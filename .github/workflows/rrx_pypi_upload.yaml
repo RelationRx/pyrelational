@@ -1,0 +1,24 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload-to-pypi:
+    runs-on: self-hosted
+    name: uploads to pypi
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip3 install wheel
+      - name: Build package
+        run: python3 setup.py sdist bdist_wheel
+      - name: Publish package to Nexus
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user:  ${{ secrets.PYPI_USER }}
+          password:  ${{ secrets.PYPI_PASSWORD }}
+          repository_url: http://pypi.relationrx.ai/repository/pypi-hosted/

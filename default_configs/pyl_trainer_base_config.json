@@ -1,0 +1,12 @@
+{
+  "gpus": 0,
+  "epochs": 100,
+  "period_eval": 1,
+  "checkpoints_dir": "experiment_logs/",
+  "checkpoints_name": "run",
+  "monitor_metric_name": "loss",
+  "monitor_metric_mode": "min",
+  "use_early_stopping": false,
+  "patience": 100,
+  "save_top_k": 1
+}

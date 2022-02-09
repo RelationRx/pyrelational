@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 120
+select = C,E,F,W,B,B950,C950,E950,F950,W950,D,D950,I,I950,N,N950,O,O950,R,R950,S,S950,T,T950,U,U950,V,V950,X,X950,Z,Z950
+extend-ignore = E203 W503 F401

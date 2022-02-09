@@ -1,0 +1,29 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+
+  make_html:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install main package
+        run: |
+         pip install -e .
+      - name: Install internal dependencies
+        run: |
+          pip install sphinx
+          pip install sphinx_rtd_theme
+      - name: Build documentation
+        run: |
+          cd docs && make clean && make html

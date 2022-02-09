@@ -1,0 +1,33 @@
+name: tests
+
+# Run this workflow every time a new commit pushed to your repository
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Tests
+    # Name the Job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install basic dependencies
+        run: |
+          pip install --upgrade pip==21.3.0
+          pip install pytest-cov
+          pip install -r requirements.txt
+      - name: Test with pytest
+        run: |
+          python -m pytest --cache-clear --cov=pyrelational tests > pytest-coverage.txt
+      - name: Comment coverage
+        uses: coroo/pytest-coverage-commentator@v1.0.2
