@@ -1,25 +1,10 @@
-# Ignoring datasets downloaded into package during development
-experiments/mnist_data
-experiments/deepsynergy_dataset
-experiments/mlruns
-
-examples/mlruns
-examples/deepsynergy_dataset
-examples/mnist_data
-
-mnist_data
+.idea
 
 # Dev files
 deprecated/
 
 # Checkpoints
 checkpoints/
-
-
-# Ignore PyTorch Lightning Logs in Experiments during development
-experiments/lightning_logs
-examples/lightning_logs
-lightning_logs
 
 # Ignoring MLRun generated files
 mlruns

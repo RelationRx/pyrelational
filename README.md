@@ -17,6 +17,7 @@
 
 ```python
 # Active Learning package
+import pyrelational as pal
 from pyrelational.data.data_manager import GenericDataManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 from pyrelational.models.generic_model import GenericModel
