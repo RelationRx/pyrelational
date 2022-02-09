@@ -1,20 +1,8 @@
 # pyrelational
 
-<p>
-    <a alt="coverage">
-        <img src="https://img.shields.io/badge/coverage-92%25-green" /></a>
-    <a alt="semver">
-        <img src="https://img.shields.io/badge/semver-0.1.3-blue" /></a>
-    <a alt="documentation" href="https://pyrelational.readthedocs.io/en/latest/index.html">
-        <img src="https://img.shields.io/badge/documentation-online-orange" /></a>
-    <a alt="pypi" href="https://pypi.org/project/pyrelational/">
-        <img src="https://img.shields.io/badge/pypi-online-yellow" /></a>
-</p>
-
 ### Quick install
 
 `pip install pyrelational`
-
 
 ### Organisation of repository
 
