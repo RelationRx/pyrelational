@@ -13,6 +13,7 @@ install_requires = [
     "pytorch-lightning>=1.5",
     "torch>=1.9.0",
     "scikit-learn>=1.0.2",
+    "tabulate>=0.7.0",
 ]
 
 
