@@ -29,7 +29,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/RelationRx/pyrelational",
     packages=find_packages(),
-    version="0.1.0",
+    version="0.1.2",
     setup_requires=setup_requires,
     tests_require=tests_require,
     install_requires=install_requires,
