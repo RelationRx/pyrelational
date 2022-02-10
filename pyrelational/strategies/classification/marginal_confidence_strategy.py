@@ -3,9 +3,9 @@ Active learning using marginal confidence uncertainty measure
 between classes in the posterior predictive distribution to
 choose which observations to propose to the oracle
 """
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.informativeness.classification import classification_margin_confidence
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.data import GenericDataManager
+from pyrelational.informativeness import classification_margin_confidence
+from pyrelational.models import GenericModel
 from pyrelational.strategies.classification.generic_classification_strategy import (
     GenericClassificationStrategy,
 )

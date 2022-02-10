@@ -1,12 +1,9 @@
 """Unit tests for data manager
 """
-import os
-import sys
-
 import pytest
 import torch
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data import GenericDataManager
 from tests.test_utils import DiabetesDataset, get_classification_dataset
 
 

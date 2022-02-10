@@ -1,6 +1,3 @@
-import os
-import sys
-
 from sklearn.cluster import AgglomerativeClustering
 
 from pyrelational.models.lightning_model import LightningModel

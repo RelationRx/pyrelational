@@ -5,9 +5,9 @@ from typing import Any, List, Optional, Union
 import torch
 from sklearn.base import ClusterMixin
 
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.informativeness.task_agnostic import representative_sampling
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.data import GenericDataManager
+from pyrelational.informativeness import representative_sampling
+from pyrelational.models import GenericModel
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 

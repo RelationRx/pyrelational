@@ -13,9 +13,9 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 
 # Active Learning package
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.informativeness.task_agnostic import relative_distance
-from pyrelational.models.lightning_model import LightningModel
+from pyrelational.data import GenericDataManager
+from pyrelational.informativeness import relative_distance
+from pyrelational.models import LightningModel
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 # dataset

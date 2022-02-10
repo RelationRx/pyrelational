@@ -14,10 +14,10 @@ from sklearn.metrics import accuracy_score
 from torch.utils.data import Dataset
 
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data import GenericDataManager
 
 # pyrelational
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.models import GenericModel
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 

@@ -1,8 +1,5 @@
 """Unit tests for active learning manager
 """
-import os
-import sys
-
 import pytest
 
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel

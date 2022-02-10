@@ -9,7 +9,7 @@ from sklearn.cluster import AgglomerativeClustering
 from torch.utils.data import DataLoader, TensorDataset
 
 import pyrelational.informativeness.regression as runc
-from pyrelational.informativeness.classification import (
+from pyrelational.informativeness import (
     classification_bald,
     classification_entropy,
     classification_least_confidence,
@@ -17,7 +17,7 @@ from pyrelational.informativeness.classification import (
     classification_ratio_confidence,
     softmax,
 )
-from pyrelational.informativeness.task_agnostic import (
+from pyrelational.informativeness import (
     relative_distance,
     representative_sampling,
 )
