@@ -1,6 +1,3 @@
-import os
-import sys
-
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
 from pyrelational.strategies.regression import (
     BALDStrategy,

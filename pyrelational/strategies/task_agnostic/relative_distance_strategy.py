@@ -2,9 +2,9 @@ from typing import List
 
 import torch
 
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.informativeness.task_agnostic import relative_distance
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.data import GenericDataManager
+from pyrelational.informativeness import relative_distance
+from pyrelational.models import GenericModel
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 

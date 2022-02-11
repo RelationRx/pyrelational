@@ -1,6 +1,6 @@
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.informativeness.regression import regression_thompson_sampling
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.data import GenericDataManager
+from pyrelational.informativeness import regression_thompson_sampling
+from pyrelational.models import GenericModel
 from pyrelational.strategies.regression.generic_regression_strategy import (
     GenericRegressionStrategy,
 )

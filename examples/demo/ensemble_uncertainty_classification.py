@@ -16,8 +16,8 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification
 
 # Active Learning package
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.models.ensemble_model import LightningEnsembleModel
+from pyrelational.data import GenericDataManager
+from pyrelational.models import LightningEnsembleModel
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 # dataset

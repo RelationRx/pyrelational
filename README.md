@@ -4,6 +4,7 @@
 
 `pip install pyrelational`
 
+
 ### Organisation of repository
 
 - `pyrelational` contains the source code for the pyrelational package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.

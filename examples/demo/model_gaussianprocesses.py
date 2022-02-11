@@ -16,8 +16,8 @@ import torch
 from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.models.lightning_model import LightningModel
+from pyrelational.data import GenericDataManager
+from pyrelational.models import LightningModel
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
 # dataset

@@ -4,8 +4,8 @@ TO DO: illustrate with dataset
 
 import torch
 
-from pyrelational.informativeness.regression import regression_least_confidence
-from pyrelational.informativeness.task_agnostic import representative_sampling
+from pyrelational.informativeness import regression_least_confidence
+from pyrelational.informativeness import representative_sampling
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 

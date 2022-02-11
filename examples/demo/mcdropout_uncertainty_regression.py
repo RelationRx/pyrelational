@@ -15,8 +15,8 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 
 # Active Learning package
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.models.mcdropout_model import LightningMCDropoutModel
+from pyrelational.data import GenericDataManager
+from pyrelational.models import LightningMCDropoutModel
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
 # dataset

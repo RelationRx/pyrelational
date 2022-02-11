@@ -17,8 +17,8 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.models.mcdropout_model import LightningMCDropoutModel
+from pyrelational.data import GenericDataManager
+from pyrelational.models import LightningMCDropoutModel
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 # dataset
