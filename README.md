@@ -19,9 +19,9 @@
 ```python
 # Active Learning package
 import pyrelational as pal
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data import GenericDataManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.models import GenericModel
 
 # Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way
 # In most cases, no change is needed to current workflow to incorporate
