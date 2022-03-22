@@ -148,20 +148,24 @@ class GenericDataManager(object):
         """This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
         """
+        train_flag = self.train_indices is not None
+        valid_flag = self.validation_indices is not None
+        test_flag = self.test_indices is not None
+
         # Different cases for presence of training mask, validation mask, test mask
         # TTT Case 0: All masks supplied; check for overlaps to avoid leaks
-        if self.train_indices is not None and self.validation_indices is not None and self.test_indices is not None:
+        if train_flag and valid_flag and test_flag:
             pass
 
         # TTF Case 1: Any remaining samples become test
-        elif self.train_indices is not None and self.validation_indices is not None and self.test_indices is None:
+        elif train_flag and valid_flag and not test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.train_indices), set(self.validation_indices)
             )
             self.test_indices = list(remaining_indices)
 
         # TFT Case 2: No validation, set any remaining as train (labelled and unlabelled handled seperately)
-        elif self.train_indices is not None and self.validation_indices is None and self.test_indices is not None:
+        elif train_flag and not valid_flag and test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.train_indices), set(self.test_indices)
             )
@@ -169,27 +173,27 @@ class GenericDataManager(object):
             self.train_indices = list(self.train_indices)
 
         # TFF Case 3: Only train, set others as test
-        elif self.train_indices is not None and self.validation_indices is None and self.test_indices is None:
+        elif train_flag and not valid_flag and not test_flag:
             remaining_indices = set(range(len(self.dataset))) - set(self.train_indices)
             self.test_indices = list(remaining_indices)
 
         # FTT Case 4: No train, set any remaining as train
-        elif self.train_indices is None and self.validation_indices is not None and self.test_indices is not None:
+        elif not train_flag and valid_flag and test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.validation_indices), set(self.test_indices)
             )
             self.train_indices = list(remaining_indices)
 
         # FTF Case 5: Only validation, send an error
-        elif self.train_indices is None and self.validation_indices is not None and self.test_indices is None:
+        elif not train_flag and valid_flag and not test_flag:
             raise ValueError("No train or test specified, too ambigious to set values")
 
         # FFT Case 6: Only test, send an error
-        elif self.train_indices is None and self.validation_indices is None and self.test_indices is not None:
+        elif not train_flag and not valid_flag and test_flag:
             raise ValueError("No train or validation specified, too ambigious to set values")
 
         # FFF Case 7: No masks given, everything is a training observation
-        elif self.train_indices is None and self.validation_indices is None and self.test_indices is None:
+        elif not train_flag and not valid_flag and not test_flag:
             self.train_indices = list(range(len(self.dataset)))
 
         else:
