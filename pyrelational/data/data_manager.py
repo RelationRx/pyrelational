@@ -60,7 +60,6 @@ class GenericDataManager(object):
         self.unlabelled_indices = unlabelled_indices
         self.validation_indices = validation_indices
         self.test_indices = test_indices
-        self.random_seed = random_seed
 
         # Loader specific arguments
         self.loader_batch_size = loader_batch_size
@@ -91,8 +90,8 @@ class GenericDataManager(object):
         else:
             logger.info("## Labelled and/or unlabelled mask unspecified")
             self.random_label_size = random_label_size
-            self.process_random()
-        # self._ensure_no_l_or_u_leaks()
+            self.process_random(random_seed)
+        self._ensure_no_l_or_u_leaks()
 
     def _ensure_no_split_leaks(self) -> None:
         tt = set.intersection(set(self.train_indices), set(self.test_indices))
@@ -126,18 +125,19 @@ class GenericDataManager(object):
                     f"There is {len(v_overlap)} sample overlap between the unlabelled indices and the validation "
                 )
 
-        t_overlap = set.intersection(set(self.l_indices), set(self.test_indices))
-        if t_overlap:
-            raise ValueError(
-                f"There is {len(t_overlap)} sample overlap between the labelled indices and the validation"
-            )
+        if self.test_indices is not None:
+            t_overlap = set.intersection(set(self.l_indices), set(self.test_indices))
+            if t_overlap:
+                raise ValueError(
+                    f"There is {len(t_overlap)} sample overlap between the labelled indices and the validation"
+                )
 
-        # save memory by using same variables
-        t_overlap = set.intersection(set(self.u_indices), set(self.test_indices))
-        if t_overlap:
-            raise ValueError(
-                f"There is {len(t_overlap)} sample overlap between the unlabelled indices and the validation"
-            )
+            # save memory by using same variables
+            t_overlap = set.intersection(set(self.u_indices), set(self.test_indices))
+            if t_overlap:
+                raise ValueError(
+                    f"There is {len(t_overlap)} sample overlap between the unlabelled indices and the validation"
+                )
 
     def _resolve_dataset_split_indices(self) -> None:
         """This function is used to resolve what values the indices should be given
@@ -247,7 +247,7 @@ class GenericDataManager(object):
     def get_labelled_loader(self) -> DataLoader:
         return self.create_loader(Subset(self.dataset, self.l_indices))
 
-    def process_random(self) -> None:
+    def process_random(self, seed=0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
@@ -259,7 +259,7 @@ class GenericDataManager(object):
             num_labelled = self.random_label_size
 
         logger.info("## Randomly generating labelled subset with {} samples from the train data".format(num_labelled))
-        random.seed(self.random_seed)
+        random.seed(seed)
         l_indices = set(random.sample(self.train_indices, num_labelled))
         u_indices = set(self.train_indices) - set(l_indices)
 
