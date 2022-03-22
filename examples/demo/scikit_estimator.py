@@ -23,11 +23,7 @@ from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 def numpy_collate(batch):
     """Collate function for a Pytorch to Numpy DataLoader"""
-    batchx = [item[0] for item in batch]
-    batchy = [item[1] for item in batch]
-    np_batchx = [x.cpu().detach().numpy() for x in batchx]
-    np_batchy = [y.cpu().detach().numpy() for y in batchy]
-    return [np.array(np_batchx), np.array(np_batchy)]
+    return [np.stack(el) for el in zip(*batch)]
 
 
 def get_breastcancer_data_manager():
@@ -49,7 +45,8 @@ def get_breastcancer_data_manager():
 
 # Wrapping the RFC with pyrelational's GenericModel
 class SKRFC(GenericModel):
-    """Scikit learn RandomForestClassifier implementing the interface of our GenericModel
+    """
+    Scikit learn RandomForestClassifier implementing the interface of our GenericModel
     for active learning.
     """
 
