@@ -107,6 +107,7 @@ class LightningModel(GenericModel):
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         model = self.current_model
+        model.eval()
 
         with torch.no_grad():
             model_prediction = []
