@@ -45,6 +45,7 @@ class GenericEnsembleModel(GenericModel, ABC):
         with torch.no_grad():
             predictions = []
             for model in self.current_model:
+                model.eval()
                 model_prediction = []
                 for x, _ in loader:
                     model_prediction.append(model(x).detach().cpu())
