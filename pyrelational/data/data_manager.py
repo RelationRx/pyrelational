@@ -1,3 +1,4 @@
+import logging
 import random
 from typing import Any, Callable, List, Optional, Sequence, Tuple, TypeVar, Union
 
@@ -5,34 +6,10 @@ import torch
 from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
 T = TypeVar("T")
+logger = logging.getLogger()
 
 
 class GenericDataManager(object):
-    """DataManager for active learning pipelines
-
-    Args:
-        dataset (torch.utils.data.Dataset): A PyTorch dataset whose indices refer to individual samples of study
-        train_indices ([int] or iterable): An iterable of indices mapping to training sample indices in the dataset
-        labelled_indices ([int] or iterable): An iterable of indices  mapping to labelled training samples
-        unlabelled_indices ([int] or iterable): An iterable of indices to unlabelled observations in the dataset
-        validation_indices ([int] or iterable): An iterable of indices to observations used for model validation
-        test_indices ([int] or iterable): An iterable of indices to observations in the input dataset used for
-            test performance of the model
-        random_label_ratio (float): Only used when labelled and unlabelled indices are not provided. Sets the ratio
-            of labelled datas to unlabelled
-        random_seed (int): random seed
-        loader_batch_size (Union[int, str]): batch size for dataloader
-        loader_shuffle (bool): shuffle flag for dataloader
-        loader_sampler (Optional[Sampler[int]]): a sampler for the dataloaders
-        loader_batch_sampler (Optional[Sampler[Sequence[int]]]): a batch sampler for the dataloaders
-        loader_num_workers (int): number of cpu workers for dataloaders
-        loader_collate_fn (Optional[Callable[[List[T]], Any]]):
-        loader_pin_memory (bool): pin memory flag for dataloaders
-        loader_drop_last (bool): drop last flag for dataloaders
-        loader_timeout (float): timeout value for dataloaders
-
-    """
-
     def __init__(
         self,
         dataset: Dataset,
@@ -41,7 +18,7 @@ class GenericDataManager(object):
         unlabelled_indices: Optional[List[int]] = None,
         validation_indices: Optional[List[int]] = None,
         test_indices: Optional[List[int]] = None,
-        random_label_ratio: float = 0.1,
+        random_label_size: Union[float, int] = 0.1,
         random_seed: int = 1234,
         loader_batch_size: Union[int, str] = 1,
         loader_shuffle: bool = False,
@@ -53,6 +30,29 @@ class GenericDataManager(object):
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
+        """
+        DataManager for active learning pipelines
+
+        :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+        :param train_indices: An iterable of indices mapping to training sample indices in the dataset
+        :param labelled_indices: An iterable of indices  mapping to labelled training samples
+        :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
+        :param validation_indices: An iterable of indices to observations used for model validation
+        :param test_indices: An iterable of indices to observations in the input dataset used for
+        test performance of the model
+        :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
+        labelled set (should either be the number of samples or ratio w.r.t. train set)
+        :param random_seed: random seed
+        :param loader_batch_size: batch size for dataloader
+        :param loader_shuffle: shuffle flag for dataloader
+        :param loader_sampler: a sampler for the dataloaders
+        :param loader_batch_sampler: a batch sampler for the dataloaders
+        :param loader_num_workers: number of cpu workers for dataloaders
+        :param loader_collate_fn: collate fn for dataloaders
+        :param loader_pin_memory: pin memory flag for dataloaders
+        :param loader_drop_last: drop last flag for dataloaders
+        :param loader_timeout: timeout value for dataloaders
+        """
         super(GenericDataManager, self).__init__()
         self.dataset = dataset
         self.train_indices = train_indices
@@ -89,13 +89,8 @@ class GenericDataManager(object):
             self.unlabelled_indices = updated_u_indices
             self.u_indices = updated_u_indices
         else:
-            print("## Labelled and/or unlabelled mask unspecified")
-            self.random_label_ratio = random_label_ratio
-            print(
-                "## Randomly generating labelled subset with {} percent of the train data".format(
-                    self.random_label_ratio * 100
-                )
-            )
+            logger.info("## Labelled and/or unlabelled mask unspecified")
+            self.random_label_size = random_label_size
             self.process_random()
         # self._ensure_no_l_or_u_leaks()
 
@@ -257,7 +252,13 @@ class GenericDataManager(object):
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
         """
-        num_labelled = int(self.random_label_ratio * len(self.train_indices))
+        if isinstance(self.random_label_size, float):
+            assert 0 < self.random_label_size < 1, "if a float, random_label_size should be between 0 and 1"
+            num_labelled = int(self.random_label_size * len(self.train_indices))
+        else:
+            num_labelled = self.random_label_size
+
+        logger.info("## Randomly generating labelled subset with {} samples from the train data".format(num_labelled))
         random.seed(self.random_seed)
         l_indices = set(random.sample(self.train_indices, num_labelled))
         u_indices = set(self.train_indices) - set(l_indices)
