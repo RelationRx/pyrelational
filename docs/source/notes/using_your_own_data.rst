@@ -1,10 +1,10 @@
 .. _using own data:
 
-Using your own datasets with pyrelational
-==================================
+Using your own datasets with PyRelationAL
+=========================================
 
 The :py:class:`pyrelational.data.data_manager.GenericDataManager` module enables users to integrate any pytorch Dataset
-into pyrelational easily. The module expects the full dataset, i.e. the union of labelled, unlabelled,
+into PyRelationAL easily. The module expects the full dataset, i.e. the union of labelled, unlabelled,
 validation (optional), and test sets. The indices of each sets should be provided to the class constructor that
 then proceeds to construct the subset Datasets object under the hood. Throughout the experiment, the data manager will
 keep track of indices and handle updates to the labelled/unlabelled pools of samples. For instance, using the Mnist dataset
@@ -62,15 +62,11 @@ Importantly, this enables using pytorch Dataset and DataLoaders to interact with
 the collate function. For instance, using the following collate function enables conversion to numpy array
 
 .. code-block:: python
-    :emphasize-lines: 15
+    :emphasize-lines: 11
 
     def numpy_collate(batch):
         """Collate function for a Pytorch to Numpy DataLoader"""
-        batchx = [item[0] for item in batch]
-        batchy = [item[1] for item in batch]
-        np_batchx = [x.cpu().detach().numpy() for x in batchx]
-        np_batchy = [y.cpu().detach().numpy() for y in batchy]
-        return [np.array(np_batchx), np.array(np_batchy)]
+        return [np.stack(el) for el in zip(*batch)]
 
     data_manager = GenericDataManager(
         mnist_dataset,

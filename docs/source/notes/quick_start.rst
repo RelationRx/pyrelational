@@ -1,7 +1,7 @@
 Quickstart and introduction by example
 ======================================
 
-As discussed in the :ref:`whatisal` section, the **pyrelational** package decomposes the active learning workflow into four
+As discussed in the :ref:`whatisal` section, the **PyRelationAL** package decomposes the active learning workflow into four
 main components: 1) a data manager, 2) a model, 3) an acquisition strategy built around an informativeness measure,
 and 4) an oracle. Note however, that the oracle is external to the package. In this section, we work through an example
 to illustrate how to instantiate and combine a data manager, a model, and an acquisition strategy.
@@ -63,13 +63,13 @@ at each iteration by the active learning strategy.
                             loader_batch_size=10,
                         )
 
-See :ref:`using own data` for more details on how to interface datasets with **pyrelational** data manager.
+See :ref:`using own data` for more details on how to interface datasets with **PyRelationAL** data manager.
 
 Model
 -----
 
 Now that our data manager is ready, we demonstrate how to define a machine learning model to interact with it.
-A **pyrelational** model wraps a user defined ML model (e.g. PyTorch Module, Pytorch Lightning Module, or scikit-learn estimator) and
+A **PyRelationAL** model wraps a user defined ML model (e.g. PyTorch Module, Pytorch Lightning Module, or scikit-learn estimator) and
 handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout).
 It is also compatible with ML models that directly estimate their uncertainties such as Gaussian Processes
 (see `demo <https://github.com/RelationRx/pyrelational/examples/demo/model_gaussianprocesses.py>`_ on source repository).
@@ -133,10 +133,10 @@ in the previous section.
             optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
             return optimizer
 
-Once defined, the lightning model can then be wrapped into a **pyrelational** model to interact with the active learning strategies.
-Note that at the moment, **pyrelational** defines MCDropout and Ensemble wrapper to approximate Bayesian uncertainty of arbitrary models.
+Once defined, the lightning model can then be wrapped into a **PyRelationAL** model to interact with the active learning strategies.
+Note that at the moment, **PyRelationAL** defines MCDropout and Ensemble wrapper to approximate Bayesian uncertainty of arbitrary models.
 You can find the existing models and templates in :mod:`pyrelational.models.generic_model`. The code snippet below
-demonstrate how to simply integrate the model above with either mc-dropout or ensembling **pyrelational** models.
+demonstrate how to simply integrate the model above with either mc-dropout or ensembling **PyRelationAL** models.
 
 .. code-block:: python
 

@@ -18,7 +18,7 @@ observations for labelling by an *oracle* for inclusion in the data used to trai
 training cycle. Active learning is not a novel concept and is known under different names in various domains, for instance
 *optimal experiment design* in statistics. To build our intuition for active learning and its terminology, we
 take a step back and look at the aims and pipelines of standard machine learning development paradigm. Then we compare
-this to the aims and pipelines of active learning. Along the way we demonstrate how **pyrelational** can help implement active
+this to the aims and pipelines of active learning. Along the way we demonstrate how **PyRelationAL** can help implement active
 learning strategies for all kinds of data and models rapidly and reliably.
 
 The standard machine learning paradigm
@@ -87,16 +87,16 @@ that are common to all active learning setups.
   DataManager, the model, the informativeness score function, and decides upon which :math:`u \in U` we propose to an oracle.
   Then takes the new labels and changes :math:`L` and :math:`U` accordingly.
 
-We incorporate all of these components in **pyrelational** to allow users to rapidly build active learning pipelines with their
+We incorporate all of these components in **PyRelationAL** to allow users to rapidly build active learning pipelines with their
 own datasets, models, and strategies inspired by the PyTorch workflow. We hope that this encourages the
 application/re-implementation of existing strategies and creation of novel strategies to further the field of active
 learning and the many real-world problems it promises to solve.
 
-Click on the QuickStart for a guided introduction to **pyrelational** as well as the other tutorials for wrapping your own
+Click on the QuickStart for a guided introduction to **PyRelationAL** as well as the other tutorials for wrapping your own
 datasets, models, performing bayesian approximation, creating your own novel active learning strategies!
 
 
 .. rubric:: Footnotes
 
 .. [#f1] For diversity sampling or model agnostic based strategies this step is not necessary. For example, imagine a strategy where we randomly pick observations for labelling; there's no need to use the model.
-.. [#f2] There are many uncertainty measures differing between models for classification and regression, many of them included in **pyrelational**!
+.. [#f2] There are many uncertainty measures differing between models for classification and regression, many of them included in **PyRelationAL**!

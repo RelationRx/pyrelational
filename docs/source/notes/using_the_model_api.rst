@@ -1,9 +1,9 @@
 .. _build your own model:
 
-Defining learning models compatible with pyrelational
-===================================================
+Defining learning models compatible with PyRelationAL
+=====================================================
 
-To interact with the pyrelational library, models need to be wrapped within a pyrelational module (:mod:`pyrelational.models`)
+To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.models`)
 that defines required methods for instantiation, training, and testing.
 
 
@@ -18,6 +18,8 @@ Let's first look an an example wrapper for a simple pytorch Module
    import torch
    import torch.nn as nn
    from pyrelational.models.mcdropout_model import GenericMCDropoutModel
+
+
    class TorchModuleWrapper(GenericMCDropoutModel):
        def __init__(self,
            model_class,
@@ -45,6 +47,7 @@ Let's first look an an example wrapper for a simple pytorch Module
            if self.current_model is None:
                raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
            criterion = nn.MSELoss()
+           self.current_model.eval()
            with torch.no_grad():
                tst_loss, cnt = 0, 0
                for x, y in loader:
@@ -67,7 +70,7 @@ This can now be instantiated with any pytorch module, for instance
 Using pytorch lightning module
 ______________________________
 
-pyrelational implements default classes (see :py:meth:`pyrelational.models.lightning_model.LightningModel`) relying on
+PyRelationAL implements default classes (see :py:meth:`pyrelational.models.lightning_model.LightningModel`) relying on
 pytorch lightning as the Trainer class offload much of the training routine definition to pytorch lighntning.
 For example, users can create ensembles of pytorch lightning modules directly as
 

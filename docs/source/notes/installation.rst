@@ -9,7 +9,7 @@ To use the library, **you will need Python 3.8 or newer**.
 Installation via Pip Wheels
 ---------------------------
 
-You can install the pyrelational library directly using pip:
+You can install the PyRelationAL library directly using pip:
 
 ::
 
@@ -18,7 +18,7 @@ You can install the pyrelational library directly using pip:
 Installation from Source
 ------------------------
 
-Alternatively, you can install pyrelational directly from source:
+Alternatively, you can install PyRelationAL directly from source:
 
 1. install the relevant packages
 

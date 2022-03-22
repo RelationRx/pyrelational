@@ -34,8 +34,17 @@ class BadgeLightningModel(LightningModel):
         super(BadgeLightningModel, self).__init__(model_class, model_config, trainer_config)
 
     def get_gradients(self, loader):
+        if self.current_model is None:
+            raise ValueError(
+                """
+                    Trying to query gradients of an untrained model,
+                    train model before calling get_gradients.
+                """
+            )
+
+        model = self.current_model
+        model.eval()
         gradients = []
-        model = self.init_model()
         for x, y in loader:  # loader should have batch size of 1
             model.zero_grad()
             pred = model(x)
@@ -64,6 +73,7 @@ class BadgeStrategy(GenericActiveLearningStrategy):
         super(BadgeStrategy, self).__init__(data_manager, model)
 
     def active_learning_step(self, num_annotate):
+        self.model.train(self.l_loader, self.valid_loader)
         u_grads = self.model.get_gradients(self.u_loader)
         l_grads = self.model.get_gradients(self.l_loader)
         scores = relative_distance(u_grads, l_grads)
