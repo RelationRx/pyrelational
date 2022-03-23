@@ -5,11 +5,11 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+    :maxdepth: 4
 
-   pyrelational.strategies.classification
-   pyrelational.strategies.regression
-   pyrelational.strategies.task_agnostic
+    strategies.classification.rst
+    strategies.regression.rst
+    strategies.task_agnostic.rst
 
 Submodules
 ----------

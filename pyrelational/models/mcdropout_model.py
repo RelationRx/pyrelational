@@ -42,6 +42,7 @@ class GenericMCDropoutModel(GenericModel, ABC):
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
         model = self.current_model
+        model.eval()
 
         with torch.no_grad():
             _enable_only_dropout_layers(model, self.eval_dropout_prob)

@@ -1,3 +1,4 @@
+import logging
 import random
 from typing import Any, Callable, List, Optional, Sequence, Tuple, TypeVar, Union
 
@@ -5,34 +6,10 @@ import torch
 from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
 T = TypeVar("T")
+logger = logging.getLogger()
 
 
 class GenericDataManager(object):
-    """DataManager for active learning pipelines
-
-    Args:
-        dataset (torch.utils.data.Dataset): A PyTorch dataset whose indices refer to individual samples of study
-        train_indices ([int] or iterable): An iterable of indices mapping to training sample indices in the dataset
-        labelled_indices ([int] or iterable): An iterable of indices  mapping to labelled training samples
-        unlabelled_indices ([int] or iterable): An iterable of indices to unlabelled observations in the dataset
-        validation_indices ([int] or iterable): An iterable of indices to observations used for model validation
-        test_indices ([int] or iterable): An iterable of indices to observations in the input dataset used for
-            test performance of the model
-        random_label_ratio (float): Only used when labelled and unlabelled indices are not provided. Sets the ratio
-            of labelled datas to unlabelled
-        random_seed (int): random seed
-        loader_batch_size (Union[int, str]): batch size for dataloader
-        loader_shuffle (bool): shuffle flag for dataloader
-        loader_sampler (Optional[Sampler[int]]): a sampler for the dataloaders
-        loader_batch_sampler (Optional[Sampler[Sequence[int]]]): a batch sampler for the dataloaders
-        loader_num_workers (int): number of cpu workers for dataloaders
-        loader_collate_fn (Optional[Callable[[List[T]], Any]]):
-        loader_pin_memory (bool): pin memory flag for dataloaders
-        loader_drop_last (bool): drop last flag for dataloaders
-        loader_timeout (float): timeout value for dataloaders
-
-    """
-
     def __init__(
         self,
         dataset: Dataset,
@@ -41,7 +18,7 @@ class GenericDataManager(object):
         unlabelled_indices: Optional[List[int]] = None,
         validation_indices: Optional[List[int]] = None,
         test_indices: Optional[List[int]] = None,
-        random_label_ratio: float = 0.1,
+        random_label_size: Union[float, int] = 0.1,
         random_seed: int = 1234,
         loader_batch_size: Union[int, str] = 1,
         loader_shuffle: bool = False,
@@ -53,6 +30,29 @@ class GenericDataManager(object):
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
+        """
+        DataManager for active learning pipelines
+
+        :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+        :param train_indices: An iterable of indices mapping to training sample indices in the dataset
+        :param labelled_indices: An iterable of indices  mapping to labelled training samples
+        :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
+        :param validation_indices: An iterable of indices to observations used for model validation
+        :param test_indices: An iterable of indices to observations in the input dataset used for
+        test performance of the model
+        :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
+        labelled set (should either be the number of samples or ratio w.r.t. train set)
+        :param random_seed: random seed
+        :param loader_batch_size: batch size for dataloader
+        :param loader_shuffle: shuffle flag for dataloader
+        :param loader_sampler: a sampler for the dataloaders
+        :param loader_batch_sampler: a batch sampler for the dataloaders
+        :param loader_num_workers: number of cpu workers for dataloaders
+        :param loader_collate_fn: collate fn for dataloaders
+        :param loader_pin_memory: pin memory flag for dataloaders
+        :param loader_drop_last: drop last flag for dataloaders
+        :param loader_timeout: timeout value for dataloaders
+        """
         super(GenericDataManager, self).__init__()
         self.dataset = dataset
         self.train_indices = train_indices
@@ -60,7 +60,6 @@ class GenericDataManager(object):
         self.unlabelled_indices = unlabelled_indices
         self.validation_indices = validation_indices
         self.test_indices = test_indices
-        self.random_seed = random_seed
 
         # Loader specific arguments
         self.loader_batch_size = loader_batch_size
@@ -78,26 +77,21 @@ class GenericDataManager(object):
 
         # Set l and u indices according to mask arguments
         # and need to check that they arent part of
-        if labelled_indices and unlabelled_indices:
+        if labelled_indices is not None and unlabelled_indices is not None:
             if set.intersection(set(labelled_indices), set(unlabelled_indices)):
                 raise ValueError("There is overlap between labelled and unlabelled samples")
             self.l_indices = labelled_indices
             self.u_indices = unlabelled_indices
-        elif labelled_indices and not unlabelled_indices:
+        elif labelled_indices is not None and unlabelled_indices is None:
             self.l_indices = labelled_indices
             updated_u_indices = list(set(self.train_indices) - set(labelled_indices))
             self.unlabelled_indices = updated_u_indices
             self.u_indices = updated_u_indices
         else:
-            print("## Labelled and/or unlabelled mask unspecified")
-            self.random_label_ratio = random_label_ratio
-            print(
-                "## Randomly generating labelled subset with {} percent of the train data".format(
-                    self.random_label_ratio * 100
-                )
-            )
-            self.process_random()
-        # self._ensure_no_l_or_u_leaks()
+            logger.info("## Labelled and/or unlabelled mask unspecified")
+            self.random_label_size = random_label_size
+            self.process_random(random_seed)
+        self._ensure_no_l_or_u_leaks()
 
     def _ensure_no_split_leaks(self) -> None:
         tt = set.intersection(set(self.train_indices), set(self.test_indices))
@@ -131,37 +125,42 @@ class GenericDataManager(object):
                     f"There is {len(v_overlap)} sample overlap between the unlabelled indices and the validation "
                 )
 
-        t_overlap = set.intersection(set(self.l_indices), set(self.test_indices))
-        if t_overlap:
-            raise ValueError(
-                f"There is {len(t_overlap)} sample overlap between the labelled indices and the validation"
-            )
+        if self.test_indices is not None:
+            t_overlap = set.intersection(set(self.l_indices), set(self.test_indices))
+            if t_overlap:
+                raise ValueError(
+                    f"There is {len(t_overlap)} sample overlap between the labelled indices and the validation"
+                )
 
-        # save memory by using same variables
-        t_overlap = set.intersection(set(self.u_indices), set(self.test_indices))
-        if t_overlap:
-            raise ValueError(
-                f"There is {len(t_overlap)} sample overlap between the unlabelled indices and the validation"
-            )
+            # save memory by using same variables
+            t_overlap = set.intersection(set(self.u_indices), set(self.test_indices))
+            if t_overlap:
+                raise ValueError(
+                    f"There is {len(t_overlap)} sample overlap between the unlabelled indices and the validation"
+                )
 
     def _resolve_dataset_split_indices(self) -> None:
         """This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
         """
+        train_flag = self.train_indices is not None
+        valid_flag = self.validation_indices is not None
+        test_flag = self.test_indices is not None
+
         # Different cases for presence of training mask, validation mask, test mask
         # TTT Case 0: All masks supplied; check for overlaps to avoid leaks
-        if self.train_indices and self.validation_indices and self.test_indices:
+        if train_flag and valid_flag and test_flag:
             pass
 
         # TTF Case 1: Any remaining samples become test
-        elif self.train_indices and self.validation_indices and not self.test_indices:
+        elif train_flag and valid_flag and not test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.train_indices), set(self.validation_indices)
             )
             self.test_indices = list(remaining_indices)
 
         # TFT Case 2: No validation, set any remaining as train (labelled and unlabelled handled seperately)
-        elif self.train_indices and not self.validation_indices and self.test_indices:
+        elif train_flag and not valid_flag and test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.train_indices), set(self.test_indices)
             )
@@ -169,27 +168,27 @@ class GenericDataManager(object):
             self.train_indices = list(self.train_indices)
 
         # TFF Case 3: Only train, set others as test
-        elif self.train_indices and not self.validation_indices and not self.test_indices:
+        elif train_flag and not valid_flag and not test_flag:
             remaining_indices = set(range(len(self.dataset))) - set(self.train_indices)
             self.test_indices = list(remaining_indices)
 
         # FTT Case 4: No train, set any remaining as train
-        elif not self.train_indices and self.validation_indices and self.test_indices:
+        elif not train_flag and valid_flag and test_flag:
             remaining_indices = set(range(len(self.dataset))) - set.union(
                 set(self.validation_indices), set(self.test_indices)
             )
             self.train_indices = list(remaining_indices)
 
         # FTF Case 5: Only validation, send an error
-        elif not self.train_indices and self.validation_indices and not self.test_indices:
+        elif not train_flag and valid_flag and not test_flag:
             raise ValueError("No train or test specified, too ambigious to set values")
 
         # FFT Case 6: Only test, send an error
-        elif not self.train_indices and not self.validation_indices and self.test_indices:
+        elif not train_flag and not valid_flag and test_flag:
             raise ValueError("No train or validation specified, too ambigious to set values")
 
         # FFF Case 7: No masks given, everything is a training observation
-        elif not self.train_indices and not self.validation_indices and not self.test_indices:
+        elif not train_flag and not valid_flag and not test_flag:
             self.train_indices = list(range(len(self.dataset)))
 
         else:
@@ -248,13 +247,19 @@ class GenericDataManager(object):
     def get_labelled_loader(self) -> DataLoader:
         return self.create_loader(Subset(self.dataset, self.l_indices))
 
-    def process_random(self) -> None:
+    def process_random(self, seed=0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
         """
-        num_labelled = int(self.random_label_ratio * len(self.train_indices))
-        random.seed(self.random_seed)
+        if isinstance(self.random_label_size, float):
+            assert 0 < self.random_label_size < 1, "if a float, random_label_size should be between 0 and 1"
+            num_labelled = int(self.random_label_size * len(self.train_indices))
+        else:
+            num_labelled = self.random_label_size
+
+        logger.info("## Randomly generating labelled subset with {} samples from the train data".format(num_labelled))
+        random.seed(seed)
         l_indices = set(random.sample(self.train_indices, num_labelled))
         u_indices = set(self.train_indices) - set(l_indices)
 

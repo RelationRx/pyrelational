@@ -1,16 +1,16 @@
-pyrelational package
+PyRelationAL package
 ====================
 
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+    :maxdepth: 4
 
-   pyrelational.data
-   pyrelational.informativeness
-   pyrelational.models
-   pyrelational.strategies
+    data.rst
+    models.rst
+    informativeness.rst
+    strategies.rst
 
 Module contents
 ---------------

@@ -1,9 +1,9 @@
 .. _using own strategy:
 
-Creating your own active learning strategies with pyrelational
-=======================================================
+Creating your own active learning strategies with PyRelationAL
+==============================================================
 
-While pyrelational already implements multiple standard active learning strategies, it is not exhaustive.
+While PyRelationAL already implements multiple standard active learning strategies, it is not exhaustive.
 However, users can easily define their own strategies by subclassing
 :py:class:`pyrelational.strategies.generic_al_strategy.GenericActiveLearningStrategy`
 and overriding the methods necessary to compute the new strategy.
@@ -25,7 +25,7 @@ subset based on euclidean distance between input features.
 .. code-block:: python
 
     import torch
-    from pyrelational.informativeness.regression import least_confidence
+    from pyrelational.informativeness import regression_least_confidence
     from pyrelational.informativeness.task_agnostic import representative_sampling
     from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
@@ -43,7 +43,7 @@ subset based on euclidean distance between input features.
         def active_learning_step(self, num_annotate):
             self.model.train(self.l_loader, self.valid_loader)
             output = self.model(self.u_loader)
-            scores = least_confidence(x=output)
+            scores = regression_least_confidence(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             ixs = [self.u_indices[i] for i in ixs[: 10 * num_annotate]]
             subquery = torch.stack(self.data_manager.get_sample_feature_vectors(ixs))
@@ -61,16 +61,14 @@ random from the remaining queryable set.
 
     import torch
     import numpy as np
-    from pyrelational.informativeness.regression import greedy
-    from pyrelational.informativeness.task_agnostic import representative_sampling
+    from pyrelational.informativeness import regression_greedy_score
     from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 
     class EpsilonGreedyStrategy(GenericActiveLearningStrategy):
         """
-        Implements a strategy that combines least_confidence scorer with representative sampling.
-        To this end, 10 times more samples than requested are selected based on least_confidence scorer,
-        the list is then reduced based on representative_sampling.
+        Implements an epsilon-greedy strategy, whereby a percentage of the samples to annotate
+        are selected randomly while the remaining are selected greedily.
         """
 
         def __init(self, datamanager, model):
@@ -80,10 +78,10 @@ random from the remaining queryable set.
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
             self.model.train(self.l_loader, self.valid_loader)
             output = self.model(self.u_loader)
-            scores = greedy(x=output)
+            scores = regression_greedy_score(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             greedy_annotate = int((1-eps)*num_annotate)
-            ixs = [self.u_indices[i] for i in ixs[: greedy_annotate]
+            ixs = [self.u_indices[i] for i in ixs[: greedy_annotate]]
             remaining_u_indices = list(set(self.u_indices) - set(ixs))
             random_annotate = np.random.choice(remaining_u_indices, num_annotate-greedy_annotate, replace=False)
             return ixs + random_annotate.tolist()
