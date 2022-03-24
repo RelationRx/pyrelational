@@ -4,10 +4,10 @@ pyrelational.strategies.task\_agnostic package
 Submodules
 ----------
 
-pyrelational.strategies.task\_agnostic.diversity\_sampling\_strategy module
+pyrelational.strategies.task\_agnostic.relative\_distance\_strategy module
 ---------------------------------------------------------------------------
 
-.. automodule:: pyrelational.strategies.task_agnostic.diversity_sampling_strategy
+.. automodule:: pyrelational.strategies.task_agnostic.relative_distance_strategy
    :members:
    :undoc-members:
    :show-inheritance:
