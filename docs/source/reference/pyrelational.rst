@@ -7,10 +7,10 @@ Subpackages
 .. toctree::
     :maxdepth: 4
 
-    data.rst
-    models.rst
-    informativeness.rst
-    strategies.rst
+    reference/data.rst
+    reference/models.rst
+    reference/informativeness.rst
+    reference/strategies.rst
 
 Module contents
 ---------------
