@@ -72,7 +72,7 @@ random from the remaining queryable set.
         """
 
         def __init(self, datamanager, model):
-            super(MixedStrategy, self).__init__(datamanager, model)
+            super(EpsilonGreedyStrategy, self).__init__(datamanager, model)
 
         def active_learning_step(self, num_annotate, eps=0.05):
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
