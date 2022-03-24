@@ -5,7 +5,7 @@
     <a alt="coverage">
         <img src="https://img.shields.io/badge/coverage-93%25-green" /></a>
     <a alt="semver">
-        <img src="https://img.shields.io/badge/semver-0.1.3-blue" /></a>
+        <img src="https://img.shields.io/badge/semver-0.1.4-blue" /></a>
     <a alt="documentation" href="https://pyrelational.readthedocs.io/en/latest/index.html">
         <img src="https://img.shields.io/badge/documentation-online-orange" /></a>
     <a alt="pypi" href="https://pypi.org/project/pyrelational/">
@@ -18,12 +18,12 @@
 
 ### Organisation of repository
 
-- `pyrelational` contains the source code for the pyrelational package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.
-- `examples` contains various example scripts and notebooks detailing how the package can be used
-- `tests` unit tests for pyrelational package
-- `docs` docs and assets for docs
+- `pyrelational` folder contains the source code for the PyRelationAL package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.
+- `examples` folder contains various example scripts and notebooks detailing how the package can be used
+- `tests` folder contains unit tests for pyrelational package
+- `docs` folder contains docs and assets for docs
 
-### The `pyrelational` package
+### The `PyRelationAL` package
 
 #### Example
 
@@ -51,7 +51,7 @@ al_manager.full_active_learning_run(num_annotate=100, test_loader=test_loader)
 #### Overview
 
 
-The pyrelational package offers a flexible workflow to enable active learning with as little change to the models and datasets as possible. It is partially inspired by Robert (Munro) Monarch's book: "Human-In-The-Loop Machine Learning" and shares some vocabulary from there. It is principally designed with PyTorch in mind, but can be easily extended to work with other libraries.
+The PyRelationAL package offers a flexible workflow to enable active learning with as little change to the models and datasets as possible. It is partially inspired by Robert (Munro) Monarch's book: "Human-In-The-Loop Machine Learning" and shares some vocabulary from there. It is principally designed with PyTorch in mind, but can be easily extended to work with other libraries.
 
 For a primer on active learning, we refer the reader to Burr Settles's survey [[reference](https://burrsettles.com/pub/settles.activelearning.pdf)]. In his own words
 > The key idea behind active learning is that a machine learning algorithm can
@@ -64,7 +64,7 @@ time-consuming, or expensive to obtain.
 
 ![Overview](docs/images/active_learning_loop.png "Overview")
 
-The `pyrelational` package decomposes the active learning workflow into four main components: 1) a **data manager**, 2) a **model**, 3) an **acquisition strategy** built around informativeness scorer, and 4) an **oracle** (see Figure above). Note that the oracle is external to the package.
+The `PyRelationAL` package decomposes the active learning workflow into four main components: 1) a **data manager**, 2) a **model**, 3) an **acquisition strategy** built around informativeness scorer, and 4) an **oracle** (see Figure above). Note that the oracle is external to the package.
 
 The data manager (defined in `pyrelational.data.data_manager.GenericDataManager`) wraps around a PyTorch Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 
@@ -91,7 +91,7 @@ at `docs/_build/html/index.html`.
 
 
 ## Quickstart & examples
-The `examples/` folder contains multiple scripts and notebooks demonstrating how to use pyrelational effectively.
+The `examples/` folder contains multiple scripts and notebooks demonstrating how to use PyRelationAL effectively.
 
 The diverse examples scripts and notebooks aim to showcase how to use pyrelational in various scenario. Specifically,
 
@@ -138,7 +138,7 @@ The diverse examples scripts and notebooks aim to showcase how to use pyrelation
 
 ## Informativeness scorer included in the library
 
-### Regression (N.B. pyrelational currently only supports single scalar regression tasks)
+### Regression (N.B. PyRelationAL currently only supports single scalar regression tasks)
 
 - Greedy
 - Least confidence
@@ -148,7 +148,7 @@ The diverse examples scripts and notebooks aim to showcase how to use pyrelation
 - BALD
 - BatchBALD (coming soon)
 
-### Classification (N.B. pyrelational does not support multi-label classification at the moment)
+### Classification (N.B. PyRelationAL does not support multi-label classification at the moment)
 
 - Least confidence
 - Margin confidence
