@@ -3,4 +3,4 @@ import pyrelational.informativeness
 import pyrelational.models
 import pyrelational.strategies
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
