@@ -25,9 +25,12 @@ rapidly implementing active learning pipelines from data management, model devel
 .. toctree::
    :glob:
    :maxdepth: 2
-   :caption: Package reference
+   :caption: Package modules
 
-   reference/pyrelational.rst
+   reference/data.rst
+   reference/models.rst
+   reference/informativeness.rst
+   reference/strategies.rst
 
 Indices and tables
 ==================

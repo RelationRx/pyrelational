@@ -1,8 +1,5 @@
-pyrelational.models package
-===========================
-
-Submodules
-----------
+pyrelational.models
+===================
 
 pyrelational.models.ensemble\_model module
 ------------------------------------------
@@ -32,14 +29,6 @@ pyrelational.models.mcdropout\_model module
 -------------------------------------------
 
 .. automodule:: pyrelational.models.mcdropout_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pyrelational.models
    :members:
    :undoc-members:
    :show-inheritance:

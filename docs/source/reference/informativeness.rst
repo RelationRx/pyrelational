@@ -1,8 +1,5 @@
-pyrelational.informativeness package
-====================================
-
-Submodules
-----------
+pyrelational.informativeness
+============================
 
 pyrelational.informativeness.classification module
 --------------------------------------------------
@@ -24,14 +21,6 @@ pyrelational.informativeness.task\_agnostic module
 --------------------------------------------------
 
 .. automodule:: pyrelational.informativeness.task_agnostic
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: pyrelational.informativeness
    :members:
    :undoc-members:
    :show-inheritance:
