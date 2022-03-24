@@ -18,10 +18,10 @@
 
 ### Organisation of repository
 
-- `PyRelationAL` contains the source code for the PyRelationAL package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.
-- `examples` contains various example scripts and notebooks detailing how the package can be used
-- `tests` unit tests for pyrelational package
-- `docs` docs and assets for docs
+- `pyrelational` folder contains the source code for the PyRelationAL package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.
+- `examples` folder contains various example scripts and notebooks detailing how the package can be used
+- `tests` folder contains unit tests for pyrelational package
+- `docs` folder contains docs and assets for docs
 
 ### The `PyRelationAL` package
 
