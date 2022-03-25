@@ -215,6 +215,7 @@ class GenericDataManager(object):
         else:
             if isinstance(percentage, int):
                 percentage /= 100
+            assert 0 < percentage < 1, "hit ratio's percentage should be strictly between 0 and 1 (or 0 and 100)"
             ixs = np.array(self.u_indices)
             percentage = int(percentage * len(ixs))
             y = torch.cat(self.get_sample_labels(ixs))
