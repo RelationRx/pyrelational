@@ -2,6 +2,7 @@ import logging
 import random
 from typing import Any, Callable, List, Optional, Sequence, Tuple, TypeVar, Union
 
+import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
@@ -19,6 +20,7 @@ class GenericDataManager(object):
         validation_indices: Optional[List[int]] = None,
         test_indices: Optional[List[int]] = None,
         random_label_size: Union[float, int] = 0.1,
+        hit_ratio_at: Optional[Union[int, float]] = None,
         random_seed: int = 1234,
         loader_batch_size: Union[int, str] = 1,
         loader_shuffle: bool = False,
@@ -42,6 +44,7 @@ class GenericDataManager(object):
         test performance of the model
         :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
         labelled set (should either be the number of samples or ratio w.r.t. train set)
+        :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
         :param random_seed: random seed
         :param loader_batch_size: batch size for dataloader
         :param loader_shuffle: shuffle flag for dataloader
@@ -92,6 +95,7 @@ class GenericDataManager(object):
             self.random_label_size = random_label_size
             self.process_random(random_seed)
         self._ensure_no_l_or_u_leaks()
+        self._top_unlabelled_set(hit_ratio_at)
 
     def _ensure_no_split_leaks(self) -> None:
         tt = set.intersection(set(self.train_indices), set(self.test_indices))
@@ -204,6 +208,18 @@ class GenericDataManager(object):
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor]:
         # So that one can access samples by index directly
         return self.dataset[idx]
+
+    def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
+        if percentage is None:
+            self.top_unlabelled = None
+        else:
+            if isinstance(percentage, int):
+                percentage /= 100
+            ixs = np.array(self.u_indices)
+            percentage = int(percentage * len(ixs))
+            y = torch.cat(self.get_sample_labels(ixs))
+            threshold = np.sort(y.abs())[-percentage]
+            self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
     def get_train_set(self) -> Dataset:
         train_subset = Subset(self.dataset, self.train_indices)

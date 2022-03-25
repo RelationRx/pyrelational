@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Optional
 
+import numpy as np
 import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
@@ -22,11 +23,10 @@ class GenericActiveLearningStrategy(ABC):
     to define specific acquisition/active learning strategies and hence
     drive the active learning process
 
-    Args:
-        data_manager (pyrelational.data_manager.GenericDataManager): an pyrelational data manager
+    :param data_manager: an pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
-        model (pyrelational.models.generic_model.GenericModel): An pyrelational model
+    :param model: An pyrelational model
             which serves as the machine learning model for the data in the
             data manager
     """
@@ -51,8 +51,7 @@ class GenericActiveLearningStrategy(ABC):
         Would not make much sense when we are doing active learning for the real
         situation, hence not part of __init__
 
-        Args:
-            test_loader (Optional: torch.utils.data.DataLoader): Pytorch Data Loader with
+        :param test_loader: Pytorch Data Loader with
                 test data compatible with model, optional as often the test loader can be
                 generated from data_manager but is here for case when it hasn't been defined
                 or there is a new test set.
@@ -65,7 +64,7 @@ class GenericActiveLearningStrategy(ABC):
         self.model.current_model = None
         return self.performances["full"]
 
-    def current_performance(self, test_loader: Optional[DataLoader] = None) -> Dict:
+    def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
 
@@ -75,6 +74,13 @@ class GenericActiveLearningStrategy(ABC):
             result = self.model.test(test_loader)
         # reset current model, to avoid issues when model does not need to be trained during al_step.
         self.model.current_model = None
+
+        if self.data_manager.top_unlabelled is not None:
+            result["hit_ratio"] = (
+                np.nan
+                if query is None
+                else len(set(query) & self.data_manager.top_unlabelled) / len(self.data_manager.top_unlabelled)
+            )
         return result
 
     @abstractmethod
@@ -82,8 +88,7 @@ class GenericActiveLearningStrategy(ABC):
         """Implements a single step of the active learning strategy stopping and returning the
         unlabelled observations to be labelled as a list of dataset indices
 
-        Args:
-            num_annotate (int > 0): number of observations from u to suggest for labelling
+        :param num_annotate: number of observations from u to suggest for labelling
         """
         pass
 
@@ -104,6 +109,7 @@ class GenericActiveLearningStrategy(ABC):
     def full_active_learning_run(
         self,
         num_annotate: int,
+        num_iterations: Optional[int] = None,
         oracle_interface: object = None,
         test_loader: DataLoader = None,
     ) -> None:
@@ -115,26 +121,31 @@ class GenericActiveLearningStrategy(ABC):
         labelled to be added to the next iteration's labelled dataset L'. This
         process repeats until there are no observations left in the unlabelled set.
 
-        Args:
-            num_annotate (int): number of observations to get annotated per iteration
-            test_loader (pytorch.utils.data.DataLoader): test data with which we evaluate
-                the current state of the model given the labelled set L
-            oracle_interface (None or pyrelational.oracle_interface.OracleInterface)
+        :param num_annotate: number of observations to get annotated per iteration
+        :param num_iterations: number of active learning loop to perform
+        :param oracle_interface: undefined for now, this will be entry point for external oracle later
+        :param test_loader: test data with which we evaluate the current state of the model given the labelled set L
         """
-
+        iter_count = 0
         while len(self.u_indices) > 0:
+            iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
             observations_for_labelling = self.active_learning_step(num_annotate)
 
             # Record the current performance
-            self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
+            self.performances[self.iteration] = self.current_performance(
+                test_loader=test_loader,
+                query=observations_for_labelling,
+            )
 
             self.active_learning_update(
                 observations_for_labelling,
                 oracle_interface,
                 update_tag=str(self.iteration),
             )
+            if (num_iterations is not None) and iter_count == num_iterations:
+                break
 
         # Final update the model and check final test performance
         self.model.train(self.l_loader, self.valid_loader)
