@@ -112,7 +112,8 @@ class GenericActiveLearningStrategy(ABC):
         num_iterations: Optional[int] = None,
         oracle_interface: object = None,
         test_loader: DataLoader = None,
-    ) -> None:
+        return_query_history: bool = False,
+    ) -> Optional[Dict]:
         """Given the number of samples to annotate and a test loader
         this method will go through the entire active learning process of training
         the model on the labelled set, and recording the current performance
@@ -125,13 +126,19 @@ class GenericActiveLearningStrategy(ABC):
         :param num_iterations: number of active learning loop to perform
         :param oracle_interface: undefined for now, this will be entry point for external oracle later
         :param test_loader: test data with which we evaluate the current state of the model given the labelled set L
+        :param return_query_history: whether to return the history of queries or not
+        :return: optionally returns a dictionary storing the indices of queries at each iteration
         """
         iter_count = 0
+        if return_query_history:
+            query_history = {}
         while len(self.u_indices) > 0:
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
             observations_for_labelling = self.active_learning_step(num_annotate)
+            if return_query_history:
+                query_history[iter_count] = observations_for_labelling
 
             # Record the current performance
             self.performances[self.iteration] = self.current_performance(
@@ -150,6 +157,8 @@ class GenericActiveLearningStrategy(ABC):
         # Final update the model and check final test performance
         self.model.train(self.l_loader, self.valid_loader)
         self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
+        if return_query_history:
+            return query_history
 
     def update_annotations(self, indices: List[int]) -> None:
         self.data_manager.update_train_labels(indices)
