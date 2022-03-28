@@ -218,7 +218,7 @@ class GenericDataManager(object):
             assert 0 < percentage < 1, "hit ratio's percentage should be strictly between 0 and 1 (or 0 and 100)"
             ixs = np.array(self.u_indices)
             percentage = int(percentage * len(ixs))
-            y = torch.cat(self.get_sample_labels(ixs))
+            y = torch.stack(self.get_sample_labels(ixs)).squeeze()
             threshold = np.sort(y.abs())[-percentage]
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 

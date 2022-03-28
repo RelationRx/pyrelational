@@ -28,7 +28,7 @@ def test_performances():
 
 
 def test_full_active_learning_run():
-    gdm = get_classification_dataset()
+    gdm = get_classification_dataset(hit_ratio_at=5)
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_manager = LeastConfidenceStrategy(data_manager=gdm, model=model)
     al_manager.theoretical_performance()
@@ -37,10 +37,12 @@ def test_full_active_learning_run():
     # Test performance history data frame
     df = al_manager.performance_history()
     print(df)
-    assert df.shape == (3, 2)
+    assert df.shape == (3, 3)
     assert len(al_manager.data_manager.l_indices) == len(gdm.train_indices)
     assert len(al_manager.data_manager.u_indices) == 0
     assert {"full", 0, 1, 2} == set(list(al_manager.performances.keys()))
+    for k in {"full", 0, 1, 2}:
+        assert "hit_ratio" in al_manager.performances[k].keys()
 
 
 def test_update_annotations():

@@ -36,6 +36,7 @@ data_manager = GenericDataManager(
     train_indices=train_indices,
     validation_indices=val_indices,
     test_indices=test_indices,
+    hit_ratio_at=5,
 )
 
 strategy = RelativeDistanceStrategy(data_manager=data_manager, model=model)

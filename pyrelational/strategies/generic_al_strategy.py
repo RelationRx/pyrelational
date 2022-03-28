@@ -59,7 +59,10 @@ class GenericActiveLearningStrategy(ABC):
         self.model.train(self.train_loader, self.valid_loader)
 
         # use test loader in data_manager if there is one
-        self.performances["full"] = self.model.test(self.test_loader if test_loader is None else test_loader)
+        result = self.model.test(self.test_loader if test_loader is None else test_loader)
+        if self.data_manager.top_unlabelled is not None:
+            result["hit_ratio"] = np.nan
+        self.performances["full"] = result
         # make sure that theoretical best model is not stored
         self.model.current_model = None
         return self.performances["full"]
