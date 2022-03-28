@@ -31,16 +31,16 @@ def relative_distance(
     samples in the reference set.
 
     :param query_set: input containing the features of samples in the queryable pool. query set should either be an
-    array-like object or a pytorch dataloader whose first element in each bactch is a featurisation of the samples in
-    the batch.
+        array-like object or a pytorch dataloader whose first element in each bactch is a featurisation of the samples
+        in the batch.
     :param reference_set: input containing the features of samples already queried samples against which the distances
-    are computed. reference set should either be an array-like object or a pytorch dataloader whose first element in
-    each bactch is a featurisation of the samples in the batch.
+        are computed. reference set should either be an array-like object or a pytorch dataloader whose first element in
+        each bactch is a featurisation of the samples in the batch.
     :param metric: defines the metric to be used to compute the distance. This should be supported by scikit-learn
-    pairwise_distances function.
+        pairwise_distances function.
     :param axis: integer indicating which dimension the features are
     :return: pytorch tensor of dimension the number of samples in query_set containing the minimum distance from each
-    sample to the reference set
+        sample to the reference set
     """
     if isinstance(query_set, get_args(Array)):
         query_set = np.array(query_set)
@@ -95,12 +95,12 @@ def representative_sampling(
     algorithms in scikit-learn.
 
     :param query_set: input containing the features of samples in the queryable pool. query set should either be an
-    array-like object or a pytorch dataloader whose first element in each bactch is a featurisation of the samples in
-    the batch.
+        array-like object or a pytorch dataloader whose first element in each bactch is a featurisation of the samples
+        in the batch
     :param num_annotate: number of representative samples to identify
     :param clustering_method: name, or instantiated class, of the clustering method to use
     :param clustering_kwargs: arguments to be passed to instantiate clustering class if a string is passed to
-    clustering_method
+        clustering_method
     :return: array-like containing the indices of the representative samples identified
     """
 

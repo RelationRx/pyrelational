@@ -20,6 +20,10 @@ install_requires = [
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+version = {}
+with open("pyrelational/version.py") as fp:
+    exec(fp.read(), version)
+
 setup(
     name="pyrelational",
     description="Python tool box for quickly implementing active learning strategies",
@@ -29,7 +33,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/RelationRx/pyrelational",
     packages=find_packages(),
-    version="0.1.4",
+    version=version["__version__"],
     setup_requires=setup_requires,
     tests_require=tests_require,
     install_requires=install_requires,

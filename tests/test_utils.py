@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from pyrelational.data.data_manager import GenericDataManager
 
 
-def get_regression_dataset():
+def get_regression_dataset(hit_ratio_at=None):
     pl.seed_everything(0)
 
     ds = DiabetesDataset()
@@ -23,10 +23,11 @@ def get_regression_dataset():
         validation_indices=valid_indices,
         test_indices=test_indices,
         loader_batch_size=10,
+        hit_ratio_at=hit_ratio_at,
     )
 
 
-def get_classification_dataset(labelled_size=None):
+def get_classification_dataset(labelled_size=None, hit_ratio_at=None):
     pl.seed_everything(0)
 
     ds = BreastCancerDataset()
@@ -43,6 +44,7 @@ def get_classification_dataset(labelled_size=None):
         test_indices=test_indices,
         labelled_indices=labelled_indices,
         loader_batch_size=10,
+        hit_ratio_at=hit_ratio_at,
     )
 
 
