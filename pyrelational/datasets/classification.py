@@ -225,7 +225,14 @@ class DigitDataset(Dataset):
         return self.x[idx], self.y[idx]
 
 class FashionMNIST(Dataset):
-    """Fashion MNIST Dataset """
+    """Fashion MNIST Dataset
+
+    From Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning
+    Algorithms. Han Xiao, Kashif Rasul, Roland Vollgraf. arXiv:1708.07747
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
     def __init__(self, n_splits=5):
         super(FashionMNIST, self).__init__()
         dataset = datasets.FashionMNIST(root="data", train=True, download=True, transform=transforms.ToTensor())
