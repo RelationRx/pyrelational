@@ -8,4 +8,8 @@ from pyrelational.datasets.classification import (
     UCIGlass,
     UCIParkinsons,
     UCISeeds,
+    StriatumDataset,
+    GaussianCloudsDataset,
+    Checkerboard2x2Dataset,
+    Checkerboard4x4Dataset,
 )

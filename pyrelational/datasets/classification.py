@@ -465,3 +465,128 @@ class GaussianCloudsDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
+
+
+class Checkerboard2x2Dataset(Dataset):
+    """Checkerboard2x2 dataset from Konyushkova et al. 2017
+
+    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    Learning from Data', NIPS 2017
+    
+    :param data_dir: path where to save the raw data default to /tmp/
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+
+    """
+    def __init__(self, data_dir="/tmp/", n_splits=10):
+        super(Checkerboard2x2Dataset, self).__init__()
+        self.data_dir = data_dir
+        self.n_splits = n_splits
+
+        self.raw_train_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard2x2_train.npz"
+        self.raw_test_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard2x2_test.npz"
+
+        self._load_dataset()
+
+    def _download_dataset(self, url):
+        if not path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
+
+        file_name = url.split('/')[-1]
+        if not path.exists(self.data_dir + file_name):
+            urllib.request.urlretrieve(
+                url, self.data_dir + file_name)
+
+    def _load_dataset(self):
+        """Download, process, and get stratified splits"""
+
+        # download
+        self._download_dataset(self.raw_train_url)
+        self._download_dataset(self.raw_test_url)
+
+        # process
+        train = np.load(self.data_dir + "checkerboard2x2_train.npz")
+        test = np.load(self.data_dir + "checkerboard2x2_test.npz")
+
+        train_feat, train_label = train['x'], train['y']
+        test_feat, test_label = test['x'], test['y']
+
+        self.x = np.vstack([train_feat, test_feat])
+        self.y = np.vstack([train_label, test_label])
+
+        skf = StratifiedKFold(n_splits=self.n_splits) # change to Stratified later
+        self.in_dim = self.x.shape[1]
+        self.out_dim = 1
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+        self.x = torch.from_numpy(self.x).float()
+        self.y = torch.from_numpy(self.y).long().squeeze()
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+class Checkerboard4x4Dataset(Dataset):
+    """Checkerboard 4x4 dataset from Konyushkova et al. 2017
+
+    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    Learning from Data', NIPS 2017
+    
+    :param data_dir: path where to save the raw data default to /tmp/
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+
+    """
+    def __init__(self, data_dir="/tmp/", n_splits=10):
+        super(Checkerboard4x4Dataset, self).__init__()
+        self.data_dir = data_dir
+        self.n_splits = n_splits
+
+        self.train_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard4x4_train.npz"
+        self.test_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard4x4_test.npz"
+
+        self._load_dataset()
+
+    def _download_dataset(self, url):
+        if not path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
+
+        file_name = url.split('/')[-1]
+        if not path.exists(self.data_dir + file_name):
+            urllib.request.urlretrieve(
+                url, self.data_dir + file_name)
+
+    def _load_dataset(self):
+        """Download, process, and get stratified splits"""
+
+        # download
+        self._download_dataset(self.train_url)
+        self._download_dataset(self.test_url)
+
+        # process
+        train = np.load(self.data_dir + "checkerboard4x4_train.npz")
+        test = np.load(self.data_dir + "checkerboard4x4_test.npz")
+
+        train_feat, train_label = train['x'], train['y']
+        test_feat, test_label = test['x'], test['y']
+
+        self.x = np.vstack([train_feat, test_feat])
+        self.y = np.vstack([train_label, test_label])
+
+        skf = StratifiedKFold(n_splits=self.n_splits) # change to Stratified later
+        self.in_dim = self.x.shape[1]
+        self.out_dim = 1
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+        self.x = torch.from_numpy(self.x).float()
+        self.y = torch.from_numpy(self.y).long().squeeze()
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
