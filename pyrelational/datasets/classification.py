@@ -171,3 +171,56 @@ class SynthClass3(Dataset):
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
 
+
+class BreastCancerDataset(Dataset):
+    """UCI ML Breast Cancer Wisconsin (Diagnostic) dataset
+    
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+
+    def __init__(self, n_splits=5):
+        super(BreastCancerDataset, self).__init__()
+        sk_x, sk_y = load_breast_cancer(return_X_y=True)
+        self.x = torch.FloatTensor(sk_x)
+        self.y = torch.LongTensor(sk_y)
+
+        skf = StratifiedKFold(n_splits=n_splits)
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+
+class DigitDataset(Dataset):
+    """UCI ML hand-written digits datasets
+    
+    From C. Kaynak (1995) Methods of Combining Multiple Classifiers and
+    Their Applications to Handwritten Digit Recognition, MSc Thesis, 
+    Institute of Graduate Studies in Science and Engineering, Bogazici 
+    University.
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, n_splits=5):
+        super(DigitDataset, self).__init__()
+        sk_x, sk_y = load_digits(return_X_y=True)
+        self.x = torch.FloatTensor(sk_x) # data
+        self.y = torch.LongTensor(sk_y) # target
+
+        skf = StratifiedKFold(n_splits=n_splits)
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
