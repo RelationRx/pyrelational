@@ -14,6 +14,8 @@ install_requires = [
     "torch>=1.9.0",
     "scikit-learn>=1.0.2",
     "tabulate>=0.7.0",
+    "pyreadr>=0.4.4",
+    "xlrd>=2.0.1",
 ]
 
 
