@@ -2,6 +2,7 @@
 
 # Dev files
 deprecated/
+examples/demo/experiment_logs/
 
 # Checkpoints
 checkpoints/
