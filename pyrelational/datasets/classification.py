@@ -10,7 +10,7 @@ import urllib.request
 from sklearn.model_selection import KFold, StratifiedKFold
 import numpy as np
 import scipy.io
-from uci_datasets import UCIDatasets
+from .uci_datasets import UCIDatasets
 
 class SynthClass1(Dataset):
     """
@@ -248,3 +248,81 @@ class FashionMNIST(Dataset):
     
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
+
+
+class UCIClassification(Dataset):
+    """UCI classification abstract class
+
+    :param name: string denotation for dataset to download 
+        as specified in uci_datasets.UCIDatasets
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, name, n_splits=10):
+        super(UCIClassification, self).__init__()
+        dataset = UCIDatasets(name=name, n_splits=n_splits)
+        torch_dataset = dataset.get_simple_dataset()
+
+        self.data_dir = dataset.data_dir
+        self.name = dataset.name
+        self.data_splits = dataset.data_splits
+
+        self.len_dataset = len(torch_dataset)
+        self.x = torch_dataset[:][0]
+        self.y = torch_dataset[:][1].squeeze()
+
+    def __len__(self):
+        return self.len_dataset
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+def remap_to_int(torch_class_array):
+    """Remaps the values in the torch_class_array to integers from 0
+    to n for n unique values in the torch_class_array
+
+    :param torch_class_array: class array whose elements are to be 
+        mapped to contiguous ints
+    """
+    remapped_array = []
+    tca2idx = {}
+    mapping_value = 0
+    for val in torch_class_array:
+        val = int(val)
+        if val in tca2idx.keys():
+            remapped_array.append(tca2idx[val])
+        else:
+            tca2idx[val] = mapping_value
+            mapping_value += 1
+            remapped_array.append(tca2idx[val])
+    return torch.Tensor(remapped_array) 
+
+class UCIGlass(UCIClassification):
+    """UCI Glass dataset
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, n_splits=10):
+        super(UCIGlass, self).__init__(name="glass", n_splits=n_splits)
+        self.y -= 1 # for 0 - k-1 class relabelling
+        self.y = remap_to_int(self.y).long() # UCIGlass has mislabelling
+
+class UCIParkinsons(UCIClassification):
+    """UCI Parkinsons dataset
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, n_splits=10):
+        super(UCIParkinsons, self).__init__(name="parkinsons", n_splits=n_splits)
+
+class UCISeeds(UCIClassification):
+    """UCI Seeds dataset
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, n_splits=10):
+        super(UCISeeds, self).__init__(name="seeds", n_splits=n_splits)
+        self.y -= 1 # for 0 - k-1 class relabeling
