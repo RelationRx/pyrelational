@@ -392,3 +392,76 @@ class StriatumDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
+
+              
+class GaussianCloudsDataset(Dataset):
+    """GaussianClouds from Konyushkova et al. 2017 basically a imbalanced 
+    binary classification task created from multivariate gaussian blobs
+
+    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    Learning from Data', NIPS 2017
+    
+    :param data_dir: path where to save the raw data default to /tmp/
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, data_dir="/tmp/", n_splits=10):
+        self.data_dir = data_dir
+        self.n_splits = n_splits
+        self._load_dataset()
+
+    def _load_dataset(self, size=1000, n_dim=2, random_balance=False, n_splits=10):
+        if random_balance:
+            # proportion of class 1 to vary from 10% to 90%
+            cl1_prop = np.random.rand()
+            cl1_prop = (cl1_prop-0.5)*0.8+0.5
+        else:
+            cl1_prop = 0.8
+
+        trainSize1 = int(size*cl1_prop)
+        trainSize2 = size-trainSize1
+        testSize1 = trainSize1*10
+        testSize2 = trainSize2*10
+        
+        # Generate parameters of datasets
+        mean1 = scipy.random.rand(n_dim)
+        cov1 = scipy.random.rand(n_dim,n_dim)-0.5
+        cov1 = np.dot(cov1,cov1.transpose())
+        mean2 = scipy.random.rand(n_dim)
+        cov2 = scipy.random.rand(n_dim,n_dim)-0.5
+        cov2 = np.dot(cov2,cov2.transpose())
+        
+        # Training data generation
+        trainX1 = np.random.multivariate_normal(mean1, cov1, trainSize1)
+        trainY1 = np.ones((trainSize1,1))
+        trainX2 = np.random.multivariate_normal(mean2, cov2, trainSize2)
+        trainY2 = np.zeros((trainSize2,1))
+
+        # Testing data generation
+        testX1 = np.random.multivariate_normal(mean1, cov1, testSize1)
+        testY1 = np.ones((testSize1,1)) 
+        testX2 = np.random.multivariate_normal(mean2, cov2, testSize2)
+        testY2 = np.zeros((testSize2,1))
+        
+        train_data = np.concatenate((trainX1, trainX2), axis=0)
+        train_labels = np.concatenate((trainY1, trainY2))
+        test_data = np.concatenate((testX1, testX2), axis=0)
+        test_labels = np.concatenate((testY1, testY2))
+
+        self.x = np.vstack([train_data, test_data])
+        self.y = np.vstack([train_labels, test_labels]).squeeze()
+
+        skf = StratifiedKFold(n_splits=self.n_splits) # change to Stratified later
+        self.in_dim = self.x.shape[1]
+        self.out_dim = 1
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+        
+        self.x = torch.from_numpy(self.x).float()
+        self.y = torch.from_numpy(self.y).long().squeeze()
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
