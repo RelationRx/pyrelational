@@ -326,3 +326,69 @@ class UCISeeds(UCIClassification):
     def __init__(self, n_splits=10):
         super(UCISeeds, self).__init__(name="seeds", n_splits=n_splits)
         self.y -= 1 # for 0 - k-1 class relabeling
+
+
+
+class StriatumDataset(Dataset):
+    """Striatum dataset as used in Konyushkova et al. 2017
+
+    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    Learning from Data', NIPS 2017
+    
+    :param data_dir: path where to save the raw data default to /tmp/
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    """
+    def __init__(self, data_dir="/tmp/", n_splits=10):
+        super(StriatumDataset, self).__init__()
+        self.data_dir = data_dir
+        self.n_splits = n_splits
+        self.train_feat_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/striatum_train_features_mini.mat"
+        self.test_feat_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/striatum_test_features_mini.mat"
+        self.train_label_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/striatum_train_labels_mini.mat"
+        self.test_label_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/striatum_test_labels_mini.mat"
+
+        self._load_dataset()
+
+    def _download_dataset(self, url):
+        if not path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
+
+        file_name = url.split('/')[-1]
+        if not path.exists(self.data_dir + file_name):
+            urllib.request.urlretrieve(
+                url, self.data_dir + file_name)
+
+    def _load_dataset(self):
+        """Download, process, and get stratified splits"""
+
+        # download
+        self._download_dataset(self.train_feat_url)
+        self._download_dataset(self.test_feat_url)
+        self._download_dataset(self.train_label_url)
+        self._download_dataset(self.test_label_url)
+
+        # process
+        train_feat = (scipy.io.loadmat(self.data_dir + 'striatum_train_features_mini.mat'))['features']
+        test_feat = scipy.io.loadmat(self.data_dir + 'striatum_test_features_mini.mat')['features']
+        train_label = scipy.io.loadmat(self.data_dir + 'striatum_train_labels_mini.mat')['labels']
+        test_label = scipy.io.loadmat(self.data_dir + 'striatum_test_labels_mini.mat')['labels']
+
+        self.x = np.vstack([train_feat, test_feat])
+        self.y = np.vstack([train_label, test_label])
+
+        skf = StratifiedKFold(n_splits=self.n_splits) 
+        self.in_dim = self.x.shape[1]
+        self.out_dim = 1
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+        self.x = torch.from_numpy(self.x).float()
+        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.y = remap_to_int(self.y).long() 
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
