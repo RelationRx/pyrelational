@@ -9,9 +9,8 @@ from os import path
 import urllib.request
 from sklearn.model_selection import KFold, StratifiedKFold
 import numpy as np
-
 import scipy.io
-
+from uci_datasets import UCIDatasets
 
 class SynthClass1(Dataset):
     """
@@ -222,5 +221,23 @@ class DigitDataset(Dataset):
     def __len__(self):
         return self.x.shape[0]
 
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+class FashionMNIST(Dataset):
+    """Fashion MNIST Dataset """
+    def __init__(self, n_splits=5):
+        super(FashionMNIST, self).__init__()
+        dataset = datasets.FashionMNIST(root="data", train=True, download=True, transform=transforms.ToTensor())
+        self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
+        self.y = torch.stack([torch.LongTensor(torch.tensor(dataset[i][1])) for i in range(len(dataset))])
+    
+        skf = StratifiedKFold(n_splits=n_splits)
+        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+    def __len__(self):
+        return self.x.shape[0]
+    
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
