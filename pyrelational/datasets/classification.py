@@ -332,7 +332,7 @@ class UCISeeds(UCIClassification):
 class StriatumDataset(Dataset):
     """Striatum dataset as used in Konyushkova et al. 2017
 
-    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
     Learning from Data', NIPS 2017
     
     :param data_dir: path where to save the raw data default to /tmp/
@@ -398,7 +398,7 @@ class GaussianCloudsDataset(Dataset):
     """GaussianClouds from Konyushkova et al. 2017 basically a imbalanced 
     binary classification task created from multivariate gaussian blobs
 
-    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
     Learning from Data', NIPS 2017
     
     :param data_dir: path where to save the raw data default to /tmp/
@@ -470,7 +470,7 @@ class GaussianCloudsDataset(Dataset):
 class Checkerboard2x2Dataset(Dataset):
     """Checkerboard2x2 dataset from Konyushkova et al. 2017
 
-    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
     Learning from Data', NIPS 2017
     
     :param data_dir: path where to save the raw data default to /tmp/
@@ -532,7 +532,7 @@ class Checkerboard2x2Dataset(Dataset):
 class Checkerboard4x4Dataset(Dataset):
     """Checkerboard 4x4 dataset from Konyushkova et al. 2017
 
-    Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
     Learning from Data', NIPS 2017
     
     :param data_dir: path where to save the raw data default to /tmp/
@@ -581,6 +581,67 @@ class Checkerboard4x4Dataset(Dataset):
         self.out_dim = 1
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+        self.x = torch.from_numpy(self.x).float()
+        self.y = torch.from_numpy(self.y).long().squeeze()
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+class CreditCardDataset(Dataset):
+    """Credit card fraud dataset, highly unbalanced and challenging.
+
+    From Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson, and Gianluca Bontempi.
+    Calibrating probability with undersampling for unbalanced classification. In 2015
+    IEEE Symposium Series on Computational Intelligence, pages 159–166, 2015.
+
+    We use the original data from http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata
+    processed using pyreadr
+
+    :param data_dir: path where to save the raw data default to /tmp/
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+
+    """
+    def __init__(self, data_dir = "/tmp/", n_splits=10):
+        super(CreditCardDataset, self).__init__()
+        self.raw_url = "http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata"
+        self.data_dir = data_dir
+        self.n_splits = n_splits
+
+        self._load_dataset()
+
+    def _load_dataset(self):
+        if not path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
+
+        url = self.raw_url
+        file_name = url.split('/')[-1]
+        if not path.exists(self.data_dir + file_name):
+            urllib.request.urlretrieve(
+                self.raw_url, self.data_dir + file_name)
+        
+        data = pyreadr.read_r(self.data_dir + file_name)
+        data = data['creditcard']
+        data.reset_index(inplace=True)
+        self.df = data
+        cols = data.columns
+        xcols = cols[1:-1]
+        ycol = 'Class'
+        x = data[xcols].to_numpy()
+        y = data[ycol].to_numpy()
+        _, y = np.unique(y, return_inverse=True) # map string classes to ints
+        self.x = x
+        self.y = y
+
+        skf = StratifiedKFold(n_splits=self.n_splits) # change to Stratified later
+        self.in_dim = len(xcols)
+        self.out_dim = 1
+        self.data_splits = skf.split(x, y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]        
 
         self.x = torch.from_numpy(self.x).float()
         self.y = torch.from_numpy(self.y).long().squeeze()
