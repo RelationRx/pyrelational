@@ -265,7 +265,7 @@ class UCIClassification(Dataset):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, name, n_splits=10):
+    def __init__(self, name, n_splits=5):
         super(UCIClassification, self).__init__()
         dataset = UCIDatasets(name=name, n_splits=n_splits)
         torch_dataset = dataset.get_simple_dataset()
@@ -310,7 +310,7 @@ class UCIGlass(UCIClassification):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, n_splits=10):
+    def __init__(self, n_splits=5):
         super(UCIGlass, self).__init__(name="glass", n_splits=n_splits)
         self.y -= 1 # for 0 - k-1 class relabelling
         self.y = remap_to_int(self.y).long() # UCIGlass has mislabelling
@@ -321,7 +321,7 @@ class UCIParkinsons(UCIClassification):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, n_splits=10):
+    def __init__(self, n_splits=5):
         super(UCIParkinsons, self).__init__(name="parkinsons", n_splits=n_splits)
 
 class UCISeeds(UCIClassification):
@@ -330,7 +330,7 @@ class UCISeeds(UCIClassification):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, n_splits=10):
+    def __init__(self, n_splits=5):
         super(UCISeeds, self).__init__(name="seeds", n_splits=n_splits)
         self.y -= 1 # for 0 - k-1 class relabeling
 
@@ -346,7 +346,7 @@ class StriatumDataset(Dataset):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, data_dir="/tmp/", n_splits=10):
+    def __init__(self, data_dir="/tmp/", n_splits=5):
         super(StriatumDataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -412,7 +412,7 @@ class GaussianCloudsDataset(Dataset):
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
-    def __init__(self, data_dir="/tmp/", n_splits=10):
+    def __init__(self, data_dir="/tmp/", n_splits=5):
         self.data_dir = data_dir
         self.n_splits = n_splits
         self._load_dataset()
@@ -485,7 +485,7 @@ class Checkerboard2x2Dataset(Dataset):
             splits to compute
 
     """
-    def __init__(self, data_dir="/tmp/", n_splits=10):
+    def __init__(self, data_dir="/tmp/", n_splits=5):
         super(Checkerboard2x2Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -547,7 +547,7 @@ class Checkerboard4x4Dataset(Dataset):
             splits to compute
 
     """
-    def __init__(self, data_dir="/tmp/", n_splits=10):
+    def __init__(self, data_dir="/tmp/", n_splits=5):
         super(Checkerboard4x4Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -613,7 +613,7 @@ class CreditCardDataset(Dataset):
             splits to compute
 
     """
-    def __init__(self, data_dir = "/tmp/", n_splits=10):
+    def __init__(self, data_dir = "/tmp/", n_splits=5):
         super(CreditCardDataset, self).__init__()
         self.raw_url = "http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata"
         self.data_dir = data_dir

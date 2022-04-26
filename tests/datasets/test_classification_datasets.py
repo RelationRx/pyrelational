@@ -64,3 +64,21 @@ def test_FashionMNIST():
     assert len(dataset) == 70000
     assert dataset.x.shape[1] == 784
     assert len(dataset.data_splits) == 5
+
+def test_UCIGlass():
+    dataset = UCIGlass()
+    assert len(dataset) == 213
+    assert dataset.x.shape[1] == 10
+    assert len(dataset.data_splits) == 5
+
+def test_UCIParkinsons():
+    dataset = UCIParkinsons()
+    assert len(dataset) == 195
+    assert dataset.x.shape[1] == 22
+    assert len(dataset.data_splits) == 5
+
+def test_UCISeeds():
+    dataset = UCISeeds()
+    assert len(dataset) == 209
+    assert dataset.x.shape[1] == 7
+    assert len(dataset.data_splits) == 5
