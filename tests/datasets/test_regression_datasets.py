@@ -40,11 +40,6 @@ def test_DiabetesDataset():
     assert len(dataset) == 442
     assert len(dataset.data_splits) == 5
 
-def test_DiabetesDataset():
-    dataset = DiabetesDataset()
-    assert len(dataset) == 442
-    assert len(dataset.data_splits) == 5
-
 def test_UCIHousing():
     dataset = UCIHousing()
     assert len(dataset) == 505
