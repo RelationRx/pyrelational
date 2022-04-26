@@ -82,3 +82,27 @@ def test_UCISeeds():
     assert len(dataset) == 209
     assert dataset.x.shape[1] == 7
     assert len(dataset.data_splits) == 5
+
+def test_StriatumDataset():
+    dataset = StriatumDataset()
+    assert len(dataset) == 20000
+    assert dataset.x.shape[1] == 272
+    assert len(dataset.data_splits) == 5
+
+def test_GaussianCloudsDataset():
+    dataset = GaussianCloudsDataset()
+    assert len(dataset) == 11000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
+
+def test_Checkerboard2x2Dataset():
+    dataset = Checkerboard2x2Dataset()
+    assert len(dataset) == 2000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
+
+def test_Checkerboard4x4Dataset():
+    dataset = Checkerboard4x4Dataset()
+    assert len(dataset) == 2000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
