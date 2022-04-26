@@ -43,3 +43,79 @@ class SynthReg1(Dataset):
 
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
+
+
+
+class SynthReg2(Dataset):
+    """Synthetic dataset for active learning on a regression based task 
+
+    A more challenging dataset than SynthReg1 wherein we see a periodic
+    pattern with 2 degrees of freedom.
+
+    :param n_splits: an int describing the number of class stratified
+            splits to compute
+    :param size: an int describing the number of observations the dataset
+            is to have
+    :param random_seed: random seed for reproducibility on splits
+    """
+    def __init__(self, n_splits=5, size=1000, random_seed=1234):
+        super(SynthReg2, self).__init__()
+        self.size = size
+        self.random_seed = random_seed
+        self.n_splits = n_splits
+
+        # generators/truth, y will be the target
+        zline = np.linspace(0, 15, size)
+        xline = np.sin(zline)
+        yline = np.cos(zline)
+
+        # Samples
+        zdata = 15 * np.random.random(size)
+        xdata = np.sin(zdata) + 0.1 * np.random.randn(size)
+        ydata = np.cos(zdata) + 0.1 * np.random.randn(size)
+
+        # Convert
+        zdata = torch.FloatTensor(zdata)
+        xdata = torch.FloatTensor(xdata)
+        ydata = torch.FloatTensor(ydata)
+
+        self.x = torch.vstack([zdata, xdata]).T
+        self.y = ydata
+
+        kf = KFold(n_splits=n_splits)
+        self.data_splits = kf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+class DiabetesDataset(Dataset):
+    """A small regression dataset for examples
+
+    From Bradley Efron, Trevor Hastie, Iain Johnstone and 
+    Robert Tibshirani (2004) “Least Angle Regression,” 
+    Annals of Statistics (with discussion), 407-499.
+    
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+
+    def __init__(self, n_splits=5):
+        # Load the diabetes dataset
+        diabetes_X, diabetes_y = load_diabetes(return_X_y=True)
+        self.x = torch.FloatTensor(diabetes_X)
+        self.y = torch.FloatTensor(diabetes_y)
+
+        kf = KFold(n_splits=n_splits)
+        self.data_splits = kf.split(self.x, self.y)
+        self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
