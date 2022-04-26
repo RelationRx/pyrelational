@@ -39,3 +39,50 @@ def test_DiabetesDataset():
     dataset = DiabetesDataset()
     assert len(dataset) == 442
     assert len(dataset.data_splits) == 5
+
+def test_DiabetesDataset():
+    dataset = DiabetesDataset()
+    assert len(dataset) == 442
+    assert len(dataset.data_splits) == 5
+
+def test_UCIHousing():
+    dataset = UCIHousing()
+    assert len(dataset) == 505
+    assert dataset.x.shape[1] == 13
+    assert len(dataset.data_splits) == 5
+
+def test_UCIConcrete():
+    dataset = UCIConcrete()
+    assert len(dataset) == 1030
+    assert dataset.x.shape[1] == 8
+    assert len(dataset.data_splits) == 5
+
+def test_UCIEnergy():
+    dataset = UCIEnergy()
+    assert len(dataset) == 768
+    assert dataset.x.shape[1] == 9
+    assert len(dataset.data_splits) == 5
+
+def test_UCIPower():
+    dataset = UCIPower()
+    assert len(dataset) == 9568
+    assert dataset.x.shape[1] == 4
+    assert len(dataset.data_splits) == 5
+
+def test_UCIWine():
+    dataset = UCIWine()
+    assert len(dataset) == 1598
+    assert dataset.x.shape[1] == 11
+    assert len(dataset.data_splits) == 5
+
+def test_UCIYacht():
+    dataset = UCIYacht()
+    assert len(dataset) == 306
+    assert dataset.x.shape[1] == 6
+    assert len(dataset.data_splits) == 5
+
+def test_UCIAirfoil():
+    dataset = UCIAirfoil()
+    assert len(dataset) == 1502
+    assert dataset.x.shape[1] == 5
+    assert len(dataset.data_splits) == 5
