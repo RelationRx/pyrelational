@@ -1,3 +1,6 @@
+"""Classification datasets that can be used for benchmarking AL strategies
+"""
+
 import torch
 import torch.distributions as distributions
 from torch.utils.data import Dataset
