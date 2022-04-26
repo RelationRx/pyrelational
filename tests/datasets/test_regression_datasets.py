@@ -17,7 +17,25 @@ from pyrelational.datasets import (
     UCIAirfoil,
     )
 
-def test_init_and_basic_details():
-    gdm = get_classification_dataset(50)
-    assert gdm.loader_batch_size == 10
-    assert len(gdm.l_indices) == 50
+def test_SynthReg1():
+    dataset = SynthReg1()
+    assert len(dataset) == 1000
+    assert len(dataset.data_splits) == 5
+
+    dataset = SynthReg1(n_splits=3, size=500)
+    assert len(dataset) == 500
+    assert len(dataset.data_splits) == 3
+
+def test_SynthReg2():
+    dataset = SynthReg2()
+    assert len(dataset) == 1000
+    assert len(dataset.data_splits) == 5
+
+    dataset = SynthReg2(n_splits=3, size=500)
+    assert len(dataset) == 500
+    assert len(dataset.data_splits) == 3
+
+def test_DiabetesDataset():
+    dataset = DiabetesDataset()
+    assert len(dataset) == 442
+    assert len(dataset.data_splits) == 5
