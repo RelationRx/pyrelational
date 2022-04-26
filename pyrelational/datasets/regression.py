@@ -119,3 +119,90 @@ class DiabetesDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
+
+class UCIRegression(Dataset):
+    """UCI regression dataset base class
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute
+    """
+    def __init__(self, name, n_splits=5):
+        super(UCIRegression, self).__init__()
+        dataset = UCIDatasets(name=name, n_splits=n_splits)
+        self.data_dir = dataset.data_dir
+        self.name = dataset.name
+        self.data_splits = dataset.data_splits
+
+        dataset = dataset.get_simple_dataset()
+        self.len_dataset = len(dataset)
+        self.x = dataset[:][0]
+        self.y = dataset[:][1].squeeze()
+
+    def __len__(self):
+        return self.x.shape[0]
+
+    def __getitem__(self, idx):
+        return self.x[idx], self.y[idx]
+
+class UCIHousing(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIHousing, self).__init__(name="housing", n_splits=n_splits)
+
+class UCIConcrete(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIConcrete, self).__init__(name="concrete", n_splits=n_splits)
+
+class UCIEnergy(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIEnergy, self).__init__(name="energy", n_splits=n_splits)
+
+class UCIPower(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIPower, self).__init__(name="power", n_splits=n_splits)
+
+class UCIWine(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIWine, self).__init__(name="wine", n_splits=n_splits)
+
+class UCIYacht(UCIRegression):
+    """UCI housing dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIYacht, self).__init__(name="yacht", n_splits=n_splits)
+
+class UCIAirfoil(UCIRegression):
+    """UCI Airfoil dataset
+
+    :param n_splits: an int describing the number of class stratified
+        splits to compute   
+    """
+    def __init__(self, n_splits=5):
+        super(UCIAirfoil, self).__init__(name="airfoil", n_splits=n_splits)
