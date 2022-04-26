@@ -13,3 +13,17 @@ from pyrelational.datasets.classification import (
     Checkerboard2x2Dataset,
     Checkerboard4x4Dataset,
 )
+
+from pyrelational.datasets.regression import (
+    SynthReg1,
+    SynthReg2,
+    DiabetesDataset,
+    UCIHousing,
+    UCIConcrete,
+    UCIEnergy,
+    UCIPower,
+    UCIWine,
+    UCIYacht,
+    UCIAirfoil,
+    )
+
