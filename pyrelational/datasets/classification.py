@@ -47,7 +47,7 @@ class SynthClass1(Dataset):
         self.x = torch.cat([pos_samples, neg_samples])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed)
+        skf = StratifiedKFold(n_splits=n_splits)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -108,7 +108,7 @@ class SynthClass2(Dataset):
         self.x = torch.cat([pos_samples_1, pos_samples_2, pos_samples_3, neg_samples_1, neg_samples_2, neg_samples_3])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed)
+        skf = StratifiedKFold(n_splits=n_splits)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -139,9 +139,11 @@ class SynthClass3(Dataset):
         self.random_seed = random_seed
         self.n_splits = n_splits
 
-        pos_dist_1 = distributions.MultivariateNormal(torch.FloatTensor([0, 0]), torch.FloatTensor([[0.60834549, -0.63667341], [-0.40887718, 0.85253229]]))
-        pos_dist_2 = distributions.MultivariateNormal(torch.FloatTensor([3, 10]), torch.FloatTensor([[0.60834549, -0.63667341], [-0.40887718, 0.85253229]]))
+        cov = torch.FloatTensor([[0.60834549, -0.63667341], [-0.40887718, 0.85253229]])
+        cov = torch.matmul(cov, cov.T)
 
+        pos_dist_1 = distributions.MultivariateNormal(torch.FloatTensor([0, 0]), cov)
+        pos_dist_2 = distributions.MultivariateNormal(torch.FloatTensor([3, 10]), cov)
         neg_dist_1 = distributions.MultivariateNormal(torch.FloatTensor([3, 3]), torch.FloatTensor([[1, 2], [2, 7]]))
 
         num_pos = int(size/2.0)
@@ -158,7 +160,7 @@ class SynthClass3(Dataset):
         self.x = torch.cat([pos_samples_1, pos_samples_2, neg_samples_1])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed)
+        skf = StratifiedKFold(n_splits=n_splits)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
