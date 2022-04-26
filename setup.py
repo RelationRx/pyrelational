@@ -16,6 +16,7 @@ install_requires = [
     "tabulate>=0.7.0",
     "pyreadr>=0.4.4",
     "xlrd>=2.0.1",
+    "openpyxl>=3.0.9",
 ]
 
 
