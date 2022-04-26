@@ -13,7 +13,7 @@ import zipfile
 import urllib.request
 
 class UCIDatasets():
-    def __init__(self, name, data_dir="data/", n_splits=10):
+    def __init__(self, name, data_dir="/tmp/", n_splits=10):
         self.datasets = {
             "housing": "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data",
             "concrete": "https://archive.ics.uci.edu/ml/machine-learning-databases/concrete/compressive/Concrete_Data.xls",
