@@ -240,7 +240,9 @@ class FashionMNIST(Dataset):
     """
     def __init__(self, n_splits=5):
         super(FashionMNIST, self).__init__()
-        dataset = datasets.FashionMNIST(root="data", train=True, download=True, transform=transforms.ToTensor())
+        train_dataset = datasets.FashionMNIST(root="/tmp/", train=True, download=True, transform=transforms.ToTensor())
+        test_dataset = datasets.FashionMNIST(root="/tmp/", train=False, download=True, transform=transforms.ToTensor())
+        dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
         self.y = torch.stack([torch.LongTensor(torch.tensor(dataset[i][1])) for i in range(len(dataset))])
     
