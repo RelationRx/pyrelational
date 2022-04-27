@@ -31,10 +31,10 @@ def pick_one_sample_per_class(dataset, train_indices):
 
 
 def create_warm_start(dataset, **dm_args):
-    """Returns a datamanager with 10% randomly labelled data 
+    """Returns a datamanager with 10% randomly labelled data
     from the train indices. The rest of the observations in the training
     set comprise the unlabelled set of observations. We call this
-    initialisation a 'warm start' AL task inspired by 
+    initialisation a 'warm start' AL task inspired by
     Konyushkova et al. (2017)
 
     This can be used both for classification and regression type datasets.
@@ -42,25 +42,24 @@ def create_warm_start(dataset, **dm_args):
     From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
     Learning from Data', NIPS 2017
 
-    :param dataset: A pytorch dataset in the style described 
+    :param dataset: A pytorch dataset in the style described
         pyrelational.datasets
     :param dm_args: kwargs for any additional keyword arguments to be passed
         into the initialisation of the datamanager.
-    
     """
     dm = GenericDataManager(dataset, **dm_args)
     return dm
 
 
 def create_classification_cold_start(dataset, train_indices, test_indices, **dm_args):
-    """Returns an AL task for benchmarking classification datasets. The 
+    """Returns an AL task for benchmarking classification datasets. The
     AL task will sample an example from each of the classes in the training
     subset of the data.
 
     Please note the current iteration does not utilise a validation set
     as described in the paper
 
-    :param dataset: A pytorch dataset in the style described 
+    :param dataset: A pytorch dataset in the style described
         pyrelational.datasets
     :param train_indices: [int] indices corresponding to observations of dataset
         used for training set
@@ -77,14 +76,13 @@ def create_classification_cold_start(dataset, train_indices, test_indices, **dm_
 
 
 def create_regression_cold_start(dataset, train_indices, test_indices, **dm_args):
-    """
-    Create data manager with 2 labelled data samples, where the data samples 
+    """Create data manager with 2 labelled data samples, where the data samples
     labelled are the pair that have the largest distance between them
 
     Please note the current iteration does not utilise a validation set
     as described in the paper
 
-    :param dataset: A pytorch dataset in the style described 
+    :param dataset: A pytorch dataset in the style described
         pyrelational.datasets
     :param train_indices: [int] indices corresponding to observations of dataset
         used for training set

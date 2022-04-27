@@ -1,4 +1,4 @@
-"""Unit tests for 
+"""Unit tests for classification datasets
 """
 import pytest
 import torch
