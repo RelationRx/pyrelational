@@ -15,7 +15,8 @@ from pyrelational.datasets import (
     UCIWine,
     UCIYacht,
     UCIAirfoil,
-    )
+)
+
 
 def test_SynthReg1():
     dataset = SynthReg1()
@@ -26,6 +27,7 @@ def test_SynthReg1():
     assert len(dataset) == 500
     assert len(dataset.data_splits) == 3
 
+
 def test_SynthReg2():
     dataset = SynthReg2()
     assert len(dataset) == 1000
@@ -35,10 +37,12 @@ def test_SynthReg2():
     assert len(dataset) == 500
     assert len(dataset.data_splits) == 3
 
+
 def test_DiabetesDataset():
     dataset = DiabetesDataset()
     assert len(dataset) == 442
     assert len(dataset.data_splits) == 5
+
 
 def test_UCIHousing():
     dataset = UCIHousing()
@@ -46,11 +50,13 @@ def test_UCIHousing():
     assert dataset.x.shape[1] == 13
     assert len(dataset.data_splits) == 5
 
+
 def test_UCIConcrete():
     dataset = UCIConcrete()
     assert len(dataset) == 1030
     assert dataset.x.shape[1] == 8
     assert len(dataset.data_splits) == 5
+
 
 def test_UCIEnergy():
     dataset = UCIEnergy()
@@ -58,11 +64,13 @@ def test_UCIEnergy():
     assert dataset.x.shape[1] == 9
     assert len(dataset.data_splits) == 5
 
+
 def test_UCIPower():
     dataset = UCIPower()
     assert len(dataset) == 9568
     assert dataset.x.shape[1] == 4
     assert len(dataset.data_splits) == 5
+
 
 def test_UCIWine():
     dataset = UCIWine()
@@ -70,11 +78,13 @@ def test_UCIWine():
     assert dataset.x.shape[1] == 11
     assert len(dataset.data_splits) == 5
 
+
 def test_UCIYacht():
     dataset = UCIYacht()
     assert len(dataset) == 306
     assert dataset.x.shape[1] == 6
     assert len(dataset.data_splits) == 5
+
 
 def test_UCIAirfoil():
     dataset = UCIAirfoil()

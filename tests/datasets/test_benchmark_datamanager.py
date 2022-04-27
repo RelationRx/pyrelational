@@ -5,40 +5,36 @@ import pytest
 from pyrelational.datasets import DiabetesDataset, BreastCancerDataset
 from pyrelational.datasets.benchmark_datamanager import *
 
+
 def test_create_warm_start_classification():
     dataset = BreastCancerDataset()
     train_indices = list(dataset.data_splits[0][0])
     test_indices = list(dataset.data_splits[0][1])
-    dm = create_warm_start(dataset, 
-        train_indices=train_indices, 
-        test_indices=test_indices)
+    dm = create_warm_start(dataset, train_indices=train_indices, test_indices=test_indices)
     assert len(dm) == 569
+
 
 def test_create_warm_start_regression():
     dataset = DiabetesDataset()
     train_indices = list(dataset.data_splits[0][0])
     test_indices = list(dataset.data_splits[0][1])
-    dm = create_warm_start(dataset, 
-        train_indices=train_indices, 
-        test_indices=test_indices)
+    dm = create_warm_start(dataset, train_indices=train_indices, test_indices=test_indices)
     assert len(dm) == 442
+
 
 def test_create_classification_cold_start():
     dataset = BreastCancerDataset()
     train_indices = list(dataset.data_splits[0][0])
     test_indices = list(dataset.data_splits[0][1])
-    dm = create_classification_cold_start(dataset, 
-        train_indices=train_indices, 
-        test_indices=test_indices)
+    dm = create_classification_cold_start(dataset, train_indices=train_indices, test_indices=test_indices)
     assert len(dm) == 569
     assert len(dm.l_indices) == 2
+
 
 def test_create_regression_cold_start():
     dataset = DiabetesDataset()
     train_indices = list(dataset.data_splits[0][0])
     test_indices = list(dataset.data_splits[0][1])
-    dm = create_regression_cold_start(dataset, 
-        train_indices=train_indices, 
-        test_indices=test_indices)
+    dm = create_regression_cold_start(dataset, train_indices=train_indices, test_indices=test_indices)
     assert len(dm) == 442
     assert len(dm.l_indices) == 2
