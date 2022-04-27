@@ -17,7 +17,8 @@ class UCIDatasets:
     def __init__(self, name, data_dir="/tmp/", n_splits=10):
         self.datasets = {
             "housing": "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data",
-            "concrete": "https://archive.ics.uci.edu/ml/machine-learning-databases/concrete/compressive/Concrete_Data.xls",
+            "concrete": "https://archive.ics.uci.edu/ml/machine-learning-databa"
+            + "ses/concrete/compressive/Concrete_Data.xls",
             "energy": "http://archive.ics.uci.edu/ml/machine-learning-databases/00242/ENB2012_data.xlsx",
             "power": "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip",
             "wine": "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",

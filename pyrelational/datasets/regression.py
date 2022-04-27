@@ -63,11 +63,6 @@ class SynthReg2(Dataset):
         self.random_seed = random_seed
         self.n_splits = n_splits
 
-        # generators/truth, y will be the target
-        zline = np.linspace(0, 15, size)
-        xline = np.sin(zline)
-        yline = np.cos(zline)
-
         # Samples
         zdata = 15 * np.random.random(size)
         xdata = np.sin(zdata) + 0.1 * np.random.randn(size)
