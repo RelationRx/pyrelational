@@ -2,15 +2,16 @@
 Class to help download and do the initial processing of dataset on the UCI database
 """
 
-import numpy as np
-import torch
 import logging
 import os
-from os import path
-from sklearn.model_selection import KFold, StratifiedKFold
-import pandas as pd
-import zipfile
 import urllib.request
+import zipfile
+from os import path
+
+import numpy as np
+import pandas as pd
+import torch
+from sklearn.model_selection import KFold, StratifiedKFold
 
 
 class UCIDatasets:
@@ -53,11 +54,11 @@ class UCIDatasets:
         data = None
 
         if self.name == "housing":
-            data = pd.read_csv(self.data_dir + "UCI/housing.data", header=0, delimiter="\s+").values
+            data = pd.read_csv(self.data_dir + "UCI/housing.data", header=0, delimiter=r"\s+").values
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         elif self.name == "airfoil":
-            data = pd.read_csv(self.data_dir + "UCI/airfoil_self_noise.dat", header=0, delimiter="\s+").values
+            data = pd.read_csv(self.data_dir + "UCI/airfoil_self_noise.dat", header=0, delimiter=r"\s+").values
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         elif self.name == "concrete":
@@ -79,7 +80,7 @@ class UCIDatasets:
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         elif self.name == "yacht":
-            data = pd.read_csv(self.data_dir + "UCI/yacht_hydrodynamics.data", header=1, delimiter="\s+").values
+            data = pd.read_csv(self.data_dir + "UCI/yacht_hydrodynamics.data", header=1, delimiter=r"\s+").values
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         elif self.name == "glass":
@@ -98,7 +99,7 @@ class UCIDatasets:
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         elif self.name == "seeds":
-            data = pd.read_csv(self.data_dir + "UCI/seeds_dataset.txt", delimiter="\s+", engine="python").values
+            data = pd.read_csv(self.data_dir + "UCI/seeds_dataset.txt", delimiter=r"\s+", engine="python").values
             self.data = data[np.random.permutation(np.arange(len(data)))]
 
         self.in_dim = data.shape[1] - 1

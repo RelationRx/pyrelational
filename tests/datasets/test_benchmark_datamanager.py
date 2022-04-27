@@ -2,11 +2,12 @@
 """
 
 import pytest
-from pyrelational.datasets import DiabetesDataset, BreastCancerDataset
+
+from pyrelational.datasets import BreastCancerDataset, DiabetesDataset
 from pyrelational.datasets.benchmark_datamanager import (
-    create_warm_start,
     create_classification_cold_start,
     create_regression_cold_start,
+    create_warm_start,
 )
 
 

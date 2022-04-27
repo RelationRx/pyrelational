@@ -1,18 +1,20 @@
 """Classification datasets that can be used for benchmarking AL strategies
 """
 
+import os
+import urllib.request
+from os import path
+
+import numpy as np
+import pyreadr
+import scipy.io
 import torch
 import torch.distributions as distributions
+from sklearn.datasets import load_breast_cancer, load_diabetes, load_digits
+from sklearn.model_selection import KFold, StratifiedKFold
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
-from sklearn.datasets import load_digits, load_breast_cancer, load_diabetes
-import pyreadr
-import os
-from os import path
-import urllib.request
-from sklearn.model_selection import KFold, StratifiedKFold
-import numpy as np
-import scipy.io
+
 from .uci_datasets import UCIDatasets
 
 

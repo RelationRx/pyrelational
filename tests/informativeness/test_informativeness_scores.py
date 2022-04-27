@@ -15,11 +15,9 @@ from pyrelational.informativeness import (
     classification_least_confidence,
     classification_margin_confidence,
     classification_ratio_confidence,
-    softmax,
-)
-from pyrelational.informativeness import (
     relative_distance,
     representative_sampling,
+    softmax,
 )
 
 

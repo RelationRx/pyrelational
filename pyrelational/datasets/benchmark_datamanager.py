@@ -1,11 +1,13 @@
 """Utility to create datamanagers corresponding to different AL tasks
 """
 import random
-import torch
-import numpy as np
-from sklearn.metrics import pairwise_distances
-from pyrelational.data.data_manager import GenericDataManager
 from collections import defaultdict
+
+import numpy as np
+import torch
+from sklearn.metrics import pairwise_distances
+
+from pyrelational.data.data_manager import GenericDataManager
 
 
 def pick_one_sample_per_class(dataset, train_indices):

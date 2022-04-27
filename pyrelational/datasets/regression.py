@@ -1,11 +1,12 @@
 """Regression datasets that can be used for benchmarking AL strategies
 """
 
-import torch
 import numpy as np
-from torch.utils.data import Dataset
-from sklearn.datasets import make_regression, load_diabetes
+import torch
+from sklearn.datasets import load_diabetes, make_regression
 from sklearn.model_selection import KFold
+from torch.utils.data import Dataset
+
 from .uci_datasets import UCIDatasets
 
 

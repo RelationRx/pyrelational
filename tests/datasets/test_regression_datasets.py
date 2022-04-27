@@ -5,16 +5,16 @@ import torch
 
 from pyrelational.data import GenericDataManager
 from pyrelational.datasets import (
+    DiabetesDataset,
     SynthReg1,
     SynthReg2,
-    DiabetesDataset,
-    UCIHousing,
+    UCIAirfoil,
     UCIConcrete,
     UCIEnergy,
+    UCIHousing,
     UCIPower,
     UCIWine,
     UCIYacht,
-    UCIAirfoil,
 )
 
 
