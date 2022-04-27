@@ -25,5 +25,4 @@ from pyrelational.datasets.regression import (
     UCIWine,
     UCIYacht,
     UCIAirfoil,
-    )
-
+)
