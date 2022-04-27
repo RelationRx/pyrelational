@@ -1,16 +1,11 @@
-"""
-Utility to create datamanagers corresponding to different 
-
+"""Utility to create datamanagers corresponding to different AL tasks
 """
 import random
 import torch
 import numpy as np
 from sklearn.metrics import pairwise_distances
-from classification_datasets import SynthClass1, SynthClass2, SynthClass3
-from regression_datasets import SynthReg1, SynthReg2
 from pyrelational.data.data_manager import GenericDataManager
 from collections import defaultdict
-
 
 def pick_one_sample_per_class(dataset, train_indices):
     """Utility function to randomly pick one sample per class in the
