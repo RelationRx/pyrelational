@@ -7,6 +7,7 @@ from sklearn.metrics import pairwise_distances
 from pyrelational.data.data_manager import GenericDataManager
 from collections import defaultdict
 
+
 def pick_one_sample_per_class(dataset, train_indices):
     """Utility function to randomly pick one sample per class in the
     training subset of dataset and return their index in the dataset.
@@ -69,10 +70,9 @@ def create_classification_cold_start(dataset, train_indices, test_indices, **dm_
         into the initialisation of the datamanager.
     """
     labelled_indices = pick_one_sample_per_class(dataset, train_indices)
-    dm = GenericDataManager(dataset, train_indices=train_indices, 
-        test_indices=test_indices, 
-        labelled_indices=labelled_indices, 
-        **dm_args)
+    dm = GenericDataManager(
+        dataset, train_indices=train_indices, test_indices=test_indices, labelled_indices=labelled_indices, **dm_args
+    )
     return dm
 
 
@@ -96,14 +96,11 @@ def create_regression_cold_start(dataset, train_indices, test_indices, **dm_args
     # Find the two samples within the training subset that have the largest distance between them.
     pair_dists = pairwise_distances(dataset[train_indices][:][0])
     sample1_idx, sample2_idx = np.unravel_index(np.argmax(pair_dists, axis=None), pair_dists.shape)
-    sample1_idx = train_indices[sample1_idx] # map to dataset index from local index
-    sample2_idx = train_indices[sample2_idx] 
+    sample1_idx = train_indices[sample1_idx]  # map to dataset index from local index
+    sample2_idx = train_indices[sample2_idx]
 
     labelled_indices = [sample1_idx, sample2_idx]
-    dm = GenericDataManager(dataset, 
-        train_indices=train_indices, 
-        test_indices=test_indices,
-        labelled_indices=labelled_indices,
-        **dm_args,
-        )
+    dm = GenericDataManager(
+        dataset, train_indices=train_indices, test_indices=test_indices, labelled_indices=labelled_indices, **dm_args,
+    )
     return dm
