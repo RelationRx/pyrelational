@@ -17,6 +17,7 @@ from pyrelational.datasets import (
     GaussianCloudsDataset,
     Checkerboard2x2Dataset,
     Checkerboard4x4Dataset,
+    CreditCardDataset,
 )
 
 
@@ -117,4 +118,11 @@ def test_Checkerboard4x4Dataset():
     dataset = Checkerboard4x4Dataset()
     assert len(dataset) == 2000
     assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
+
+
+def test_CreditCardDataset():
+    dataset = CreditCardDataset()
+    assert len(dataset) == 284807
+    assert dataset.x.shape[1] == 30
     assert len(dataset.data_splits) == 5

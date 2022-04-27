@@ -12,6 +12,7 @@ from pyrelational.datasets.classification import (
     GaussianCloudsDataset,
     Checkerboard2x2Dataset,
     Checkerboard4x4Dataset,
+    CreditCardDataset,
 )
 
 from pyrelational.datasets.regression import (
