@@ -65,64 +65,64 @@ def test_DigitDataset():
     assert len(dataset.data_splits) == 5
 
 
-# def test_FashionMNIST():
-#     dataset = FashionMNIST()
-#     assert len(dataset) == 70000
-#     assert dataset.x.shape[1] == 784
-#     assert len(dataset.data_splits) == 5
+def test_FashionMNIST():
+    dataset = FashionMNIST(data_dir="test_data/")
+    assert len(dataset) == 70000
+    assert dataset.x.shape[1] == 784
+    assert len(dataset.data_splits) == 5
 
 
-# def test_UCIGlass():
-#     dataset = UCIGlass()
-#     assert len(dataset) == 213
-#     assert dataset.x.shape[1] == 10
-#     assert len(dataset.data_splits) == 5
+def test_UCIGlass():
+    dataset = UCIGlass(data_dir="test_data/")
+    assert len(dataset) == 213
+    assert dataset.x.shape[1] == 10
+    assert len(dataset.data_splits) == 5
 
 
-# def test_UCIParkinsons():
-#     dataset = UCIParkinsons()
-#     assert len(dataset) == 195
-#     assert dataset.x.shape[1] == 22
-#     assert len(dataset.data_splits) == 5
+def test_UCIParkinsons():
+    dataset = UCIParkinsons(data_dir="test_data/")
+    assert len(dataset) == 195
+    assert dataset.x.shape[1] == 22
+    assert len(dataset.data_splits) == 5
 
 
-# def test_UCISeeds():
-#     dataset = UCISeeds()
-#     assert len(dataset) == 209
-#     assert dataset.x.shape[1] == 7
-#     assert len(dataset.data_splits) == 5
+def test_UCISeeds():
+    dataset = UCISeeds(data_dir="test_data/")
+    assert len(dataset) == 209
+    assert dataset.x.shape[1] == 7
+    assert len(dataset.data_splits) == 5
 
 
-# def test_StriatumDataset():
-#     dataset = StriatumDataset()
-#     assert len(dataset) == 20000
-#     assert dataset.x.shape[1] == 272
-#     assert len(dataset.data_splits) == 5
+def test_StriatumDataset():
+    dataset = StriatumDataset(data_dir="test_data/")
+    assert len(dataset) == 20000
+    assert dataset.x.shape[1] == 272
+    assert len(dataset.data_splits) == 5
 
 
-# def test_GaussianCloudsDataset():
-#     dataset = GaussianCloudsDataset()
-#     assert len(dataset) == 11000
-#     assert dataset.x.shape[1] == 2
-#     assert len(dataset.data_splits) == 5
+def test_GaussianCloudsDataset():
+    dataset = GaussianCloudsDataset(data_dir="test_data/")
+    assert len(dataset) == 11000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
 
 
-# def test_Checkerboard2x2Dataset():
-#     dataset = Checkerboard2x2Dataset()
-#     assert len(dataset) == 2000
-#     assert dataset.x.shape[1] == 2
-#     assert len(dataset.data_splits) == 5
+def test_Checkerboard2x2Dataset():
+    dataset = Checkerboard2x2Dataset(data_dir="test_data/")
+    assert len(dataset) == 2000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
 
 
-# def test_Checkerboard4x4Dataset():
-#     dataset = Checkerboard4x4Dataset()
-#     assert len(dataset) == 2000
-#     assert dataset.x.shape[1] == 2
-#     assert len(dataset.data_splits) == 5
+def test_Checkerboard4x4Dataset():
+    dataset = Checkerboard4x4Dataset(data_dir="test_data/")
+    assert len(dataset) == 2000
+    assert dataset.x.shape[1] == 2
+    assert len(dataset.data_splits) == 5
 
 
-# def test_CreditCardDataset():
-#     dataset = CreditCardDataset()
-#     assert len(dataset) == 284807
-#     assert dataset.x.shape[1] == 30
-#     assert len(dataset.data_splits) == 5
+def test_CreditCardDataset():
+    dataset = CreditCardDataset(data_dir="test_data/")
+    assert len(dataset) == 284807
+    assert dataset.x.shape[1] == 30
+    assert len(dataset.data_splits) == 5

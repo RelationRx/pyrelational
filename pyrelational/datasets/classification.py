@@ -243,10 +243,10 @@ class FashionMNIST(Dataset):
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
+    def __init__(self, data_dir="/tmp/", n_splits=5):
         super(FashionMNIST, self).__init__()
-        train_dataset = datasets.FashionMNIST(root="/tmp/", train=True, download=True, transform=transforms.ToTensor())
-        test_dataset = datasets.FashionMNIST(root="/tmp/", train=False, download=True, transform=transforms.ToTensor())
+        train_dataset = datasets.FashionMNIST(root=data_dir, train=True, download=True, transform=transforms.ToTensor())
+        test_dataset = datasets.FashionMNIST(root=data_dir, train=False, download=True, transform=transforms.ToTensor())
         dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
         self.y = torch.stack([torch.LongTensor(torch.tensor(dataset[i][1])) for i in range(len(dataset))])
@@ -271,9 +271,9 @@ class UCIClassification(Dataset):
             splits to compute
     """
 
-    def __init__(self, name, n_splits=5):
+    def __init__(self, name, data_dir="/tmp/", n_splits=5):
         super(UCIClassification, self).__init__()
-        dataset = UCIDatasets(name=name, n_splits=n_splits)
+        dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits)
         torch_dataset = dataset.get_simple_dataset()
 
         self.data_dir = dataset.data_dir
@@ -319,8 +319,8 @@ class UCIGlass(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
-        super(UCIGlass, self).__init__(name="glass", n_splits=n_splits)
+    def __init__(self, data_dir="/tmp/", n_splits=5):
+        super(UCIGlass, self).__init__(name="glass", data_dir=data_dir, n_splits=n_splits)
         self.y -= 1  # for 0 - k-1 class relabelling
         self.y = remap_to_int(self.y).long()  # UCIGlass has mislabelling
 
@@ -332,8 +332,8 @@ class UCIParkinsons(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
-        super(UCIParkinsons, self).__init__(name="parkinsons", n_splits=n_splits)
+    def __init__(self, data_dir="/tmp/", n_splits=5):
+        super(UCIParkinsons, self).__init__(name="parkinsons", data_dir=data_dir, n_splits=n_splits)
 
 
 class UCISeeds(UCIClassification):
@@ -343,8 +343,8 @@ class UCISeeds(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
-        super(UCISeeds, self).__init__(name="seeds", n_splits=n_splits)
+    def __init__(self, data_dir="/tmp/", n_splits=5):
+        super(UCISeeds, self).__init__(name="seeds", data_dir=data_dir, n_splits=n_splits)
         self.y -= 1  # for 0 - k-1 class relabeling
 
 
