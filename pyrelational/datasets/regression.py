@@ -10,9 +10,9 @@ from .uci_datasets import UCIDatasets
 
 
 class SynthReg1(Dataset):
-    """Synthetic dataset for active learning on a regression based task 
+    """Synthetic dataset for active learning on a regression based task
 
-    Simple 1 dof regression problem that can be placed into two types 
+    Simple 1 dof regression problem that can be placed into two types
     of AL situations as described in the module docstring
 
     :param n_splits: an int describing the number of class stratified
@@ -45,7 +45,7 @@ class SynthReg1(Dataset):
 
 
 class SynthReg2(Dataset):
-    """Synthetic dataset for active learning on a regression based task 
+    """Synthetic dataset for active learning on a regression based task
 
     A more challenging dataset than SynthReg1 wherein we see a periodic
     pattern with 2 degrees of freedom.
@@ -95,12 +95,12 @@ class SynthReg2(Dataset):
 class DiabetesDataset(Dataset):
     """A small regression dataset for examples
 
-    From Bradley Efron, Trevor Hastie, Iain Johnstone and 
-    Robert Tibshirani (2004) “Least Angle Regression,” 
+    From Bradley Efron, Trevor Hastie, Iain Johnstone and
+    Robert Tibshirani (2004) “Least Angle Regression,”
     Annals of Statistics (with discussion), 407-499.
-    
+
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -150,7 +150,7 @@ class UCIHousing(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -161,7 +161,7 @@ class UCIConcrete(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -172,7 +172,7 @@ class UCIEnergy(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -183,7 +183,7 @@ class UCIPower(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -194,7 +194,7 @@ class UCIWine(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -205,7 +205,7 @@ class UCIYacht(UCIRegression):
     """UCI housing dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):
@@ -216,7 +216,7 @@ class UCIAirfoil(UCIRegression):
     """UCI Airfoil dataset
 
     :param n_splits: an int describing the number of class stratified
-        splits to compute   
+        splits to compute
     """
 
     def __init__(self, n_splits=5):

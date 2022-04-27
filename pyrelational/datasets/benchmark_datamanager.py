@@ -13,7 +13,7 @@ def pick_one_sample_per_class(dataset, train_indices):
     training subset of dataset and return their index in the dataset.
     This is used for defining an initial state of the labelled subset
     in the active learning task
-    
+
     :param train_indices: list or iterable with the indices corresponding
         to the training samples in the dataset
     """
@@ -39,7 +39,7 @@ def create_warm_start(dataset, **dm_args):
 
     This can be used both for classification and regression type datasets.
 
-    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
     Learning from Data', NIPS 2017
 
     :param dataset: A pytorch dataset in the style described
@@ -99,6 +99,10 @@ def create_regression_cold_start(dataset, train_indices, test_indices, **dm_args
 
     labelled_indices = [sample1_idx, sample2_idx]
     dm = GenericDataManager(
-        dataset, train_indices=train_indices, test_indices=test_indices, labelled_indices=labelled_indices, **dm_args,
+        dataset,
+        train_indices=train_indices,
+        test_indices=test_indices,
+        labelled_indices=labelled_indices,
+        **dm_args,
     )
     return dm

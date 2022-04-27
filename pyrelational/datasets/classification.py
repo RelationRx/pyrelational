@@ -63,8 +63,8 @@ class SynthClass2(Dataset):
     """
     Synth2 dataset as described in Yang and Loog
 
-    Originally proposed by Huang et al in: 
-    Active learning by querying informative 
+    Originally proposed by Huang et al in:
+    Active learning by querying informative
     and representative examples
 
     :param n_splits: an int describing the number of class stratified
@@ -180,7 +180,7 @@ class SynthClass3(Dataset):
 
 class BreastCancerDataset(Dataset):
     """UCI ML Breast Cancer Wisconsin (Diagnostic) dataset
-    
+
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
@@ -204,10 +204,10 @@ class BreastCancerDataset(Dataset):
 
 class DigitDataset(Dataset):
     """UCI ML hand-written digits datasets
-    
+
     From C. Kaynak (1995) Methods of Combining Multiple Classifiers and
-    Their Applications to Handwritten Digit Recognition, MSc Thesis, 
-    Institute of Graduate Studies in Science and Engineering, Bogazici 
+    Their Applications to Handwritten Digit Recognition, MSc Thesis,
+    Institute of Graduate Studies in Science and Engineering, Bogazici
     University.
 
     :param n_splits: an int describing the number of class stratified
@@ -263,7 +263,7 @@ class FashionMNIST(Dataset):
 class UCIClassification(Dataset):
     """UCI classification abstract class
 
-    :param name: string denotation for dataset to download 
+    :param name: string denotation for dataset to download
         as specified in uci_datasets.UCIDatasets
     :param n_splits: an int describing the number of class stratified
             splits to compute
@@ -293,7 +293,7 @@ def remap_to_int(torch_class_array):
     """Remaps the values in the torch_class_array to integers from 0
     to n for n unique values in the torch_class_array
 
-    :param torch_class_array: class array whose elements are to be 
+    :param torch_class_array: class array whose elements are to be
         mapped to contiguous ints
     """
     remapped_array = []
@@ -349,9 +349,9 @@ class UCISeeds(UCIClassification):
 class StriatumDataset(Dataset):
     """Striatum dataset as used in Konyushkova et al. 2017
 
-    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
     Learning from Data', NIPS 2017
-    
+
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
@@ -416,12 +416,12 @@ class StriatumDataset(Dataset):
 
 
 class GaussianCloudsDataset(Dataset):
-    """GaussianClouds from Konyushkova et al. 2017 basically a imbalanced 
+    """GaussianClouds from Konyushkova et al. 2017 basically a imbalanced
     binary classification task created from multivariate gaussian blobs
 
-    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
     Learning from Data', NIPS 2017
-    
+
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
@@ -492,9 +492,9 @@ class GaussianCloudsDataset(Dataset):
 class Checkerboard2x2Dataset(Dataset):
     """Checkerboard2x2 dataset from Konyushkova et al. 2017
 
-    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
     Learning from Data', NIPS 2017
-    
+
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
@@ -555,9 +555,9 @@ class Checkerboard2x2Dataset(Dataset):
 class Checkerboard4x4Dataset(Dataset):
     """Checkerboard 4x4 dataset from Konyushkova et al. 2017
 
-    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active 
+    From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
     Learning from Data', NIPS 2017
-    
+
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
