@@ -10,7 +10,7 @@ import pyreadr
 import scipy.io
 import torch
 import torch.distributions as distributions
-from sklearn.datasets import load_breast_cancer, load_diabetes, load_digits
+from sklearn.datasets import load_breast_cancer, load_digits
 from sklearn.model_selection import KFold, StratifiedKFold
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
@@ -249,7 +249,7 @@ class FashionMNIST(Dataset):
         test_dataset = datasets.FashionMNIST(root=data_dir, train=False, download=True, transform=transforms.ToTensor())
         dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
-        self.y = torch.stack([torch.LongTensor(torch.tensor(dataset[i][1])) for i in range(len(dataset))])
+        self.y = torch.stack([torch.tensor(dataset[i][1]) for i in range(len(dataset))])
 
         skf = StratifiedKFold(n_splits=n_splits)
         self.data_splits = skf.split(self.x, self.y)

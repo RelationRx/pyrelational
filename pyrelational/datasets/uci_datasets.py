@@ -44,6 +44,8 @@ class UCIDatasets:
     def _load_dataset(self):
         if self.name not in self.datasets:
             raise Exception("Not part of datasets supported in PyRelationAL at the moment")
+        if not path.exists(self.data_dir):
+            os.mkdir(self.data_dir)
         if not path.exists(self.data_dir + "UCI"):
             os.mkdir(self.data_dir + "UCI")
 
