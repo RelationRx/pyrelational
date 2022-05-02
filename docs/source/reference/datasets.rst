@@ -129,3 +129,83 @@ CreditCardDataset
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+Regression datasets
+-----------------------
+
+SynthReg1
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.SynthReg1
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+SynthReg2
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.SynthReg2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+DiabetesDataset
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.DiabetesDataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+UCIHousing
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.UCIHousing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+UCIPower
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.UCIPower
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+UCIWine
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.UCIWine
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
+UCIYacht
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.UCIYacht
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+UCIAirfoil
+~~~~~~~~~~~
+
+.. automodule:: pyrelational.datasets.regression.UCIAirfoil
+   :members:
+   :undoc-members:
+   :show-inheritance:
