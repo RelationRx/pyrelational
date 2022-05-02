@@ -28,6 +28,7 @@ rapidly implementing active learning pipelines from data management, model devel
    :caption: Package modules
 
    reference/data.rst
+   reference/datasets.rst
    reference/models.rst
    reference/informativeness.rst
    reference/strategies.rst
