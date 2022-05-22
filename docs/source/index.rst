@@ -21,6 +21,7 @@ rapidly implementing active learning pipelines from data management, model devel
    notes/using_your_own_data
    notes/using_the_model_api
    notes/using_your_own_strategy
+   notes/benchmark_datasets
 
 .. toctree::
    :glob:
