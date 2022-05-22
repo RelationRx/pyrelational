@@ -11,7 +11,6 @@ from pyrelational.datasets import (
     UCIAirfoil,
     UCIConcrete,
     UCIEnergy,
-    UCIHousing,
     UCIPower,
     UCIWine,
     UCIYacht,
@@ -41,13 +40,6 @@ def test_SynthReg2():
 def test_DiabetesDataset():
     dataset = DiabetesDataset()
     assert len(dataset) == 442
-    assert len(dataset.data_splits) == 5
-
-
-def test_UCIHousing():
-    dataset = UCIHousing(data_dir="test_data/")
-    assert len(dataset) == 505
-    assert dataset.x.shape[1] == 13
     assert len(dataset.data_splits) == 5
 
 
