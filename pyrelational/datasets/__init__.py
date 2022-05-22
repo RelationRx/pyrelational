@@ -21,7 +21,6 @@ from pyrelational.datasets.regression import (
     UCIAirfoil,
     UCIConcrete,
     UCIEnergy,
-    UCIHousing,
     UCIPower,
     UCIWine,
     UCIYacht,
