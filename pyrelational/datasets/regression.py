@@ -142,17 +142,6 @@ class UCIRegression(Dataset):
         return self.x[idx], self.y[idx]
 
 
-class UCIHousing(UCIRegression):
-    """UCI housing dataset
-
-    :param n_splits: an int describing the number of class stratified
-        splits to compute
-    """
-
-    def __init__(self, data_dir="/tmp/", n_splits=5):
-        super(UCIHousing, self).__init__(name="housing", data_dir=data_dir, n_splits=n_splits)
-
-
 class UCIConcrete(UCIRegression):
     """UCI housing dataset
 
