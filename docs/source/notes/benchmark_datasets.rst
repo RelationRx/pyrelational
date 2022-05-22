@@ -14,15 +14,38 @@ AL tasks easier. Better yet, lets hope it will garner interest in establishing a
 Example usage: classification dataset
 =====================================
 
-The following
+In this example we will look at the Wisconsin Breast Cancer (diagnostic) dataset [#f2]_ . It can be be downloaded and processed with
 
-For classification
+.. code-block:: python
+
+    from pyrelational.datasets import BreastCancerDataset
+    dataset = BreastCancerDataset(n_splits = 5)
+
+Where the `n_splits` argument specifies the number of train-test splits should be computed. For classification datasets the splits will be stratified by class. The `dataset` variable will behave like a regular PyTorch Dataset and is compatible with their excellent DataLoaders.
+
+The `create_warm_start()` and `create_classification_cold_start()` functions in `pyrelational.datasets.benchmark_datamanager` will generate PyRelationAL DataManager objects corresponding to the following AL learning tasks inspired by Konyushkova et al. [#f3]_ .
+
+- **Cold-start classification**: 1 observation for each class represented in the training set is labelled and the rest unlabeled.
+- **Warm-start classification**: a randomly sampled 10 percent of the training set is labelled, the rest is unlabelled.
+
+The following code snippet will return a DataManager corresponding to a cold-start initialisation for the breast cancer classification dataset using one of the precomputed splits
+
+.. code-block:: python
+
+    from pyrelational.datasets import BreastCancerDataset
+    dataset = BreastCancerDataset()
+    train_indices = list(dataset.data_splits[0][0])
+    test_indices = list(dataset.data_splits[0][1])
+    dm = create_classification_cold_start(dataset, train_indices=train_indices, test_indices=test_indices)
 
 
 Example usage: regression dataset
 =================================
 
 
+
 .. rubric:: Footnotes
 
 .. [#f1] Please see the datasets API reference for a full listing
+.. [#f2] https://archive.ics.uci.edu/ml/datasets/breast+cancer+wisconsin+(diagnostic)
+.. [#f3] Learning Active Learning from Data from Konyushkova et al. NeurIPS 2017 (publicly available via https://arxiv.org/abs/1703.03365)
