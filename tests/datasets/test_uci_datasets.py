@@ -8,7 +8,7 @@ from pyrelational.datasets import UCIDatasets
 
 
 def test_UCIDatasets():
-    dataset = UCIDatasets("housing", data_dir="test_data/", n_splits=10)
+    dataset = UCIDatasets("glass", data_dir="test_data/", n_splits=10)
     assert dataset.n_splits == 10
     assert len(dataset.data_splits) == 10
 
