@@ -1,7 +1,7 @@
 .. _benchmark_datasets:
 
-Benchmarking Active Learning
-============================
+Benchmark datasets and AL task configurations
+=============================================
 A fundamental assumption in evaluating active learning strategies is that there exists a labelled subset of a training dataset that allows a model to perform as well (on the holdout test set) as using the entire training set. In evaluating an AL strategy we are interested in finding this subset efficiently, and maximising performance in an efficient manner.
 
 To help users benchmark their strategies and active learning pipelines we have collected a range of datasets that have been used for benchmarking strategies in AL literature [#f1]_ . We provide classification and regression type datasets from a range of real world applications. Additionally we provide utilities to help create **cold** and **warm** start label initialisations corresponding to different active learning tasks to also help evaluate your strategy in these scenarios. More on these on the respective sections below.
@@ -12,7 +12,7 @@ We hope that this resource helps make horizontal analysis of AL strategies acros
 AL tasks easier. Better yet, lets hope it will garner interest in establishing a set of challening active learning benchmarks and tasks that can set a standard for the AL field.
 
 Example usage: classification dataset
-=====================================
+-------------------------------------
 
 In this example we will look at the Wisconsin Breast Cancer (diagnostic) dataset [#f2]_ . It can be downloaded and processed with
 
@@ -40,7 +40,7 @@ The following code snippet will return a DataManager corresponding to a cold-sta
 
 
 Example usage: regression dataset
-=================================
+---------------------------------
 
 This example will be identical to the classification case, except of course adjusted to be applicable for the regression ML task. We will use the UCI Diabetes dataset [#f4]_ . This can be downloaded and processed with
 
