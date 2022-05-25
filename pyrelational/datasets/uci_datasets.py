@@ -73,7 +73,6 @@ class UCIDatasets:
         elif self.name == "power":
             zipfile.ZipFile(self.data_dir + "UCI/CCPP.zip").extractall(self.data_dir + "UCI/")
             data = pd.read_excel(self.data_dir + "UCI/CCPP/Folds5x2_pp.xlsx", header=0).values
-            np.random.shuffle(data)
             self.data = data
 
         elif self.name == "wine":
