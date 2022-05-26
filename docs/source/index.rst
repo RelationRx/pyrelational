@@ -21,6 +21,7 @@ rapidly implementing active learning pipelines from data management, model devel
    notes/using_your_own_data
    notes/using_the_model_api
    notes/using_your_own_strategy
+   notes/benchmark_datasets
 
 .. toctree::
    :glob:
@@ -28,6 +29,7 @@ rapidly implementing active learning pipelines from data management, model devel
    :caption: Package modules
 
    reference/data.rst
+   reference/datasets.rst
    reference/models.rst
    reference/informativeness.rst
    reference/strategies.rst
