@@ -71,6 +71,16 @@ class BreastCancerClassification(LightningModule):
         x = self.softmax(x)
         return x
 
+    def return_penultimate_embed(self, x: torch.Tensor):
+        """
+        Return embedding from penultimate layer.
+
+        :param x: input tensor to calculate embedding for
+        """
+        x = self.dropout(self.elu(self.layer_1(x)))
+        x = self.dropout(self.elu(self.layer_2(x)))
+        return x
+
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
