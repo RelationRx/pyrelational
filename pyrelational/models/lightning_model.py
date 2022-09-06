@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Type, Union
+from typing import Dict, List, Tuple, Type, Union
 
 import pytorch_lightning as pl
 import torch
@@ -43,6 +43,7 @@ class LightningModel(GenericModel):
         trainer_config: Union[Dict, str],
     ):
         super(LightningModel, self).__init__(model_class, model_config, trainer_config)
+        self.device = _determine_device(trainer_config["gpus"])
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
@@ -106,12 +107,13 @@ class LightningModel(GenericModel):
         """
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-        model = self.current_model
+        model = self.current_model.to(self.device)
         model.eval()
 
         with torch.no_grad():
             model_prediction = []
             for x, _ in loader:
+                x = x.to(self.device)
                 model_prediction.append(model(x).detach().cpu())
         predictions = torch.cat(model_prediction, 0)
         return predictions
@@ -137,3 +139,19 @@ def _check_pyl_trainer_config(config: Dict) -> Dict:
     }
     config = {**default, **config}
     return config
+
+
+def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
+    """
+    Determines the torch device of the model given the gpus argument for pytorch lightning trainer
+
+    :param gpus: Number of gpus (int) or which gpu to train on (str)
+    """
+    if isinstance(gpus, list):
+        gpus = gpus[0]
+    elif isinstance(gpus, str):
+        return torch.device(f"cuda:{gpus}")
+    elif isinstance(gpus, int) and (gpus > 0):
+        return torch.device("cuda")
+    elif gpus is None or (gpus == 0):
+        return torch.device("cpu")
