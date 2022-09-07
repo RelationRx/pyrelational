@@ -143,12 +143,13 @@ def _check_pyl_trainer_config(config: Dict) -> Dict:
 
 def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
     """
-    Determines the torch device of the model given the gpus argument for pytorch lightning trainer
+    Determines the torch device of the model from the gpus argument for pytorch lightning trainer
 
-    :param gpus: Number of gpus (int) or which gpu to train on (str)
+    :param gpus: Number of gpus (int) or which gpus to train on (str, list)
+    :return: torch device
     """
     if isinstance(gpus, list):
-        gpus = gpus[0]
+        gpus = str(gpus[0])
     elif isinstance(gpus, str):
         return torch.device(f"cuda:{gpus}")
     elif isinstance(gpus, int) and (gpus > 0):
