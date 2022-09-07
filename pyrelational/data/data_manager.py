@@ -98,6 +98,7 @@ class GenericDataManager(object):
         self._top_unlabelled_set(hit_ratio_at)
 
     def _ensure_no_split_leaks(self) -> None:
+        """Ensures that there is no overlap between train/validation/test sets."""
         tt = set.intersection(set(self.train_indices), set(self.test_indices))
         tv, vt = False, False
         if self.validation_indices is not None:
@@ -223,22 +224,31 @@ class GenericDataManager(object):
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
     def get_train_set(self) -> Dataset:
+        """Get train set from full dataset and train indices."""
         train_subset = Subset(self.dataset, self.train_indices)
         return train_subset
 
     def get_validation_set(self) -> Optional[Subset]:
+        """Get validation set from full dataset and validation indices."""
         if self.validation_indices is None:
             return None
         validation_subset = Subset(self.dataset, self.validation_indices)
         return validation_subset
 
     def get_test_set(self) -> Optional[Subset]:
+        """Get test set from full dataset and test indices."""
         if self.test_indices is None:
             return None
         test_subset = Subset(self.dataset, self.test_indices)
         return test_subset
 
     def get_train_loader(self, full: bool = False) -> DataLoader:
+        """
+        Get train dataloader. Returns full train loader, else return labelled loader
+
+        :param full: whether to use full dataset with unlabelled included
+        :return: loader to use for training
+        """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
             train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
@@ -247,21 +257,25 @@ class GenericDataManager(object):
             return self.get_labelled_loader()
 
     def get_validation_loader(self) -> Optional[DataLoader]:
+        """Get validation dataloader"""
         if self.validation_indices is None:
             return None
         validation_loader = self.create_loader(self.get_validation_set())
         return validation_loader
 
     def get_test_loader(self) -> Optional[DataLoader]:
+        """Get test loader"""
         if self.test_indices is None:
             return None
         test_loader = self.create_loader(self.get_test_set())
         return test_loader
 
     def get_unlabelled_loader(self) -> DataLoader:
+        """Get unlabelled loader"""
         return self.create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader:
+        """Get labelled loader"""
         return self.create_loader(Subset(self.dataset, self.l_indices))
 
     def process_random(self, seed=0) -> None:
@@ -295,6 +309,7 @@ class GenericDataManager(object):
         self.u_indices = list(set(self.u_indices) - set(indices))
 
     def percentage_labelled(self) -> float:
+        """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
         return num_labelled / float(total_len)
