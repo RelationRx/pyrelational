@@ -1,12 +1,12 @@
 name: lint-task
-
-permissions:
-  pull-requests: write
-  
 # Run this workflow every time a new commit pushed to your repository
 on:
   pull_request:
 
+
+permissions:
+  pull-requests: write
+  
 jobs:
 
   # Set the job key. The key is displayed as the job name
