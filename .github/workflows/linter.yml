@@ -10,6 +10,8 @@ jobs:
   # when a job name is not provided
   run-lint-test:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     name: lint
     # Name the Job
     steps:
@@ -29,8 +31,6 @@ jobs:
           pip install  lintly==0.6.0 flake8==4.0.1 flake8-bugbear==22.1.11 black==21.12b0 markupsafe==2.0.1
           flake8 --exclude env | lintly --format=flake8
           black . --exclude env --check 2>&1 >/dev/null | lintly    --format=black
-        env:
-          LINTLY_API_KEY: ${{ secrets.GITHUB_TOKEN }}
       - name: clean venv
         run: |
           rm -r env
