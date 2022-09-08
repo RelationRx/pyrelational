@@ -2,10 +2,6 @@ name: lint-task
 # Run this workflow every time a new commit pushed to your repository
 on:
   pull_request:
-
-
-permissions:
-  pull-requests: write
   
 jobs:
 
@@ -13,6 +9,8 @@ jobs:
   # when a job name is not provided
   run-lint-test:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     name: lint
     # Name the Job
     steps:
