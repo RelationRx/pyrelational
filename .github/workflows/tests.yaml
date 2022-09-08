@@ -35,3 +35,5 @@ jobs:
           cat pytest-coverage.txt
       - name: Comment coverage
         uses: coroo/pytest-coverage-commentator@v1.0.2
+        with:
+          fail_ci_if_error: false
