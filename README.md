@@ -21,7 +21,7 @@ Detailed in the **overview** section below, PyRelationAL offers:
 - Active learning strategies and templates for making your own! (*Active learning strategy*)
 - Benchmark datasets: an API for downloading datasets and AL task configurations based on literature for more standardised and painfree benchmarking.
 
-One of our main incentives for making this library is to get more people interested in research and development of AL. Hence we have made primers, tutorials, and examples available on our website for newcomers (and experience AL practitioners alike). Experienced users can refer to our numerous examples to get started on their AL projects.
+One of our main incentives in making this library is to get more people interested in research and development of AL. Hence we have made primers, tutorials, and examples available on our website for newcomers (and experience AL practitioners alike). Experienced users can refer to our numerous examples to get started on their AL projects.
 
 ## Quick install
 
