@@ -211,6 +211,13 @@ class GenericDataManager(object):
         return self.dataset[idx]
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
+        """
+        Sets the top unlabelled indices according to the value of their labels.
+        Used for calculating hit ratio, which demonstrates
+        how quickly the samples in this set are recovered for labelling.
+
+        :param percentage: Top percentage of samples to be considered in top set
+        """
         if percentage is None:
             self.top_unlabelled = None
         else:
@@ -337,7 +344,13 @@ class GenericDataManager(object):
         return res
 
     def create_loader(self, dataset: Dataset) -> DataLoader:
-        """Utility to help create dataloader with specifications set at initialisation"""
+        """
+        Utility to help create dataloader with specifications set at initialisation.
+
+        :param dataset: Pytorch dataset to be used in DataLoader
+
+        :return Pytorch DataLoader with correct specifications
+        """
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(
             dataset,
