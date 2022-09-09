@@ -1,5 +1,6 @@
 import logging
 import random
+import warnings
 from typing import (
     Any,
     Callable,
@@ -15,7 +16,6 @@ from typing import (
     Union,
     cast,
 )
-import warnings
 
 import numpy as np
 import torch
@@ -124,7 +124,7 @@ class GenericDataManager(object):
             tv = set.intersection(set(train_indices), set(validation_indices))
             vt = set.intersection(set(validation_indices), set(test_indices))
         if tv or tt or vt:
-            raise ValueError("There is overlap between the split indices supplied")
+            raise ValueError("There is an overlap between the split indices supplied")
 
     def _ensure_no_empty_train(self, train_indices: List[int]) -> None:
         """ensures that the train set is not empty, as there is no need to
@@ -179,13 +179,13 @@ class GenericDataManager(object):
 
         remaining_indices = set(range(len(self.dataset))) - set.union(
             set(train_indices if train_indices is not None else []),
-            set(train_indices if train_indices is not None else []),
-            set(train_indices if train_indices is not None else []),
+            set(validation_indices if validation_indices is not None else []),
+            set(test_indices if test_indices is not None else []),
         )
 
         if train_indices is None:
             if test_indices is None:
-                raise ValueError("Invalid split indices provided")
+                raise ValueError("No train or test specified, too ambigious to set values")
             train_indices = list(remaining_indices)
         elif test_indices is None:
             test_indices = list(remaining_indices)

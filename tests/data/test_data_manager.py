@@ -59,7 +59,7 @@ def test_resolving_dataset_indices():
     train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [350, 50, 42])
     valid_indices = valid_ds.indices
 
-    # Check case 5 only validation raises error
+    # Check case 4 no train and test raises error
     with pytest.raises(ValueError) as case5:
         GenericDataManager(
             ds,
@@ -67,15 +67,6 @@ def test_resolving_dataset_indices():
             loader_batch_size=10,
         )
     assert str(case5.value) == "No train or test specified, too ambigious to set values"
-
-    # Check case 5 only validation raises error
-    with pytest.raises(ValueError) as case6:
-        GenericDataManager(
-            ds,
-            test_indices=test_ds.indices,
-            loader_batch_size=10,
-        )
-    assert str(case6.value) == "No train or validation specified, too ambigious to set values"
 
     # TODO HANDLE OTHER CASES
 
@@ -138,4 +129,4 @@ def test_resolving_dataset_check_split_leaks():
             test_indices=test_indices,
             loader_batch_size=10,
         )
-    assert str(e_info.value) == "There is overlap between the split indices supplied"
+    assert str(e_info.value) == "There is an overlap between the split indices supplied"
