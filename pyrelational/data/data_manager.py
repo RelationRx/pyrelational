@@ -241,9 +241,7 @@ class GenericDataManager(object):
     def get_train_loader(self, full: bool = False) -> DataLoader:
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
-            train_loader = self.create_loader(
-                Subset(self.dataset, (self.l_indices + self.u_indices)), self.loader_shuffle
-            )
+            train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
             return train_loader
         else:
             return self.get_labelled_loader()
@@ -264,7 +262,7 @@ class GenericDataManager(object):
         return self.create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader:
-        return self.create_loader(Subset(self.dataset, self.l_indices))
+        return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def process_random(self, seed=0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
