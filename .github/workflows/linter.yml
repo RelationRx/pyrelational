@@ -9,8 +9,6 @@ jobs:
   # when a job name is not provided
   run-lint-test:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     name: lint
     # Name the Job
     steps:
