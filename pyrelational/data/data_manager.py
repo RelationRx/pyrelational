@@ -271,18 +271,18 @@ class GenericDataManager(object):
         return validation_loader
 
     def get_test_loader(self) -> Optional[DataLoader]:
-        """Get test loader"""
+        """Get test dataloader"""
         if self.test_indices is None:
             return None
         test_loader = self.create_loader(self.get_test_set())
         return test_loader
 
     def get_unlabelled_loader(self) -> DataLoader:
-        """Get unlabelled loader"""
+        """Get unlabelled dataloader"""
         return self.create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader:
-        """Get labelled loader"""
+        """Get labelled dataloader"""
         return self.create_loader(Subset(self.dataset, self.l_indices))
 
     def process_random(self, seed=0) -> None:
