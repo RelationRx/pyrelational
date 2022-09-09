@@ -448,11 +448,11 @@ class GaussianCloudsDataset(Dataset):
         testSize2 = trainSize2 * 10
 
         # Generate parameters of datasets
-        mean1 = scipy.random.rand(n_dim)
-        cov1 = scipy.random.rand(n_dim, n_dim) - 0.5
+        mean1 = np.random.rand(n_dim)
+        cov1 = np.random.rand(n_dim, n_dim) - 0.5
         cov1 = np.dot(cov1, cov1.transpose())
-        mean2 = scipy.random.rand(n_dim)
-        cov2 = scipy.random.rand(n_dim, n_dim) - 0.5
+        mean2 = np.random.rand(n_dim)
+        cov2 = np.random.rand(n_dim, n_dim) - 0.5
         cov2 = np.dot(cov2, cov2.transpose())
 
         # Training data generation
