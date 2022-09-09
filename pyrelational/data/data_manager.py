@@ -47,7 +47,7 @@ class GenericDataManager(object):
         :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
         :param random_seed: random seed
         :param loader_batch_size: batch size for dataloader
-        :param loader_shuffle: shuffle flag for train dataloader
+        :param loader_shuffle: shuffle flag for labelled dataloader
         :param loader_sampler: a sampler for the dataloaders
         :param loader_batch_sampler: a batch sampler for the dataloaders
         :param loader_num_workers: number of cpu workers for dataloaders
