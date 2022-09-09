@@ -1,4 +1,3 @@
-import copy
 import logging
 from abc import ABC
 from typing import Dict, Optional, Type, Union
@@ -9,7 +8,7 @@ from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
 from .generic_model import GenericModel
-from .lightning_model import LightningModel
+from .lightning_model import LightningModel, _determine_device
 
 logger = logging.getLogger()
 
@@ -28,7 +27,8 @@ class GenericMCDropoutModel(GenericModel, ABC):
         eval_dropout_prob: float = 0.2,
     ):
         super(GenericMCDropoutModel, self).__init__(model_class, model_config, trainer_config)
-        _check_mc_dropout_model(model_class, model_config)
+        _check_mc_dropout_model(model_class, self.model_config)
+        self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
         self.eval_dropout_prob = eval_dropout_prob
 
@@ -42,6 +42,7 @@ class GenericMCDropoutModel(GenericModel, ABC):
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
         model = self.current_model
+        model = model.to(self.device)
         model.eval()
 
         with torch.no_grad():
@@ -49,6 +50,7 @@ class GenericMCDropoutModel(GenericModel, ABC):
             for _ in range(self.n_estimators):
                 model_prediction = []
                 for x, _ in loader:
+                    x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
             predictions = torch.stack(predictions)

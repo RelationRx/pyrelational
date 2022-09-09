@@ -1,3 +1,4 @@
+import warnings
 from typing import Dict, List, Tuple, Type, Union
 
 import pytorch_lightning as pl
@@ -43,7 +44,7 @@ class LightningModel(GenericModel):
         trainer_config: Union[Dict, str],
     ):
         super(LightningModel, self).__init__(model_class, model_config, trainer_config)
-        self.device = _determine_device(trainer_config["gpus"])
+        self.device = _determine_device(self.trainer_config.get("gpus", 0))
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
@@ -150,6 +151,7 @@ def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
     """
     if isinstance(gpus, list):
         gpus = str(gpus[0])
+        warnings.warn("Multiple GPUs provided, setting the first GPU to be device used in call function of model")
     elif isinstance(gpus, str):
         return torch.device(f"cuda:{gpus}")
     elif isinstance(gpus, int) and (gpus > 0):
