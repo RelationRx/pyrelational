@@ -321,7 +321,7 @@ class GenericDataManager(object):
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return res
 
-    def create_loader(self, dataset: Dataset, shuffle: bool) -> DataLoader:
+    def create_loader(self, dataset: Dataset, shuffle: bool = False) -> DataLoader:
         """Utility to help create dataloader with specifications set at initialisation"""
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(
