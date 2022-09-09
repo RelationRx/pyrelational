@@ -23,7 +23,7 @@ class GenericDataManager(object):
         hit_ratio_at: Optional[Union[int, float]] = None,
         random_seed: int = 1234,
         loader_batch_size: Union[int, str] = 1,
-        loader_shuffle: bool = False,
+        loader_shuffle: bool = True,
         loader_sampler: Optional[Sampler[int]] = None,
         loader_batch_sampler: Optional[Sampler[Sequence[int]]] = None,
         loader_num_workers: int = 0,
@@ -47,7 +47,7 @@ class GenericDataManager(object):
         :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
         :param random_seed: random seed
         :param loader_batch_size: batch size for dataloader
-        :param loader_shuffle: shuffle flag for dataloader
+        :param loader_shuffle: shuffle flag for train dataloader
         :param loader_sampler: a sampler for the dataloaders
         :param loader_batch_sampler: a batch sampler for the dataloaders
         :param loader_num_workers: number of cpu workers for dataloaders
@@ -241,7 +241,9 @@ class GenericDataManager(object):
     def get_train_loader(self, full: bool = False) -> DataLoader:
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
-            train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
+            train_loader = self.create_loader(
+                Subset(self.dataset, (self.l_indices + self.u_indices)), self.loader_shuffle
+            )
             return train_loader
         else:
             return self.get_labelled_loader()
@@ -321,13 +323,13 @@ class GenericDataManager(object):
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return res
 
-    def create_loader(self, dataset: Dataset) -> DataLoader:
+    def create_loader(self, dataset: Dataset, shuffle: bool) -> DataLoader:
         """Utility to help create dataloader with specifications set at initialisation"""
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(
             dataset,
             batch_size=batch_size,
-            shuffle=self.loader_shuffle,
+            shuffle=shuffle,
             sampler=self.loader_sampler,
             batch_sampler=self.loader_batch_sampler,
             num_workers=self.loader_num_workers,
