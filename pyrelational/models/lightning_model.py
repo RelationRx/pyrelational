@@ -1,5 +1,4 @@
-import warnings
-from typing import Dict, List, Tuple, Type, Union
+from typing import Dict, Tuple, Type, Union
 
 import pytorch_lightning as pl
 import torch
@@ -8,6 +7,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
+from ._model_utils import _determine_device
 from .generic_model import GenericModel
 
 
@@ -140,21 +140,3 @@ def _check_pyl_trainer_config(config: Dict) -> Dict:
     }
     config = {**default, **config}
     return config
-
-
-def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
-    """
-    Determines the torch device of the model from the gpus argument for pytorch lightning trainer
-
-    :param gpus: Number of gpus (int) or which gpus to train on (str, list)
-    :return: torch device
-    """
-    if isinstance(gpus, list):
-        gpus = str(gpus[0])
-        warnings.warn("Multiple GPUs provided, setting the first GPU to be device used in call function of model")
-    elif isinstance(gpus, str):
-        return torch.device(f"cuda:{gpus}")
-    elif isinstance(gpus, int) and (gpus > 0):
-        return torch.device("cuda")
-    elif gpus is None or (gpus == 0):
-        return torch.device("cpu")
