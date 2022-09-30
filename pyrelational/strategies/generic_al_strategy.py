@@ -55,6 +55,8 @@ class GenericActiveLearningStrategy(ABC):
                 test data compatible with model, optional as often the test loader can be
                 generated from data_manager but is here for case when it hasn't been defined
                 or there is a new test set.
+
+        :return: performances
         """
         self.model.train(self.train_loader, self.valid_loader)
 
@@ -68,6 +70,17 @@ class GenericActiveLearningStrategy(ABC):
         return self.performances["full"]
 
     def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
+        """
+        Current performance of model
+        :param test_loader: Pytorch Data Loader with
+                test data compatible with model, optional as often the test loader can be
+                generated from data_manager but is here for case when it hasn't been defined
+                or there is a new test set.
+
+        :param query: List of indices selected for labelling. Used for calculating hit ratio metric
+        :return: dictionary containing metric results on test set
+
+        """
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
 
@@ -96,6 +109,14 @@ class GenericActiveLearningStrategy(ABC):
         pass
 
     def active_learning_update(self, indices: List[int], oracle_interface: object = None, update_tag: str = "") -> None:
+        """
+        Updates labels based on indices selected for labelling
+
+        :param indices: List of indices selected for labelling
+        :param oracle_interface: undefined for now, this will be entry point for external oracle later
+        :param update_tag: tag which records what the observations(indices) were labelled by.
+        Default behaviour is to map to iteration at which it was labelled
+        """
         if oracle_interface is None:
             self.update_annotations(indices)
         else:
@@ -164,6 +185,10 @@ class GenericActiveLearningStrategy(ABC):
             return query_history
 
     def update_annotations(self, indices: List[int]) -> None:
+        """
+        Update labels in the datamanager train set based on indices selected for labelling
+        :param indices: list of indices selected for labelling
+        """
         self.data_manager.update_train_labels(indices)
 
     def performance_history(self) -> pd.DataFrame:
@@ -198,9 +223,13 @@ class GenericActiveLearningStrategy(ABC):
         return pd_df
 
     def log_labelled_by(self, indices: List[int], tag: str = ""):
-        """Update the dictionary that records what the observation
+        """
+        Update the dictionary that records what the observation
         was labelled by. Default behaviour is to map observation to
         iteration at which it was labelled
+
+        :param indices: list of indices selected for labelling
+        :param tag: string which indicates what the observations where labelled by
         """
         for indx in indices:
             self.labelled_by[indx] = tag
