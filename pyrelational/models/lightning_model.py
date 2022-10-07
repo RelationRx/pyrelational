@@ -8,6 +8,7 @@ from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
 from .generic_model import GenericModel
+from .model_utils import _determine_device
 
 
 class LightningModel(GenericModel):
@@ -43,6 +44,7 @@ class LightningModel(GenericModel):
         trainer_config: Union[Dict, str],
     ):
         super(LightningModel, self).__init__(model_class, model_config, trainer_config)
+        self.device = _determine_device(self.trainer_config.get("gpus", 0))
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
@@ -106,12 +108,13 @@ class LightningModel(GenericModel):
         """
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-        model = self.current_model
+        model = self.current_model.to(self.device)
         model.eval()
 
         with torch.no_grad():
             model_prediction = []
             for x, _ in loader:
+                x = x.to(self.device)
                 model_prediction.append(model(x).detach().cpu())
         predictions = torch.cat(model_prediction, 0)
         return predictions

@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 
 from .generic_model import GenericModel
 from .lightning_model import LightningModel
+from .model_utils import _determine_device
 
 
 class GenericEnsembleModel(GenericModel, ABC):
@@ -24,6 +25,7 @@ class GenericEnsembleModel(GenericModel, ABC):
         n_estimators: int = 10,
     ):
         super(GenericEnsembleModel, self).__init__(model_class, model_config, trainer_config)
+        self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
     def init_model(self) -> List[Any]:
@@ -45,9 +47,11 @@ class GenericEnsembleModel(GenericModel, ABC):
         with torch.no_grad():
             predictions = []
             for model in self.current_model:
+                model = model.to(self.device)
                 model.eval()
                 model_prediction = []
                 for x, _ in loader:
+                    x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
             predictions = torch.stack(predictions)
