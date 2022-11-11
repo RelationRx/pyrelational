@@ -8,9 +8,9 @@ setup_requires = ["pytest-runner"]
 tests_require = ["pytest", "pytest-cov", "mock"]
 
 install_requires = [
-    "numpy>=1.20.0",
+    "numpy>=1.22.0",
     "pandas>=1.3.0",
-    "pytorch-lightning>=1.5",
+    "pytorch-lightning>=1.6",
     "torch>=1.9.0",
     "scikit-learn>=1.0.2",
     "tabulate>=0.7.0",
