@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Tests
+    # Name the Job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install basic dependencies
+        run: |
+          pip install --upgrade pip==21.3.0
+          pip install pytest-cov
+          pip install -r requirements.txt
+      - name: Test with pytest
+        run: |
+          python -m pytest --cache-clear --cov=pyrelational tests > pytest-coverage.txt
+      - name: Print error
+        if: failure()
+        run: |
+          cat pytest-coverage.txt
+      - run: sed -i '/<!-- CODECOV:START -->/,/<!-- CODECOV:END -->/d' README.md
+      - run: echo '<!-- CODECOV:START -->' >> README.md
+      - run: cat pytest-coverage.txt >> README.md
+      - run: echo '<!-- CODECOV:END -->' >> README.md
+      - name: push
+      - uses: actions-x/commit@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        with:
+          name: GitHub Actions Autocommitter
+          files: ./README.md
+          message: '[GITOPS] updated README with latest changes'
