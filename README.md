@@ -2,7 +2,7 @@
 
 <p>
     <a alt="coverage">
-        <img src="https://img.shields.io/badge/coverage-94%25-green" /></a>
+        <img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/RelationTherapeutics/99eba16a0a4fad7eadf98ef938afe38c/pytest-coverage-comment.json" /></a>
     <a alt="semver">
         <img src="https://img.shields.io/badge/semver-0.1.6-blue" /></a>
     <a alt="documentation" href="https://pyrelational.readthedocs.io/en/latest/index.html">
