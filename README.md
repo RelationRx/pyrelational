@@ -171,7 +171,3 @@ Make sure you have `sphinx` and `sphinx-rtd-theme` packages installed (`pip inst
 
 To generate the docs, `cd` into the `docs/` directory and run `make html`. This will generate the docs
 at `docs/_build/html/index.html`.
-
-### Code testing coverage
-
-<!-- Pytest Coverage Comment:Begin --><!-- Pytest Coverage Comment:End -->
