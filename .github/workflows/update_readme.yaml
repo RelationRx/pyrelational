@@ -6,14 +6,26 @@ jobs:
     name: Live Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install basic dependencies
+        run: |
+          pip install --upgrade pip==21.3.0
+          pip install pytest-cov
+          pip install -r requirements.txt
+      - name: Build coverage file
+        run: |
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=app tests/ | tee pytest-coverage.txt
 
       - name: Pytest coverage comment
         id: coverageComment
         uses: MishaKav/pytest-coverage-comment@main
         with:
-          pytest-coverage-path: ./data/pytest-coverage_4.txt
-          junitxml-path: ./data/pytest_1.xml
+          pytest-coverage-path: ./data/pytest-coverage.txt
+          junitxml-path: ./data/pytest.xml
 
       - name: Check the output coverage
         run: |
@@ -30,7 +42,7 @@ jobs:
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:
-          auth: ${{ secrets.PYTEST_COVERAGE_COMMENT }}
+          auth: ${{ secrets.GITHUB }}
           gistID: 5e90d640f8c212ab7bbac38f72323f80
           filename: pytest-coverage-comment__main.json
           label: Coverage Report
