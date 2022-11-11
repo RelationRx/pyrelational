@@ -18,14 +18,14 @@ jobs:
           pip install -r requirements.txt
       - name: Build coverage file
         run: |
-          python -m pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=pyrelational tests/ | tee pytest-coverage.txt
+          python -m pytest --junitxml=pytest.xml --cov=pyrelational tests/ | tee pytest-coverage.txt
 
       - name: Pytest coverage comment
         id: coverageComment
         uses: MishaKav/pytest-coverage-comment@main
         with:
-          pytest-coverage-path: ./data/pytest-coverage.txt
-          junitxml-path: ./data/pytest.xml
+          pytest-coverage-path: pytest-coverage.txt
+          junitxml-path: pytest.xml
 
       - name: Check the output coverage
         run: |
