@@ -42,7 +42,7 @@ jobs:
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:
-          auth: ${{ secrets.GITHUB }}
+          auth: ${{ secrets.GITHUB_TOKEN }}
           gistID: 5e90d640f8c212ab7bbac38f72323f80
           filename: pytest-coverage-comment__main.json
           label: Coverage Report
