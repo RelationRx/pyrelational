@@ -181,4 +181,4 @@ at `docs/_build/html/index.html`.
 
 ### Code testing coverage
 
-<!-- CODECOV:START --><!-- CODECOV:END -->
+<!-- Pytest Coverage Comment:Begin --><!-- Pytest Coverage Comment:End -->
