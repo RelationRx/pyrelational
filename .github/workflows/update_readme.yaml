@@ -1,7 +1,6 @@
 name: CI
 
-on:
-  push:
+on: [push, pull_request]
 
 jobs:
   # Set the job key. The key is displayed as the job name
@@ -28,12 +27,20 @@ jobs:
         if: failure()
         run: |
           cat pytest-coverage.txt
+
+
+  build:
+     name:
+     runs-on: ubuntu-latest
+     steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
       - run: sed -i '/<!-- CODECOV:START -->/,/<!-- CODECOV:END -->/d' README.md
       - run: echo '<!-- CODECOV:START -->' >> README.md
       - run: cat pytest-coverage.txt >> README.md
       - run: echo '<!-- CODECOV:END -->' >> README.md
       - name: push
-      - uses: actions-x/commit@v2
+        uses: actions-x/commit@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         with:
