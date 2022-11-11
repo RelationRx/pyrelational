@@ -28,11 +28,6 @@ jobs:
         run: |
           cat pytest-coverage.txt
 
-
-  build:
-     name:
-     runs-on: ubuntu-latest
-     steps:
       - name: Checkout source code
         uses: actions/checkout@v2
       - run: sed -i '/<!-- CODECOV:START -->/,/<!-- CODECOV:END -->/d' README.md
