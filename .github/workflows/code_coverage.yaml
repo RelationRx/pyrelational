@@ -1,9 +1,9 @@
-name: My Pytest Coverage Comment
+name: Pytest Coverage
 on:
-  push:
+  push: [main]
 jobs:
   live-test:
-    name: Live Test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -45,7 +45,7 @@ jobs:
           auth: ${{ secrets.GIST_TOKEN }}
           gistID: 99eba16a0a4fad7eadf98ef938afe38c
           filename: pytest-coverage-comment.json
-          label: Coverage Report
+          label: Test Coverage
           message: ${{ steps.coverageComment.outputs.coverage }}
           color: ${{ steps.coverageComment.outputs.color }}
           namedLogo: python
