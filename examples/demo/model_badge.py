@@ -5,12 +5,13 @@ About BADGE algorithm: https://arxiv.org/abs/1906.03671
 """
 
 import logging
+from typing import List
 
 import torch
 
 # Dataset and machine learning model
-from examples.utils.datasets import DiabetesDataset  # noqa: E402
-from examples.utils.ml_models import DiabetesRegression  # noqa: E402
+from examples.utils.datasets import BreastCancerDataset  # noqa: E402
+from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 
 # Active Learning package
 from pyrelational.data import GenericDataManager
@@ -19,8 +20,8 @@ from pyrelational.models import LightningModel
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 # dataset
-dataset = DiabetesDataset()
-train_ds, val_ds, test_ds = torch.utils.data.random_split(dataset, [400, 22, 20])
+dataset = BreastCancerDataset()
+train_ds, val_ds, test_ds = torch.utils.data.random_split(dataset, [500, 30, 39])
 train_indices = train_ds.indices
 val_indices = val_ds.indices
 test_indices = test_ds.indices
@@ -30,10 +31,19 @@ test_indices = test_ds.indices
 
 
 class BadgeLightningModel(LightningModel):
+    """Model compatible with BADGE strategy"""
+
     def __init__(self, model_class, model_config, trainer_config):
         super(BadgeLightningModel, self).__init__(model_class, model_config, trainer_config)
 
     def get_gradients(self, loader):
+        """
+        Get gradients for each sample in dataloader as outlined in BADGE paper.
+
+        Assumes the last layer is a linear layer and return_penultimate_embed/criterion is defined in the model class
+        :param loader: dataloader
+        :return: tensor of gradients for each sample
+        """
         if self.current_model is None:
             raise ValueError(
                 """
@@ -45,18 +55,22 @@ class BadgeLightningModel(LightningModel):
         model = self.current_model
         model.eval()
         gradients = []
-        for x, y in loader:  # loader should have batch size of 1
+        for x, _ in loader:
             model.zero_grad()
-            pred = model(x)
-            loss = model.criterion(y, pred)  # assumes criterion is defined in model class
-            loss.backward()
-            gradients.append(
-                torch.cat([w.grad.flatten() for w in list(model.parameters())[-3:-1]], 0)
-            )  # taking gradients from last layers (bias and weights)
-        return torch.stack(gradients)
+            logits = model(x)
+            class_preds = torch.argmax(logits, dim=1)
+            loss = model.criterion(logits, class_preds)  # assumes criterion is defined in model class
+            e = model.return_penultimate_embed(x)
+            # find gradients of bias in last layer
+            bias_grad = torch.autograd.grad(loss, logits)[0]
+            # find gradients of weights in last layer
+            weights_grad = torch.einsum("be,bc -> bec", e, bias_grad)
+            gradients.append(torch.cat([weights_grad.detach().cpu(), bias_grad.unsqueeze(1).detach().cpu()], 1))
+
+        return torch.cat(gradients, 0)
 
 
-model = BadgeLightningModel(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 5})
+model = BadgeLightningModel(model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 5})
 
 # data_manager and defining strategy
 data_manager = GenericDataManager(
@@ -64,15 +78,21 @@ data_manager = GenericDataManager(
     train_indices=train_indices,
     validation_indices=val_indices,
     test_indices=test_indices,
-    loader_batch_size=1,
-)  # make sure batch size is 1 for gradient estimates
+    loader_batch_size=16,
+)
 
 
 class BadgeStrategy(GenericActiveLearningStrategy):
-    def __init__(self, data_manager, model):
+    """Implementation of BADGE strategy."""
+
+    def __init__(self, data_manager: GenericDataManager, model: BadgeLightningModel):
         super(BadgeStrategy, self).__init__(data_manager, model)
 
-    def active_learning_step(self, num_annotate):
+    def active_learning_step(self, num_annotate: int) -> List[int]:
+        """
+        :param num_annotate: Number of samples to label
+        :return: indices of samples to label
+        """
         self.model.train(self.l_loader, self.valid_loader)
         u_grads = self.model.get_gradients(self.u_loader)
         l_grads = self.model.get_gradients(self.l_loader)

@@ -42,7 +42,7 @@ class GenericDataManager(object):
         hit_ratio_at: Optional[Union[int, float]] = None,
         random_seed: int = 1234,
         loader_batch_size: Union[int, str] = 1,
-        loader_shuffle: bool = False,
+        loader_shuffle: bool = True,
         loader_sampler: Optional[Sampler[int]] = None,
         loader_batch_sampler: Optional[Sampler[Sequence[int]]] = None,
         loader_num_workers: int = 0,
@@ -66,7 +66,7 @@ class GenericDataManager(object):
         :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
         :param random_seed: random seed
         :param loader_batch_size: batch size for dataloader
-        :param loader_shuffle: shuffle flag for dataloader
+        :param loader_shuffle: shuffle flag for labelled dataloader
         :param loader_sampler: a sampler for the dataloaders
         :param loader_batch_sampler: a batch sampler for the dataloaders
         :param loader_num_workers: number of cpu workers for dataloaders
@@ -118,6 +118,7 @@ class GenericDataManager(object):
         validation_indices: Optional[List[int]],
         test_indices: List[int],
     ) -> None:
+        """Ensures that there is no overlap between train/validation/test sets."""
         tt = set.intersection(set(train_indices), set(test_indices))
         tv, vt = None, None
         if validation_indices is not None:
@@ -214,6 +215,13 @@ class GenericDataManager(object):
         return self.dataset[idx]
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
+        """
+        Sets the top unlabelled indices according to the value of their labels.
+        Used for calculating hit ratio, which demonstrates
+        how quickly the samples in this set are recovered for labelling.
+
+        :param percentage: Top percentage of samples to be considered in top set
+        """
         if percentage is None:
             self.top_unlabelled = None
         else:
@@ -227,20 +235,29 @@ class GenericDataManager(object):
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
     def get_train_set(self) -> Dataset:
+        """Get train set from full dataset and train indices."""
         train_subset = Subset(self.dataset, self.train_indices)
         return train_subset
 
     def get_validation_set(self) -> Optional[Subset]:
+        """Get validation set from full dataset and validation indices."""
         if self.validation_indices is None:
             return None
         validation_subset = Subset(self.dataset, self.validation_indices)
         return validation_subset
 
     def get_test_set(self) -> Subset:
+        """Get test set from full dataset and test indices."""
         test_subset = Subset(self.dataset, self.test_indices)
         return test_subset
 
     def get_train_loader(self, full: bool = False) -> DataLoader:
+        """
+        Get train dataloader. Returns full train loader, else return labelled loader
+
+        :param full: whether to use full dataset with unlabelled included
+        :return: loader to use for training
+        """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
             train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
@@ -249,19 +266,23 @@ class GenericDataManager(object):
             return self.get_labelled_loader()
 
     def get_validation_loader(self) -> Optional[DataLoader]:
+        """Get validation dataloader"""
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
         return self.create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader:
+        """Get test dataloader"""
         return self.create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader:
+        """Get unlabelled dataloader"""
         return self.create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader:
-        return self.create_loader(Subset(self.dataset, self.l_indices))
+        """Get labelled dataloader"""
+        return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def process_random(self, seed=0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
@@ -294,6 +315,7 @@ class GenericDataManager(object):
         self.u_indices = list(set(self.u_indices) - set(indices))
 
     def percentage_labelled(self) -> float:
+        """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
         return num_labelled / float(total_len)
@@ -320,14 +342,21 @@ class GenericDataManager(object):
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return res
 
-    def create_loader(self, dataset: Dataset) -> DataLoader:
-        """Utility to help create dataloader with specifications set at initialisation"""
-        dataset = self._check_dataset_has_len(dataset)
+    def create_loader(self, dataset: Dataset, shuffle: bool = False) -> DataLoader:
+        """
+        Utility to help create dataloader with specifications set at initialisation.
+
+        :param dataset: Pytorch dataset to be used in DataLoader
+        :param shuffle: whether to shuffle the data in dataloder
+
+        :return Pytorch DataLoader with correct specifications
+
+        """
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(
             dataset,
             batch_size=batch_size,
-            shuffle=self.loader_shuffle,
+            shuffle=shuffle,
             sampler=self.loader_sampler,
             batch_sampler=self.loader_batch_sampler,
             num_workers=self.loader_num_workers,

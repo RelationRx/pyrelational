@@ -20,10 +20,10 @@ def classification_least_confidence(prob_dist: torch.Tensor, axis: int = -1) -> 
     The least confidence uncertainty is the normalised difference between
     the most confident prediction and 100 percent confidence
 
-    Args:
-        prob_dist (pytorch tensor): real number tensor whose elements add to 1.0
-        sorted (bool): if the probability distribution is pre-sorted from
-            largest to smallest
+    :param prob_dist: real number tensor whose elements add to 1.0 along an axis
+    :param axis: axis of prob_dist where probabilities add to 1
+
+    :return: tensor with normalised least confidence scores
     """
     assert torch.allclose(
         prob_dist.sum(axis), torch.tensor(1.0)
@@ -41,10 +41,10 @@ def classification_margin_confidence(prob_dist: torch.Tensor, axis: int = -1) ->
     The margin confidence uncertainty is the difference between the top two
     most confident predictions
 
-    Args:
-        prob_dist (pytorch tensor): real number tensor whose elements add to 1.0
-        sorted (bool): if the probability distribution is pre-sorted from
-            largest to smallest
+    :param prob_dist: real number tensor whose elements add to 1.0 along an axis
+    :param axis: axis of prob_dist where probabilities add to 1
+
+    :return: tensor with margin confidence scores
     """
     assert torch.allclose(
         prob_dist.sum(axis), torch.tensor(1.0)
@@ -62,10 +62,10 @@ def classification_ratio_confidence(prob_dist: torch.Tensor, axis: int = -1) -> 
     The ratio confidence uncertainty is the ratio between the top two most
     confident predictions
 
-    Args:
-        prob_dist (pytorch tensor): real number tensor whose elements add to 1.0
-        sorted (bool): if the probability distribution is pre-sorted from
-            largest to smallest
+    :param prob_dist: real number tensor whose elements add to 1.0 along an axis
+    :param axis: axis of prob_dist where probabilities add to 1
+
+    :return: tensor of ratio confidence uncertainties
     """
     assert torch.allclose(
         prob_dist.sum(axis), torch.tensor(1.0)
@@ -84,8 +84,10 @@ def classification_entropy(prob_dist: torch.Tensor, axis: int = -1) -> torch.Ten
 
     :math:`- \frac{1}{\log(n)} \sum_{i}^{n} p_i \log (p_i)`
 
-    Args:
-        prob_dist (pytorch tensor): real number tensor whose elements add to 1.0
+    :param prob_dist: real number tensor whose elements add to 1.0 along an axis
+    :param axis: axis of prob_dist where probabilities add to 1
+
+    :return: tensor of entropy based uncertainties
     """
     assert torch.allclose(
         prob_dist.sum(axis), torch.tensor(1.0)
@@ -125,9 +127,11 @@ def softmax(scores: torch.Tensor, base: float = math.e, axis: int = -1) -> torch
 
     Assumes input is a pytorch tensor: tensor([1.0, 4.0, 2.0, 3.0])
 
-    Args
-        prediction (pytorch tensor) a pytorch tensor of any positive/negative real numbers.
-        base (float) the base for the exponential (default e)
+    :param scores: (pytorch tensor) a pytorch tensor of any positive/negative real numbers.
+    :param base: the base for the exponential (default e)
+    :param: axis to apply softmax on scores
+
+    :return: tensor of softmaxed scores
     """
     exps = base ** scores.float()  # exponential for each value in array
     sum_exps = torch.sum(exps, dim=axis, keepdim=True)  # sum of all exponentials
