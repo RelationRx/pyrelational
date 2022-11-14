@@ -9,7 +9,19 @@ from torch.utils.data import Dataset
 from pyrelational.data.data_manager import GenericDataManager
 
 
-def get_regression_dataset(hit_ratio_at=None):
+def get_regression_dataset(
+    hit_ratio_at=None, use_train: bool = True, use_validation: bool = True, use_test: bool = True
+) -> GenericDataManager:
+    """
+    Get datamanager which wraps diabetes regression dataset
+
+    :param hit_ratio_at: threshold for hit ratio
+    :param use_train: whether to use provided train indices in datamanager
+    :param use_validation: whether to use provided validation indices in datamanager
+    :param use_test: whether to use provided test indices in datamanager
+
+    :return: datamanager
+    """
     pl.seed_everything(0)
 
     ds = DiabetesDataset()
@@ -19,9 +31,9 @@ def get_regression_dataset(hit_ratio_at=None):
     test_indices = test_ds.indices
     return GenericDataManager(
         ds,
-        train_indices=train_indices,
-        validation_indices=valid_indices,
-        test_indices=test_indices,
+        train_indices=train_indices if use_train else None,
+        validation_indices=valid_indices if use_validation else None,
+        test_indices=test_indices if use_test else None,
         loader_batch_size=10,
         hit_ratio_at=hit_ratio_at,
     )
