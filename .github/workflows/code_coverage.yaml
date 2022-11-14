@@ -1,6 +1,9 @@
 name: Pytest Coverage
 on:
-  push: [main]
+  push:
+    branches:
+      - main
+
 jobs:
   live-test:
     name: Test
