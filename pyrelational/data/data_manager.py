@@ -177,7 +177,7 @@ class GenericDataManager(object):
         when only a partial subset of them is supplied
 
         .. image:: docs/images/data_indices_diagram.png
-        
+
 
         :param train_indices: list of indices in dataset for train set
         :param validation_indices: list of indices in dataset for validation set

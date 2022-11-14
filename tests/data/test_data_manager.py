@@ -1,11 +1,16 @@
 """Unit tests for data manager
 """
 from typing import Tuple
+
 import pytest
 import torch
 
 from pyrelational.data import GenericDataManager
-from tests.test_utils import DiabetesDataset, get_classification_dataset, get_regression_dataset
+from tests.test_utils import (
+    DiabetesDataset,
+    get_classification_dataset,
+    get_regression_dataset,
+)
 
 
 def test_init_and_basic_details():
@@ -52,6 +57,7 @@ def test_get_dataset_size():
     ds_size = len(gdm)
     assert ds_size == 569
 
+
 def test_train_and_test_indices_both_supplied():
     """Test if train and test indices are both supplied, that remaining indices are unused."""
 
@@ -61,7 +67,7 @@ def test_train_and_test_indices_both_supplied():
     assert len(valid_dm.validation_indices) == 50
     assert len(valid_dm.test_indices) == 42
     assert len(no_valid_dm.train_indices) == 350
-    assert no_valid_dm.validation_indices == None
+    assert no_valid_dm.validation_indices is None
     assert len(no_valid_dm.test_indices) == 42
 
 
