@@ -76,7 +76,7 @@ class GenericDataManager(object):
         :param loader_timeout: timeout value for dataloaders
         """
         super(GenericDataManager, self).__init__()
-        dataset = _check_dataset_has_len(dataset)
+        dataset = self._check_dataset_has_len(dataset)
 
         self.dataset = dataset
 
@@ -175,6 +175,13 @@ class GenericDataManager(object):
     ) -> None:
         """This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
+
+        .. image:: docs/images/Data_indices_diagram.png
+        
+
+        :param train_indices: list of indices in dataset for train set
+        :param validation_indices: list of indices in dataset for validation set
+        :param test_indices: list of indices in dataset for test set
         """
 
         remaining_indices = set(range(len(self.dataset))) - set.union(
@@ -315,7 +322,7 @@ class GenericDataManager(object):
 
     def create_loader(self, dataset: Dataset) -> DataLoader:
         """Utility to help create dataloader with specifications set at initialisation"""
-        dataset = _check_dataset_has_len(dataset)
+        dataset = self._check_dataset_has_len(dataset)
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(
             dataset,
@@ -346,8 +353,9 @@ class GenericDataManager(object):
 
         return str_out
 
-
-def _check_dataset_has_len(dataset: Dataset) -> SizedDataset:
-    if not isinstance(dataset, Sized):
-        raise AttributeError("dataset must have __len__ method defined")
-    return cast(SizedDataset, dataset)
+    @staticmethod
+    def _check_dataset_has_len(dataset: Dataset) -> SizedDataset:
+        """Check Dataset is Sized (has a __len__ method)"""
+        if not isinstance(dataset, Sized):
+            raise AttributeError("dataset must have __len__ method defined")
+        return cast(SizedDataset, dataset)
