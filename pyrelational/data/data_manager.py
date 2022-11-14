@@ -176,7 +176,7 @@ class GenericDataManager(object):
         """This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
 
-        .. image:: docs/images/Data_indices_diagram.png
+        .. image:: docs/images/data_indices_diagram.png
         
 
         :param train_indices: list of indices in dataset for train set
