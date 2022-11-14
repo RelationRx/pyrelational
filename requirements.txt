@@ -16,6 +16,5 @@ gpytorch==1.4.0
 pyreadr==0.4.4
 xlrd==2.0.1
 openpyxl==3.0.9
-pytest-cov==3.0.0
+pytest-cov
 protobuf~=3.19.0
-mypy==0.961
