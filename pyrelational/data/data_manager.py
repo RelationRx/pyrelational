@@ -30,6 +30,37 @@ class SizedDataset(Dataset, Sized):
 
 
 class GenericDataManager(object):
+    """
+    DataManager for active learning pipelines
+
+    A diagram showing how the train/test indices are resolved:
+
+    .. figure:: /_static/data_indices_diagram.png
+        :align: center
+        :width: 50%
+    |
+    :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+    :param train_indices: An iterable of indices mapping to training sample indices in the dataset
+    :param labelled_indices: An iterable of indices  mapping to labelled training samples
+    :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
+    :param validation_indices: An iterable of indices to observations used for model validation
+    :param test_indices: An iterable of indices to observations in the input dataset used for
+        test performance of the model
+    :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
+        labelled set (should either be the number of samples or ratio w.r.t. train set)
+    :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
+    :param random_seed: random seed
+    :param loader_batch_size: batch size for dataloader
+    :param loader_shuffle: shuffle flag for labelled dataloader
+    :param loader_sampler: a sampler for the dataloaders
+    :param loader_batch_sampler: a batch sampler for the dataloaders
+    :param loader_num_workers: number of cpu workers for dataloaders
+    :param loader_collate_fn: collate fn for dataloaders
+    :param loader_pin_memory: pin memory flag for dataloaders
+    :param loader_drop_last: drop last flag for dataloaders
+    :param loader_timeout: timeout value for dataloaders
+    """
+
     def __init__(
         self,
         dataset: Dataset,
@@ -51,30 +82,6 @@ class GenericDataManager(object):
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
-        """
-        DataManager for active learning pipelines
-
-        :param dataset: A PyTorch dataset whose indices refer to individual samples of study
-        :param train_indices: An iterable of indices mapping to training sample indices in the dataset
-        :param labelled_indices: An iterable of indices  mapping to labelled training samples
-        :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
-        :param validation_indices: An iterable of indices to observations used for model validation
-        :param test_indices: An iterable of indices to observations in the input dataset used for
-        test performance of the model
-        :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
-        labelled set (should either be the number of samples or ratio w.r.t. train set)
-        :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
-        :param random_seed: random seed
-        :param loader_batch_size: batch size for dataloader
-        :param loader_shuffle: shuffle flag for labelled dataloader
-        :param loader_sampler: a sampler for the dataloaders
-        :param loader_batch_sampler: a batch sampler for the dataloaders
-        :param loader_num_workers: number of cpu workers for dataloaders
-        :param loader_collate_fn: collate fn for dataloaders
-        :param loader_pin_memory: pin memory flag for dataloaders
-        :param loader_drop_last: drop last flag for dataloaders
-        :param loader_timeout: timeout value for dataloaders
-        """
         super(GenericDataManager, self).__init__()
         dataset = self._check_dataset_has_len(dataset)
 
@@ -176,8 +183,6 @@ class GenericDataManager(object):
     ) -> None:
         """This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
-
-        .. image:: docs/images/data_indices_diagram.png
 
 
         :param train_indices: list of indices in dataset for train set
