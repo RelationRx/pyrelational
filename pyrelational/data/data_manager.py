@@ -5,10 +5,8 @@ from typing import (
     Any,
     Callable,
     Collection,
-    Iterable,
     List,
     Optional,
-    Protocol,
     Sequence,
     Sized,
     Tuple,
@@ -21,12 +19,10 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
+from pyrelational.types import SizedDataset
+
 T = TypeVar("T")
 logger = logging.getLogger()
-
-
-class SizedDataset(Dataset, Sized):
-    ...
 
 
 class GenericDataManager(object):
