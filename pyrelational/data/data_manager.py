@@ -79,7 +79,7 @@ class GenericDataManager(object):
         loader_timeout: float = 0,
     ):
         super(GenericDataManager, self).__init__()
-        dataset = self._check_dataset_has_len(dataset)
+        dataset = self._check_is_sized(dataset)
 
         self.dataset = dataset
 
@@ -384,7 +384,7 @@ class GenericDataManager(object):
         return str_out
 
     @staticmethod
-    def _check_dataset_has_len(dataset: Dataset) -> SizedDataset:
+    def _check_is_sized(dataset: Dataset) -> SizedDataset:
         """Check Dataset is Sized (has a __len__ method)"""
         if not isinstance(dataset, Sized):
             raise AttributeError("dataset must have __len__ method defined")
