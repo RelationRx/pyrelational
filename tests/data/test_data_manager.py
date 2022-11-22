@@ -109,8 +109,25 @@ def test_no_test_and_no_train_indices():
     assert str(case5.value) == "No train or test specified, too ambigious to set values"
 
 
+def test_empty_test_set():
+    """Test error occurs when we produce a datamanager with an empty test set."""
+    ds = DiabetesDataset()
+    train_ds, valid_ds, _ = torch.utils.data.random_split(ds, [400, 42, 0])
+    valid_indices = valid_ds.indices
+    train_indices = train_ds.indices
+    with pytest.raises(ValueError) as e_info:
+        GenericDataManager(
+            ds,
+            validation_indices=valid_indices,
+            train_indices=train_indices,
+            loader_batch_size=10,
+        )
+    assert str(e_info.value) == "The test set is empty"
+
+
 def test_empty_train_set():
-    """Testing that we throw an error when we produce a datamanager with
+    """
+    Testing that we throw an error when we produce a datamanager with
     an empty train set
     """
 
@@ -168,3 +185,7 @@ def test_resolving_dataset_check_split_leaks():
             loader_batch_size=10,
         )
     assert str(e_info.value) == "There is an overlap between the split indices supplied"
+
+
+if __name__ == "__main__":
+    test_empty_test_set()

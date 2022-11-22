@@ -6,6 +6,7 @@ from typing import (
     Callable,
     Collection,
     List,
+    Literal,
     Optional,
     Sequence,
     Sized,
@@ -130,12 +131,15 @@ class GenericDataManager(object):
         if tv or tt or vt:
             raise ValueError("There is an overlap between the split indices supplied")
 
-    def _ensure_no_empty_train(self, train_indices: List[int]) -> None:
-        """ensures that the train set is not empty, as there is no need to
-        do anything if its empty
+    def _ensure_not_empty(self, mode: Literal["train", "test"], indices: List[int]) -> None:
         """
-        if len(train_indices) == 0:
-            raise ValueError("The train set is empty")
+        Ensures that train or test set is not empty.
+
+        :param mode: either "train" or "test"
+        :param indices: either train or test indices
+        """
+        if len(indices) == 0:
+            raise ValueError(f"The {mode} set is empty")
 
     def _ensure_no_l_u_intersection(self, labelled_indices: List[int], unlabelled_indices: List[int]):
         if set.intersection(set(labelled_indices), set(unlabelled_indices)):
@@ -201,7 +205,8 @@ class GenericDataManager(object):
         elif remaining_indices:
             warnings.warn(f"{len(remaining_indices)} indices are not found in any split")
 
-        self._ensure_no_empty_train(train_indices)
+        self._ensure_not_empty("train", train_indices)
+        self._ensure_not_empty("test", test_indices)
         self._ensure_no_split_leaks(train_indices, validation_indices, test_indices)
         self.train_indices = train_indices
         self.validation_indices = validation_indices
