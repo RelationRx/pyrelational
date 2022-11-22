@@ -1,15 +1,8 @@
 # PyRelationAL
 
-<p>
-    <a alt="coverage">
-        <img src="https://img.shields.io/badge/coverage-94%25-green" /></a>
-    <a alt="semver">
-        <img src="https://img.shields.io/badge/semver-0.1.6-blue" /></a>
-    <a alt="documentation" href="https://pyrelational.readthedocs.io/en/latest/index.html">
-        <img src="https://img.shields.io/badge/documentation-online-orange" /></a>
-    <a alt="pypi" href="https://pypi.org/project/pyrelational/">
-        <img src="https://img.shields.io/badge/pypi-online-yellow" /></a>
-</p>
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/RelationTherapeutics/99eba16a0a4fad7eadf98ef938afe38c/raw/pytest-coverage-comment.json)
+[![PyPI version](https://badge.fury.io/py/pyrelational.svg)](https://badge.fury.io/py/pyrelational)
+[![Documentation Status](https://readthedocs.org/projects/pyrelational/badge/?version=stable)](https://pyrelational.readthedocs.io/en/stable/?badge=stable)
 
 PyRelationAL is an open source Python library for the rapid and reliable construction of active learning (AL) pipelines and strategies. The toolkit offers a modular design for a flexible workflow that enables active learning with as little change to your models and datasets as possible. The package is primarily aimed at researchers so that they can rapidly reimplement, adapt, and create novel active learning strategies. For more information on how we achieve this you can consult the sections below, our comprehensive docs, or our paper. PyRelationAL is principally designed with PyTorch workflows in mind but can easily be extended to work with other ML frameworks.
 
