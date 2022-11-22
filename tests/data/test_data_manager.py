@@ -185,7 +185,3 @@ def test_resolving_dataset_check_split_leaks():
             loader_batch_size=10,
         )
     assert str(e_info.value) == "There is an overlap between the split indices supplied"
-
-
-if __name__ == "__main__":
-    test_empty_test_set()
