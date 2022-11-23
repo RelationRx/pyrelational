@@ -116,8 +116,8 @@ class GenericDataManager(object):
         self._ensure_no_l_or_u_leaks()
         self._top_unlabelled_set(hit_ratio_at)
 
+    @staticmethod
     def _ensure_no_split_leaks(
-        self,
         train_indices: List[int],
         validation_indices: Optional[List[int]],
         test_indices: List[int],
@@ -131,7 +131,8 @@ class GenericDataManager(object):
         if tv or tt or vt:
             raise ValueError("There is an overlap between the split indices supplied")
 
-    def _ensure_not_empty(self, mode: Literal["train", "test"], indices: List[int]) -> None:
+    @staticmethod
+    def _ensure_not_empty(mode: Literal["train", "test"], indices: List[int]) -> None:
         """
         Ensures that train or test set is not empty.
 
@@ -141,7 +142,8 @@ class GenericDataManager(object):
         if len(indices) == 0:
             raise ValueError(f"The {mode} set is empty")
 
-    def _ensure_no_l_u_intersection(self, labelled_indices: List[int], unlabelled_indices: List[int]):
+    @staticmethod
+    def _ensure_no_l_u_intersection(labelled_indices: List[int], unlabelled_indices: List[int]):
         if set.intersection(set(labelled_indices), set(unlabelled_indices)):
             raise ValueError("There is overlap between labelled and unlabelled samples")
 
