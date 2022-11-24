@@ -1,10 +1,16 @@
 """Unit tests for data manager
 """
+from typing import Tuple
+
 import pytest
 import torch
 
 from pyrelational.data import GenericDataManager
-from tests.test_utils import DiabetesDataset, get_classification_dataset
+from tests.test_utils import (
+    DiabetesDataset,
+    get_classification_dataset,
+    get_regression_dataset,
+)
 
 
 def test_init_and_basic_details():
@@ -52,36 +58,76 @@ def test_get_dataset_size():
     assert ds_size == 569
 
 
-def test_resolving_dataset_indices():
-    """Testing different user inputs to dataset split indices"""
+def test_train_and_test_indices_both_supplied():
+    """Test if train and test indices are both supplied, that remaining indices are unused."""
+
+    valid_dm = get_regression_dataset(use_train=True, use_validation=True, use_test=True)
+    no_valid_dm = get_regression_dataset(use_train=True, use_validation=False, use_test=True)
+    assert len(valid_dm.train_indices) == 350
+    assert len(valid_dm.validation_indices) == 50
+    assert len(valid_dm.test_indices) == 42
+    assert len(no_valid_dm.train_indices) == 350
+    assert no_valid_dm.validation_indices is None
+    assert len(no_valid_dm.test_indices) == 42
+
+
+def test_no_train_indices():
+    """Test if no train indices are supplied (but test indices are), remaining indices become train set."""
     ds = DiabetesDataset()
+    valid_dm = get_regression_dataset(use_train=False, use_validation=True, use_test=True)
+    no_valid_dm = get_regression_dataset(use_train=False, use_validation=False, use_test=True)
+    assert len(valid_dm.train_indices) == len(ds) - 42 - 50
+    assert len(no_valid_dm.train_indices) == len(ds) - 42
 
-    train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [350, 50, 42])
+
+def test_no_test_indices():
+    """Test if no test indices are supplied (but train indices are), remaining indices become test set."""
+    ds = DiabetesDataset()
+    valid_dm = get_regression_dataset(use_train=True, use_validation=True, use_test=False)
+    no_valid_dm = get_regression_dataset(use_train=True, use_validation=False, use_test=False)
+    assert len(valid_dm.test_indices) == len(ds) - 350 - 50
+    assert len(no_valid_dm.test_indices) == len(ds) - 350
+
+
+def test_no_test_and_no_train_indices():
+    """Test if no test and no train indices are supplied, error is raised."""
+    ds = DiabetesDataset()
+    _, valid_ds, _ = torch.utils.data.random_split(ds, [350, 50, 42])
     valid_indices = valid_ds.indices
-
-    # Check case 5 only validation raises error
     with pytest.raises(ValueError) as case5:
         GenericDataManager(
-            ds,
+            DiabetesDataset(),
             validation_indices=valid_indices,
             loader_batch_size=10,
         )
     assert str(case5.value) == "No train or test specified, too ambigious to set values"
-
-    # Check case 5 only validation raises error
-    with pytest.raises(ValueError) as case6:
+    with pytest.raises(ValueError) as case5:
         GenericDataManager(
-            ds,
-            test_indices=test_ds.indices,
+            DiabetesDataset(),
             loader_batch_size=10,
         )
-    assert str(case6.value) == "No train or validation specified, too ambigious to set values"
+    assert str(case5.value) == "No train or test specified, too ambigious to set values"
 
-    # TODO HANDLE OTHER CASES
+
+def test_empty_test_set():
+    """Test error occurs when we produce a datamanager with an empty test set."""
+    ds = DiabetesDataset()
+    train_ds, valid_ds, _ = torch.utils.data.random_split(ds, [400, 42, 0])
+    valid_indices = valid_ds.indices
+    train_indices = train_ds.indices
+    with pytest.raises(ValueError) as e_info:
+        GenericDataManager(
+            ds,
+            validation_indices=valid_indices,
+            train_indices=train_indices,
+            loader_batch_size=10,
+        )
+    assert str(e_info.value) == "The test set is empty"
 
 
 def test_empty_train_set():
-    """Testing that we throw an error when we produce a datamanager with
+    """
+    Testing that we throw an error when we produce a datamanager with
     an empty train set
     """
 
@@ -138,4 +184,4 @@ def test_resolving_dataset_check_split_leaks():
             test_indices=test_indices,
             loader_batch_size=10,
         )
-    assert str(e_info.value) == "There is overlap between the split indices supplied"
+    assert str(e_info.value) == "There is an overlap between the split indices supplied"
