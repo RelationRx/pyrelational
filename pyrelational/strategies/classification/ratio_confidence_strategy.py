@@ -16,6 +16,6 @@ class RatioConfidenceStrategy(GenericClassificationStrategy):
     """Implements Ratio Confidence Strategy whereby unlabelled samples are scored and queried based on
     the ratio confidence for classification scorer"""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel):
-        super(RatioConfidenceStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(RatioConfidenceStrategy, self).__init__()
         self.scoring_fn = classification_ratio_confidence

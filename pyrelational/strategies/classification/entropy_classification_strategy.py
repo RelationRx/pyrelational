@@ -16,6 +16,6 @@ class EntropyClassificationStrategy(GenericClassificationStrategy):
     """Implements Entropy Classification Strategy whereby unlabelled samples are scored and queried based on
     entropy"""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel):
-        super(EntropyClassificationStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(EntropyClassificationStrategy, self).__init__()
         self.scoring_fn = classification_entropy

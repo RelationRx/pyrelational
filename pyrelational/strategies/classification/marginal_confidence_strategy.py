@@ -15,6 +15,6 @@ class MarginalConfidenceStrategy(GenericClassificationStrategy):
     """Implements Marginal Confidence Strategy whereby unlabelled samples are scored and queried based on
     the marginal confidence for classification scorer"""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel):
-        super(MarginalConfidenceStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(MarginalConfidenceStrategy, self).__init__()
         self.scoring_fn = classification_margin_confidence
