@@ -127,6 +127,8 @@ class GenericPipeline(ABC):
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
+        defaultKwargs = self.__dict__
+        kwargs = {**defaultKwargs, **kwargs}  # update kwargs with any user defined ones
         observations_for_labelling = self.strategy.active_learning_step(*args, **self.strategy._filter_kwargs(**kwargs))
         return observations_for_labelling
 
@@ -159,6 +161,8 @@ class GenericPipeline(ABC):
         oracle_interface: object = None,
         test_loader: DataLoader = None,
         return_query_history: bool = False,
+        *strategy_args,
+        **strategy_kwargs,
     ) -> Optional[Dict]:
         """Given the number of samples to annotate and a test loader
         this method will go through the entire active learning process of training
@@ -182,7 +186,9 @@ class GenericPipeline(ABC):
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
-            observations_for_labelling = self.strategy.active_learning_step(num_annotate)
+            observations_for_labelling = self.active_learning_step(
+                num_annotate=num_annotate, *strategy_args, **strategy_kwargs
+            )
             if return_query_history:
                 query_history[iter_count] = observations_for_labelling
 

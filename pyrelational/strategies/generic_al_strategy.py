@@ -63,12 +63,10 @@ class GenericActiveLearningStrategy(ABC):
             filtered_kwargs = kwargs
         return filtered_kwargs
 
-    def __repr__(self) -> str:
-        """Pretty prints strategy"""
-        str_out = f"{self.__name__}"
-        return str_out
+    def __repr__(self):
+        return self.__class__.__name__
 
     def __str__(self) -> str:
         """Pretty prints strategy"""
-        str_out = f"Strategy: {self.__name__}"
+        str_out = f"Strategy: {self.__repr__}"
         return str_out
