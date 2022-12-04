@@ -12,13 +12,15 @@ class UpperConfidenceBoundStrategy(GenericActiveLearningStrategy):
     """Implements Upper Confidence Bound Strategy whereby unlabelled samples are scored and queried based on the
     UCB scorer"""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel, kappa: float = 1.0):
-        super(UpperConfidenceBoundStrategy, self).__init__(data_manager, model)
+    def __init__(self, kappa: float = 1.0):
+        super(UpperConfidenceBoundStrategy, self).__init__()
         self.kappa = kappa
 
-    def active_learning_step(self, num_annotate: int) -> List[int]:
-        self.model.train(self.l_loader, self.valid_loader)
-        output = self.model(self.u_loader)
+    def active_learning_step(
+        self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
+    ) -> List[int]:
+        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
+        output = model(data_manager.get_unlabelled_loader())
         uncertainty = regression_upper_confidence_bound(x=output, kappa=self.kappa)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
-        return [self.u_indices[i] for i in ixs[:num_annotate]]
+        return [data_manager.u_indices[i] for i in ixs[:num_annotate]]

@@ -15,8 +15,8 @@ class BALDStrategy(GenericRegressionStrategy):
     """Implements BALD Strategy whereby unlabelled samples are queried based on mutual information score based on
     multiple estimator models."""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel):
-        super(BALDStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(BALDStrategy, self).__init__()
         self.scoring_fn = regression_bald
 
 
@@ -27,18 +27,18 @@ class SoftBALDStrategy(BALDStrategy):
 
     def __init__(
         self,
-        data_manager: GenericDataManager,
-        model: GenericModel,
         temperature: float = 0.5,
     ):
-        super(SoftBALDStrategy, self).__init__(data_manager, model)
+        super(SoftBALDStrategy, self).__init__()
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)
 
-    def active_learning_step(self, num_annotate: int) -> List[int]:
-        self.model.train(self.l_loader, self.valid_loader)
-        output = self.model(self.u_loader)
+    def active_learning_step(
+        self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
+    ) -> List[int]:
+        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
+        output = model(data_manager.get_unlabelled_loader())
         scores = self.scoring_fn(x=output) / self.T
         scores = torch.softmax(scores, -1).numpy()
-        num_annotate = min(num_annotate, len(self.u_indices))
-        return np.random.choice(self.u_indices, size=num_annotate, replace=False, p=scores).tolist()
+        num_annotate = min(num_annotate, len(data_manager.u_indices))
+        return np.random.choice(data_manager.u_indices, size=num_annotate, replace=False, p=scores).tolist()
