@@ -13,11 +13,13 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from torch.utils.data import Dataset
 
+# Data and data manager
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data import GenericDataManager
 
-# pyrelational
+# Model, strategy, and pipeline
 from pyrelational.models import GenericModel
+from pyrelational.pipeline.generic_pipeline import GenericPipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 
@@ -81,16 +83,20 @@ model_config = {"n_estimators": 10, "bootstrap": False}
 trainer_config = {}
 model = SKRFC(RandomForestClassifier, model_config, trainer_config)
 
-# Run active learning strategy
-al_strategy = LeastConfidenceStrategy(data_manager, model)
+# Instantiate an active learning strategy
+al_strategy = LeastConfidenceStrategy()
 
-# performance with the full trainset labelled
-al_strategy.theoretical_performance()
+# Given that we have a data manager, a model, and an active learning strategy
+# we may create an active learning pipeline
+pipeline = GenericPipeline(data_manager=data_manager, model=model, strategy=al_strategy)
+
+# theoretical performance if the full trainset is labelled
+pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = al_strategy.active_learning_step(num_annotate=100)
-al_strategy.active_learning_update(to_annotate, oracle_interface=None, update_tag="Manual Update")
+to_annotate = pipeline.active_learning_step(num_annotate=100)
+pipeline.active_learning_update(to_annotate, oracle_interface=None, update_tag=f"Manual Update with {str(al_strategy)}")
 
 # Annotating data step by step until the trainset is fully annotated
-al_strategy.full_active_learning_run(num_annotate=100)
-print(al_strategy)
+pipeline.full_active_learning_run(num_annotate=20)
+print(pipeline)
