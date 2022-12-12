@@ -51,16 +51,6 @@ class GenericActiveLearningStrategy(ABC):
         filtered_kwargs = {
             k: v for k, v in kwargs.items() if (k in _sign_params.keys() and _sign_params[k].kind not in _params)
         }
-
-        exists_var_keyword = any(v.kind == inspect.Parameter.VAR_KEYWORD for v in _sign_params.values())
-        # if no kwargs filtered, return all kwargs as default
-        if not filtered_kwargs and not exists_var_keyword:
-            # no kwargs in update signature -> don't return any kwargs
-            filtered_kwargs = {}
-        elif exists_var_keyword:
-            # kwargs found in update signature -> return all kwargs to be sure to not omit any.
-            # filtering logic is likely implemented within the update call.
-            filtered_kwargs = kwargs
         return filtered_kwargs
 
     def __repr__(self):
