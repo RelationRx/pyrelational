@@ -200,7 +200,7 @@ class GenericDataManager(object):
 
         if train_indices is None:
             if test_indices is None:
-                raise ValueError("No train or test specified, too ambigious to set values")
+                raise ValueError("No train or test specified, too ambiguous to set values")
             train_indices = list(remaining_indices)
         elif test_indices is None:
             test_indices = list(remaining_indices)
