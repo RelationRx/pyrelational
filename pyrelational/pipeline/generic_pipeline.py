@@ -86,11 +86,12 @@ class GenericPipeline(ABC):
 
         # use test loader in data_manager if there is one
         result = self.model.test(self.test_loader if test_loader is None else test_loader)
-        if self.data_manager.top_unlabelled is not None:
-            result["hit_ratio"] = np.nan
+        result = self.compute_hit_ratio(result)
         self.performances["full"] = result
+
         # make sure that theoretical best model is not stored
         self.model.current_model = None
+
         return self.performances["full"]
 
     def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
@@ -108,11 +109,18 @@ class GenericPipeline(ABC):
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
 
+        # use test loader in data_manager if there is one
         result = self.model.test(self.test_loader if test_loader is None else test_loader)
-            result = self.model.test(self.test_loader)
-        else:
-            result = self.model.test(test_loader)
+        result = self.compute_hit_ratio(result, query)
+        return result
 
+    def compute_hit_ratio(self, result: Dict, query: Optional[List[int]] = None) -> Dict:
+        """Utility function for computing the hit ratio as used within the current performance
+        and theoretical performance methods.
+
+        :param result: Dict or Dict-like of metrics
+        :param query: List of indices selected for labelling. Usef for calculating hit ratio metric
+        """
         if self.data_manager.top_unlabelled is not None:
             result["hit_ratio"] = (
                 np.nan
