@@ -6,7 +6,7 @@ from pyrelational.strategies.task_agnostic import (
     RelativeDistanceStrategy,
     RepresentativeSamplingStrategy,
 )
-from tests.test_utils import DiabetesRegression, get_regression_dataset
+from tests.test_utils import DiabetesRegressionModel, get_regression_dataset
 
 
 def test_diversity_strategies():
@@ -26,5 +26,5 @@ def test_diversity_strategies():
 
 
 def get_model():
-    model = LightningModel(DiabetesRegression, {}, {"epochs": 5, "gpus": 0})
+    model = LightningModel(DiabetesRegressionModel, {}, {"epochs": 5, "gpus": 0})
     return model
