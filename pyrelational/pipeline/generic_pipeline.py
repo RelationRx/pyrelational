@@ -112,8 +112,6 @@ class GenericPipeline(ABC):
             result = self.model.test(self.test_loader)
         else:
             result = self.model.test(test_loader)
-        # reset current model, to avoid issues when model does not need to be trained during al_step.
-        self.model.current_model = None
 
         if self.data_manager.top_unlabelled is not None:
             result["hit_ratio"] = (
