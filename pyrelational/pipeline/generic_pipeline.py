@@ -108,7 +108,7 @@ class GenericPipeline(ABC):
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
 
-        if test_loader is None:
+        result = self.model.test(self.test_loader if test_loader is None else test_loader)
             result = self.model.test(self.test_loader)
         else:
             result = self.model.test(test_loader)
