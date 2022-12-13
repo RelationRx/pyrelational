@@ -138,20 +138,17 @@ class GenericPipeline(ABC):
         observations_for_labelling = self.strategy.active_learning_step(*args, **self.strategy._filter_kwargs(**kwargs))
         return observations_for_labelling
 
-    def active_learning_update(self, indices: List[int], oracle_interface: object = None, update_tag: str = "") -> None:
+    def active_learning_update(self, indices: List[int], update_tag: str = "") -> None:
         """
         Updates labels based on indices selected for labelling
 
         :param indices: List of indices selected for labelling
-        :param oracle_interface: undefined for now, this will be entry point for external oracle later
         :param update_tag: tag which records what the observations(indices) were labelled by.
         Default behaviour is to map to iteration at which it was labelled
         """
-        if oracle_interface is None:
-            self.update_annotations(indices)
-        else:
-            oracle_interface.update_dataset(self.data_manager, indices)
-            self.update_annotations(indices)
+        if self.oracle is not None:
+            self.oracle.update_dataset(self.data_manager, indices)
+        self.update_annotations(indices)
 
         # Logging
         self.iteration += 1
@@ -164,7 +161,6 @@ class GenericPipeline(ABC):
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
-        oracle_interface: object = None,
         test_loader: DataLoader = None,
         return_query_history: bool = False,
         *strategy_args,
@@ -180,7 +176,6 @@ class GenericPipeline(ABC):
 
         :param num_annotate: number of observations to get annotated per iteration
         :param num_iterations: number of active learning loop to perform
-        :param oracle_interface: undefined for now, this will be entry point for external oracle later
         :param test_loader: test data with which we evaluate the current state of the model given the labelled set L
         :param return_query_history: whether to return the history of queries or not
         :return: optionally returns a dictionary storing the indices of queries at each iteration
@@ -206,7 +201,6 @@ class GenericPipeline(ABC):
 
             self.active_learning_update(
                 observations_for_labelling,
-                oracle_interface,
                 update_tag=str(self.iteration),
             )
             if (num_iterations is not None) and iter_count == num_iterations:

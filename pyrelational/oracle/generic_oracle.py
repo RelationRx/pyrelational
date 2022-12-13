@@ -36,9 +36,24 @@ class GenericOracle(ABC):
             data_manager.set_target_value(idx=idx, value=val)
 
     @abstractmethod
-    def update_dataset(self, data_manager: GenericDataManager, indices: List[int]) -> List[Any]:
+    def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
+        """Abstract method that needs to be implemented to obtain the annotations for the input index
+
+        :param data_manager: reference to the data_manager which will load the observation if necessary
+        :param idx: index to observation which we want to query an annotation
+
+        :return: the output of the oracle
+        """
+        # Default method is to simply return the target in the dataset
+        return data_manager.get_sample(idx)[1]
+
+    @abstractmethod
+    def update_dataset(self, data_manager: GenericDataManager, indices: List[int]) -> None:
         """
         This method serves to obtain labels for the supplied indices and update the
         target values in the corresponding observations of the data manager
+
+        :param data_manager: reference to DataManager whose dataset we intend to update
+        :param indices: list of indices to observations we want updated
         """
         pass
