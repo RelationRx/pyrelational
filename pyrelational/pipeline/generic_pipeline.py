@@ -21,13 +21,13 @@ logger = logging.getLogger()
 
 
 class GenericPipeline(ABC):
-    """The pipeline facillitates the communication between
+    """The pipeline facilitates the communication between
     - DataManager
     - Model,
     - ALStrategy,
     - Oracle (Optional)
 
-    To enact a generic ative learning cycle.
+    To enact a generic active learning cycle.
 
     :param data_manager: an pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
@@ -219,8 +219,14 @@ class GenericPipeline(ABC):
             return query_history
 
     def update_annotations(self, indices: List[int]) -> None:
-        """
-        Update labels in the datamanager train set based on indices selected for labelling
+        """Calls upon the data_manager to update the set of labelled indices with those supplied
+        as arguments. It will move the observations associated with the supplied indices from the
+        unlabelled set to the labelled set. By default any indices supplied that are already in
+        the labelled set are untouched.
+
+        Note this does not change the target values of the indices, this is handled by a method
+        in the oracle.
+
         :param indices: list of indices selected for labelling
         """
         self.data_manager.update_train_labels(indices)
