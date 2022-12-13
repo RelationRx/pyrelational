@@ -127,21 +127,34 @@ class TestInformativenessScorer(TestCase):
         a = torch.distributions.Normal(torch.randn(10), torch.rand(10))
         o = runc.regression_upper_confidence_bound(x=a, kappa=0.25)
         self.assertEqual(o.numel(), a.loc.size(0))
+        torch.testing.assert_close(o, a.loc + 0.25 * a.scale)
 
-    def test_regression_informativeness_with_mean_std_input(self) -> None:
+    def test_regression_greedy_with_mean_std_input(self) -> None:
         """Check output dimension of informativeness measures supporting mean/std input."""
-        mean, std = torch.randn(10), torch.abs(torch.randn(10))
+        mean = torch.randn(10)
         o = runc.regression_greedy_score(mean=mean)
         self.assertEqual(o.numel(), mean.size(0))
+        torch.testing.assert_close(mean, o)
 
+    def test_regression_least_confidence_with_mean_std_input(self) -> None:
+        """Check output dimension of informativeness measures supporting mean/std input."""
+        std = torch.abs(torch.randn(10))
         o = runc.regression_least_confidence(std=std)
-        self.assertEqual(o.numel(), mean.size(0))
+        self.assertEqual(o.numel(), std.size(0))
+        torch.testing.assert_close(o, std)
 
+    def test_regression_expected_improvement_with_mean_std_input(self) -> None:
+        """Check output dimension of informativeness measures supporting mean/std input."""
+        mean, std = torch.randn(10), torch.abs(torch.randn(10))
         o = runc.regression_expected_improvement(mean=mean, std=std, max_label=0.8)
         self.assertEqual(o.numel(), mean.size(0))
 
+    def test_regression_ucb_with_mean_std_input(self) -> None:
+        """Check output dimension of informativeness measures supporting mean/std input."""
+        mean, std = torch.randn(10), torch.abs(torch.randn(10))
         o = runc.regression_upper_confidence_bound(mean=mean, std=std, kappa=0.25)
         self.assertEqual(o.numel(), mean.size(0))
+        torch.testing.assert_close(o, mean + 0.25 * std)
 
     def test_regression_input_check_fail_on_none(self) -> None:
         """Check that input check fails on empty inputs."""
