@@ -36,8 +36,7 @@ class SoftBALDStrategy(BALDStrategy):
     def active_learning_step(
         self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
     ) -> List[int]:
-        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-        output = model(data_manager.get_unlabelled_loader())
+        output = self.train_and_infer(data_manager=data_manager, model=model)
         scores = self.scoring_fn(x=output) / self.T
         scores = torch.softmax(scores, -1).numpy()
         num_annotate = min(num_annotate, len(data_manager.u_indices))

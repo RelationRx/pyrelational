@@ -18,8 +18,7 @@ class ExpectedImprovementStrategy(GenericActiveLearningStrategy):
     def active_learning_step(
         self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
     ) -> List[int]:
-        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-        output = model(data_manager.get_unlabelled_loader())
+        output = self.train_and_infer(data_manager=data_manager, model=model)
         max_label = max(data_manager.get_sample_labels(data_manager.l_indices))
         uncertainty = regression_expected_improvement(x=output, max_label=max_label)
         ixs = torch.argsort(uncertainty, descending=True).tolist()

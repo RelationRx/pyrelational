@@ -16,6 +16,9 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
+from pyrelational.data import GenericDataManager
+from pyrelational.models import GenericModel
+
 logger = logging.getLogger()
 
 
@@ -40,6 +43,19 @@ class GenericActiveLearningStrategy(ABC):
         :param num_annotate: number of observations from u to suggest for labelling
         """
         pass
+
+    def train_and_infer(self, data_manager: GenericDataManager, model: GenericModel) -> Any:
+        """Trains the model on the currently labelled subset of the data and produces
+        an output that can be used in model uncertainty based strategies
+
+        :param data_manager: reference to data_manager which will supply data to train model
+            and the unlabelled observations
+        :param model: Model with generic model interface that will be trained and used to produce
+            output of this method
+        """
+        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
+        output = model(data_manager.get_unlabelled_loader())
+        return output
 
     def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
         """filter kwargs such that they match the active_learning_step signature of the concrete strategy."""

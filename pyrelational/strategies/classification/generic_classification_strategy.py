@@ -17,8 +17,7 @@ class GenericClassificationStrategy(GenericActiveLearningStrategy, ABC):
         self.scoring_fn = NotImplementedError
 
     def active_learning_step(self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel):
-        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-        output = model(data_manager.get_unlabelled_loader()).mean(0)
+        output = self.train_and_infer(data_manager=data_manager, model=model).mean(0)
         if not torch.allclose(output.sum(1), torch.tensor(1.0)):
             output = softmax(output)
         uncertainty = self.scoring_fn(softmax(output))

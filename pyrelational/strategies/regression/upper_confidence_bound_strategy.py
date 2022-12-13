@@ -19,8 +19,7 @@ class UpperConfidenceBoundStrategy(GenericActiveLearningStrategy):
     def active_learning_step(
         self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
     ) -> List[int]:
-        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-        output = model(data_manager.get_unlabelled_loader())
+        output = self.train_and_infer(data_manager=data_manager, model=model)
         uncertainty = regression_upper_confidence_bound(x=output, kappa=self.kappa)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
