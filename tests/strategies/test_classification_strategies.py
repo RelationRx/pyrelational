@@ -3,6 +3,7 @@
 import pytest
 
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
+from pyrelational.oracle import DummyOracle
 from pyrelational.pipeline import GenericPipeline
 from pyrelational.strategies.classification import (
     EntropyClassificationStrategy,
@@ -33,7 +34,8 @@ def test_full_active_learning_run():
     gdm = get_classification_dataset(hit_ratio_at=5)
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+    oracle = DummyOracle()
+    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy, oracle=oracle)
     pipeline.theoretical_performance()
 
     pipeline.full_active_learning_run(num_annotate=200)
@@ -48,21 +50,22 @@ def test_full_active_learning_run():
         assert "hit_ratio" in pipeline.performances[k].keys()
 
 
-def test_update_annotations():
-    gdm = get_classification_dataset()
-    model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
-    al_strategy = LeastConfidenceStrategy()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
-    pipeline.theoretical_performance()
+# # TODO: Move these tests to the oracle
+# def test_update_annotations():
+#     gdm = get_classification_dataset()
+#     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
+#     al_strategy = LeastConfidenceStrategy()
+#     pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+#     pipeline.theoretical_performance()
 
-    random_u_sindex = gdm.u_indices[0]
-    len_gdm_l = len(gdm.l_indices)
-    len_gdm_u = len(gdm.u_indices)
+#     random_u_sindex = gdm.u_indices[0]
+#     len_gdm_l = len(gdm.l_indices)
+#     len_gdm_u = len(gdm.u_indices)
 
-    pipeline.update_annotations([random_u_sindex])
-    assert random_u_sindex in gdm.l_indices
-    assert len(gdm.l_indices) > len_gdm_l
-    assert len(gdm.u_indices) < len_gdm_u
+#     pipeline.update_annotations([random_u_sindex])
+#     assert random_u_sindex in gdm.l_indices
+#     assert len(gdm.l_indices) > len_gdm_l
+#     assert len(gdm.u_indices) < len_gdm_u
 
 
 def test_get_percentage_labelled():
