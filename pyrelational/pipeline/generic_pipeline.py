@@ -57,6 +57,8 @@ class GenericPipeline(ABC):
 
         if oracle is None:
             self.oracle = BenchmarkOracle()  # Pattern for linter not allowing call in arguments
+        else:
+            self.oracle = oracle
 
         # Pipeline meta properties
         self.iteration = 0
