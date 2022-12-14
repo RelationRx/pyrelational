@@ -17,8 +17,9 @@ from torch.utils.data import Dataset
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data import GenericDataManager
 
-# Model, strategy, and pipeline
+# Model, strategy, oracle, and pipeline
 from pyrelational.models import GenericModel
+from pyrelational.oracle import DummyOracle
 from pyrelational.pipeline.generic_pipeline import GenericPipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
@@ -86,16 +87,19 @@ model = SKRFC(RandomForestClassifier, model_config, trainer_config)
 # Instantiate an active learning strategy
 al_strategy = LeastConfidenceStrategy()
 
+# Instantiate an oracle (in this case a dummy one)
+oracle = DummyOracle()
+
 # Given that we have a data manager, a model, and an active learning strategy
 # we may create an active learning pipeline
-pipeline = GenericPipeline(data_manager=data_manager, model=model, strategy=al_strategy)
+pipeline = GenericPipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
 pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
 to_annotate = pipeline.active_learning_step(num_annotate=100)
-pipeline.active_learning_update(to_annotate, oracle_interface=None, update_tag=f"Manual Update with {str(al_strategy)}")
+pipeline.active_learning_update(indices=to_annotate, update_tag=f"Manual Update with {str(al_strategy)}")
 
 # Annotating data step by step until the trainset is fully annotated
 pipeline.full_active_learning_run(num_annotate=20)
