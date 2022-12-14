@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 
 from pyrelational.data.data_manager import GenericDataManager
 from pyrelational.models.generic_model import GenericModel
+from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
 from pyrelational.oracle.generic_oracle import GenericOracle
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
@@ -47,16 +48,13 @@ class GenericPipeline(ABC):
         data_manager: GenericDataManager,
         model: GenericModel,
         strategy: GenericActiveLearningStrategy,
-        oracle: Optional[GenericOracle] = None,
+        oracle: GenericOracle = BenchmarkOracle(),
     ):
         super(GenericPipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy
         self.oracle = oracle
-
-        # Mediator pattern for strategy
-        self.strategy._pipeline = self
 
         # Pipeline meta properties
         self.iteration = 0

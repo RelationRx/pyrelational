@@ -217,7 +217,10 @@ class GenericDataManager(object):
         :param idx: index value to the observation
         :param value: new value for the observation
         """
-        self.dataset.y[idx] = value
+        if hasattr(self.dataset, "y"):
+            self.dataset.y[idx] = value
+        if hasattr(self.dataset, "targets"):
+            self.dataset.targets[idx] = value
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
         """
