@@ -35,19 +35,31 @@ class GenericOracle(ABC):
         for idx, val in zip(indices, values):
             data_manager.set_target_value(idx=idx, value=val)
 
-    @abstractmethod
+    def update_annotations(self, data_manager: GenericDataManager, indices: List[int]) -> None:
+        """Calls upon the data_manager to update the set of labelled indices with those supplied
+        as arguments. It will move the observations associated with the supplied indices from the
+        unlabelled set to the labelled set. By default any indices supplied that are already in
+        the labelled set are untouched.
+
+        Note this does not change the target values of the indices, this is handled by a method
+        in the oracle.
+
+        :param data_manager: reference to the data_manager whose sets we are adjusting
+        :param indices: list of indices selected for labelling
+        """
+        data_manager.update_train_labels(indices)
+
+    # @abstractmethod
     def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
-        """Abstract method that needs to be implemented to obtain the annotations for the input index
+        """Method that needs to be overridden to obtain the annotations for the input index
 
         :param data_manager: reference to the data_manager which will load the observation if necessary
         :param idx: index to observation which we want to query an annotation
 
         :return: the output of the oracle
         """
-        # Default method is to simply return the target in the dataset
-        return data_manager.get_sample(idx)[1]
+        pass
 
-    @abstractmethod
     def update_dataset(self, data_manager: GenericDataManager, indices: List[int]) -> None:
         """
         This method serves to obtain labels for the supplied indices and update the
@@ -56,4 +68,7 @@ class GenericOracle(ABC):
         :param data_manager: reference to DataManager whose dataset we intend to update
         :param indices: list of indices to observations we want updated
         """
-        pass
+        for idx in indices:
+            target_val = self.query_target_value(data_manager=data_manager, idx=idx)
+            self.update_target_value(data_manager=data_manager, idx=idx, value=target_val)
+        self.update_annotations(data_manager=data_manager, indices=indices)
