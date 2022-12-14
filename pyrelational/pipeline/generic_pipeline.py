@@ -146,9 +146,7 @@ class GenericPipeline(ABC):
         :param update_tag: tag which records what the observations(indices) were labelled by.
         Default behaviour is to map to iteration at which it was labelled
         """
-        if self.oracle is not None:
-            self.oracle.update_dataset(self.data_manager, indices)
-        self.update_annotations(indices)
+        self.oracle.update_dataset(data_manager=self.data_manager, indices=indices)
 
         # Logging
         self.iteration += 1
@@ -211,19 +209,6 @@ class GenericPipeline(ABC):
         self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
         if return_query_history:
             return query_history
-
-    def update_annotations(self, indices: List[int]) -> None:
-        """Calls upon the data_manager to update the set of labelled indices with those supplied
-        as arguments. It will move the observations associated with the supplied indices from the
-        unlabelled set to the labelled set. By default any indices supplied that are already in
-        the labelled set are untouched.
-
-        Note this does not change the target values of the indices, this is handled by a method
-        in the oracle.
-
-        :param indices: list of indices selected for labelling
-        """
-        self.data_manager.update_train_labels(indices)
 
     def performance_history(self) -> pd.DataFrame:
         """Constructs a pandas table of performances of the model over the
