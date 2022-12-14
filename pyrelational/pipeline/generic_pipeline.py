@@ -48,13 +48,15 @@ class GenericPipeline(ABC):
         data_manager: GenericDataManager,
         model: GenericModel,
         strategy: GenericActiveLearningStrategy,
-        oracle: GenericOracle = BenchmarkOracle(),
+        oracle: GenericOracle = None,
     ):
         super(GenericPipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy
-        self.oracle = oracle
+
+        if oracle is None:
+            self.oracle = BenchmarkOracle()  # Pattern for linter not allowing call in arguments
 
         # Pipeline meta properties
         self.iteration = 0
