@@ -7,14 +7,14 @@ from pyrelational.data.data_manager import GenericDataManager
 from .generic_oracle import GenericOracle
 
 
-class DummyOracle(GenericOracle):
+class BenchmarkOracle(GenericOracle):
     """An dummy oracle designed for evaluating strategies in R&D settings,
     it assumes that all of the observations are sufficiently annotated and
     returns those annotations when queried.
     """
 
     def __init__(self):
-        super(DummyOracle, self).__init__()
+        super(BenchmarkOracle, self).__init__()
 
     def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
         """Default method is to simply return the target in the dataset

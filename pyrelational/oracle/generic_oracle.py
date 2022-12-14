@@ -49,7 +49,7 @@ class GenericOracle(ABC):
         """
         data_manager.update_train_labels(indices)
 
-    # @abstractmethod
+    @abstractmethod
     def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
         """Method that needs to be overridden to obtain the annotations for the input index
 

@@ -3,7 +3,7 @@
 import pytest
 
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
-from pyrelational.oracle import DummyOracle
+from pyrelational.oracle import BenchmarkOracle
 from pyrelational.pipeline import GenericPipeline
 from pyrelational.strategies.classification import (
     EntropyClassificationStrategy,
@@ -34,7 +34,7 @@ def test_full_active_learning_run():
     gdm = get_classification_dataset(hit_ratio_at=5)
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
-    oracle = DummyOracle()
+    oracle = BenchmarkOracle()
     pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy, oracle=oracle)
     pipeline.theoretical_performance()
 
