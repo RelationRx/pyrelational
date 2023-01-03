@@ -9,7 +9,7 @@ from pyrelational.strategies.regression import (
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,
 )
-from tests.test_utils import DiabetesRegression, get_regression_dataset
+from tests.test_utils import DiabetesRegressionModel, get_regression_dataset
 
 
 def test_regression_strategies():
@@ -33,5 +33,5 @@ def test_regression_strategies():
 
 
 def get_model():
-    model = LightningMCDropoutModel(DiabetesRegression, {}, {"epochs": 5, "gpus": 0})
+    model = LightningMCDropoutModel(DiabetesRegressionModel, {}, {"epochs": 5, "gpus": 0})
     return model

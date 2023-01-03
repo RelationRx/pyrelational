@@ -48,8 +48,8 @@ class LightningModel(GenericModel):
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
+        Initialise pytorch lightning trainer.
 
-        :param config: dictionary of key:value pairs required to instantiate a trainer object
         :return: a pytorch lightning trainer object
         """
         config = self.trainer_config

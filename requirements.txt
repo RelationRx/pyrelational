@@ -1,19 +1,20 @@
-numpy>=1.22.0
-pandas>=1.3.0
-pytorch-lightning>=1.6
-torch>=1.9.0
-torchvision
-gpytorch
-scikit-learn
-tabulate>=0.7.0
-pre-commit
-black
-pytest
-setuptools
-flake8
-flake8-bugbear
-pyreadr>=0.4.4
-xlrd>=2.0.1
+black==22.12.0
+flake8==6.0.0
+flake8-bugbear==22.12.6
+gpytorch>=1.4.0, <=1.9.0
+numpy>=1.22.0, <1.23.6
 openpyxl>=3.0.9
+pandas>=1.3.0, <1.5.3
+parameterized==0.8.1
+pre-commit==2.20.0
+protobuf>=3.19.0
+pyreadr>=0.4.4
+pytest==7.2.0
 pytest-cov
-protobuf
+pytorch-lightning>=1.6, <1.8.5
+torch>=1.9.0, <1.14.0
+torchvision>=0.10.0, <=0.14.0
+scikit-learn>=1.0.2, <1.2.1
+setuptools>=59.5.0
+tabulate>=0.7.0, <=0.9.0
+xlrd>=2.0.1
