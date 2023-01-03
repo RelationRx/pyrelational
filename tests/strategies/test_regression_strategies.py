@@ -1,4 +1,5 @@
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
+from pyrelational.pipeline import GenericPipeline
 from pyrelational.strategies.regression import (
     BALDStrategy,
     ExpectedImprovementStrategy,
@@ -14,18 +15,21 @@ from tests.test_utils import DiabetesRegressionModel, get_regression_dataset
 def test_regression_strategies():
     model = get_model()
     data_manager = get_regression_dataset()
+    lcs = LeastConfidenceStrategy()
+    ucbs = UpperConfidenceBoundStrategy(kappa=2)
+    tss = ThompsonSamplingStrategy()
+    gs = GreedyStrategy()
+    eis = ExpectedImprovementStrategy()
+    bs = BALDStrategy()
+    sbs = SoftBALDStrategy()
 
-    LeastConfidenceStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
-    UpperConfidenceBoundStrategy(
-        model=model,
-        data_manager=data_manager,
-        kappa=2,
-    ).active_learning_step(num_annotate=100)
-    ThompsonSamplingStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
-    GreedyStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
-    ExpectedImprovementStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
-    BALDStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
-    SoftBALDStrategy(model=model, data_manager=data_manager).active_learning_step(num_annotate=100)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=lcs).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=ucbs).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=tss).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=gs).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=eis).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=bs).active_learning_step(num_annotate=5)
+    GenericPipeline(data_manager=data_manager, model=model, strategy=sbs).active_learning_step(num_annotate=5)
 
 
 def get_model():

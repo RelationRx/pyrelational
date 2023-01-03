@@ -16,6 +16,6 @@ class LeastConfidenceStrategy(GenericClassificationStrategy):
     """Implements Least Confidence Strategy whereby unlabelled samples are scored and queried based on
     the least confidence for classification scorer"""
 
-    def __init__(self, data_manager: GenericDataManager, model: GenericModel):
-        super(LeastConfidenceStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(LeastConfidenceStrategy, self).__init__()
         self.scoring_fn = classification_least_confidence

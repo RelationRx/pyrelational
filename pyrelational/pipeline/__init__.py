@@ -1,0 +1,1 @@
+from pyrelational.pipeline.generic_pipeline import GenericPipeline

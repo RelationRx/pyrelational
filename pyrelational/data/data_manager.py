@@ -222,6 +222,18 @@ class GenericDataManager(object):
         # So that one can access samples by index directly
         return self.dataset[idx]
 
+    def set_target_value(self, idx: int, value: Any) -> None:
+        """Sets a value to the y value of the corresponding observation
+        denoted by idx in the underlying dataset with the supplied value
+
+        :param idx: index value to the observation
+        :param value: new value for the observation
+        """
+        if hasattr(self.dataset, "y"):
+            self.dataset.y[idx] = value
+        if hasattr(self.dataset, "targets"):
+            self.dataset.targets[idx] = value
+
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
         """
         Sets the top unlabelled indices according to the value of their labels.
