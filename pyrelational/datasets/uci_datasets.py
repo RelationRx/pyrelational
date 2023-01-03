@@ -15,19 +15,21 @@ from sklearn.model_selection import KFold, StratifiedKFold
 
 
 class UCIDatasets:
+
+    datasets = {
+        "concrete": "https://archive.ics.uci.edu/ml/machine-learning-databa"
+        + "ses/concrete/compressive/Concrete_Data.xls",
+        "energy": "http://archive.ics.uci.edu/ml/machine-learning-databases/00242/ENB2012_data.xlsx",
+        "power": "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip",
+        "wine": "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+        "yacht": "http://archive.ics.uci.edu/ml/machine-learning-databases/00243/yacht_hydrodynamics.data",
+        "glass": "https://archive.ics.uci.edu/ml/machine-learning-databases/glass/glass.data",
+        "parkinsons": "https://archive.ics.uci.edu/ml/machine-learning-databases/parkinsons/parkinsons.data",
+        "seeds": "https://archive.ics.uci.edu/ml/machine-learning-databases/00236/seeds_dataset.txt",
+        "airfoil": "https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat",
+    }
+
     def __init__(self, name, data_dir="/tmp/", n_splits=10):
-        self.datasets = {
-            "concrete": "https://archive.ics.uci.edu/ml/machine-learning-databa"
-            + "ses/concrete/compressive/Concrete_Data.xls",
-            "energy": "http://archive.ics.uci.edu/ml/machine-learning-databases/00242/ENB2012_data.xlsx",
-            "power": "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip",
-            "wine": "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
-            "yacht": "http://archive.ics.uci.edu/ml/machine-learning-databases/00243/yacht_hydrodynamics.data",
-            "glass": "https://archive.ics.uci.edu/ml/machine-learning-databases/glass/glass.data",
-            "parkinsons": "https://archive.ics.uci.edu/ml/machine-learning-databases/parkinsons/parkinsons.data",
-            "seeds": "https://archive.ics.uci.edu/ml/machine-learning-databases/00236/seeds_dataset.txt",
-            "airfoil": "https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat",
-        }
         self.data_dir = data_dir
         self.name = name
         self.n_splits = n_splits
@@ -91,7 +93,7 @@ class UCIDatasets:
             data = pd.read_csv(self.data_dir + "UCI/parkinsons.data", header=0, delimiter=",", index_col=0)
             # we need to get the "status" column as the target
             columns = list(data.columns)
-            columns = set(columns) - set(["status"])
+            columns = set(columns) - {"status"}
             reordered_columns = list(columns)
             reordered_columns.extend(["status"])
             data = data[reordered_columns]
