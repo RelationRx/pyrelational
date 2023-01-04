@@ -14,7 +14,7 @@ from .model_utils import _determine_device
 logger = logging.getLogger()
 
 
-class GenericMCDropoutModel(ModelManager, ABC):
+class MCDropoutManager(ModelManager, ABC):
     """
     Generic model wrapper for mcdropout uncertainty estimator
     """
@@ -27,7 +27,7 @@ class GenericMCDropoutModel(ModelManager, ABC):
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
-        super(GenericMCDropoutModel, self).__init__(model_class, model_config, trainer_config)
+        super(MCDropoutManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
@@ -58,7 +58,7 @@ class GenericMCDropoutModel(ModelManager, ABC):
         return predictions
 
 
-class LightningMCDropoutModel(GenericMCDropoutModel, LightningModel):
+class LightningMCDropoutModel(MCDropoutManager, LightningModel):
     r"""
     Wrapper for MC Dropout estimator with pytorch lightning trainer
 
