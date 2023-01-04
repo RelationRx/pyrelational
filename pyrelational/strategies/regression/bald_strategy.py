@@ -7,11 +7,11 @@ from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_bald
 from pyrelational.models import ModelManager
 from pyrelational.strategies.regression.generic_regression_strategy import (
-    GenericRegressionStrategy,
+    RegressionStrategy,
 )
 
 
-class BALDStrategy(GenericRegressionStrategy):
+class BALDStrategy(RegressionStrategy):
     """Implements BALD Strategy whereby unlabelled samples are queried based on mutual information score based on
     multiple estimator models."""
 

@@ -7,12 +7,12 @@ from pyrelational.models import ModelManager
 from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class GenericRegressionStrategy(Strategy, ABC):
+class RegressionStrategy(Strategy, ABC):
     """A base active learning strategy class for regression in which the top n indices,
     according to user-specified scoring function, are queried at each iteration"""
 
     def __init__(self):
-        super(GenericRegressionStrategy, self).__init__()
+        super(RegressionStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
     def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
