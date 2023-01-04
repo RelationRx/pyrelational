@@ -4,7 +4,7 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import softmax
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 
@@ -16,7 +16,7 @@ class GenericClassificationStrategy(GenericActiveLearningStrategy, ABC):
         super(GenericClassificationStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: GenericModel):
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
         output = self.train_and_infer(data_manager=data_manager, model=model).mean(0)
         if not torch.allclose(output.sum(1), torch.tensor(1.0)):
             output = softmax(output)

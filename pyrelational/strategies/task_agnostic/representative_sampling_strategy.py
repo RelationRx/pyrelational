@@ -7,7 +7,7 @@ from sklearn.base import ClusterMixin
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import representative_sampling
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 

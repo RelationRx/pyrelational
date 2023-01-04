@@ -17,7 +17,7 @@ from tabulate import tabulate
 from torch.utils.data import DataLoader
 
 from pyrelational.data import DataManager
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 
 logger = logging.getLogger()
 
@@ -44,7 +44,7 @@ class GenericActiveLearningStrategy(ABC):
         """
         pass
 
-    def train_and_infer(self, data_manager: DataManager, model: GenericModel) -> Any:
+    def train_and_infer(self, data_manager: DataManager, model: ModelManager) -> Any:
         """Trains the model on the currently labelled subset of the data and produces
         an output that can be used in model uncertainty based strategies
 

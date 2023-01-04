@@ -6,7 +6,7 @@ choose which observations to propose to the oracle
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_entropy
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.strategies.classification.generic_classification_strategy import (
     GenericClassificationStrategy,
 )

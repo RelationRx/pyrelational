@@ -18,7 +18,7 @@ from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data import DataManager
 
 # Model, strategy, oracle, and pipeline
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.oracle import DummyOracle
 from pyrelational.pipeline.generic_pipeline import GenericPipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -46,10 +46,10 @@ def get_breastcancer_data_manager():
     )
 
 
-# Wrapping the RFC with pyrelational's GenericModel
-class SKRFC(GenericModel):
+# Wrapping the RFC with pyrelational's ModelManager
+class SKRFC(ModelManager):
     """
-    Scikit learn RandomForestClassifier implementing the interface of our GenericModel
+    Scikit learn RandomForestClassifier implementing the interface of our ModelManager
     for active learning.
     """
 

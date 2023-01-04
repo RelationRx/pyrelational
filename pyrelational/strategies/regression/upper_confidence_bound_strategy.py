@@ -4,7 +4,7 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_upper_confidence_bound
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
 
@@ -16,7 +16,7 @@ class UpperConfidenceBoundStrategy(GenericActiveLearningStrategy):
         super(UpperConfidenceBoundStrategy, self).__init__()
         self.kappa = kappa
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: GenericModel) -> List[int]:
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
         uncertainty = regression_upper_confidence_bound(x=output, kappa=self.kappa)
         ixs = torch.argsort(uncertainty, descending=True).tolist()

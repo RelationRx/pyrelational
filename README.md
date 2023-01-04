@@ -31,7 +31,7 @@ pip install pyrelational
 import pyrelational as pal
 from pyrelational.data import DataManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 
 # Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way
 # In most cases, no change is needed to current workflow to incorporate
@@ -39,7 +39,7 @@ from pyrelational.models import GenericModel
 data_manager = DataManager(dataset, train_mask, validation_mask, test_mask)
 
 # Create a model class that will handle model instantiation
-model = GenericModel(ModelConstructor, model_config, trainer_config, **kwargs)
+model = ModelManager(ModelConstructor, model_config, trainer_config, **kwargs)
 
 # Use the various implemented active learning strategies or define your own
 al_manager = GenericActiveLearningStrategy(data_manager=data_manager, model=model)
@@ -55,7 +55,7 @@ The `PyRelationAL` package decomposes the active learning workflow into four mai
 
 The **data manager** (defined in `pyrelational.data.data_manager.DataManager`) wraps around a PyTorch Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 
-The **model** (extending `pyrelational.models.generic_model.GenericModel`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It also enables using ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`).
+The **model** (extending `pyrelational.models.generic_model.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It also enables using ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`).
 
 The **AL strategy** (extending `pyrelational.strategies.generic_al_strategy.GenericActiveLearningStrategy`) defines an active learning strategy via an *informativeness measure* and a *query selection algorithm*. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `GenericActiveLearningStrategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles.
 
