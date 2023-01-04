@@ -9,12 +9,12 @@ from typing import Any, Dict, List, Optional
 from pyrelational.data.data_manager import DataManager
 
 
-class GenericOracle(ABC):
+class Oracle(ABC):
     """An abstract class acting as an interface for implementing concrete oracles
     that can interact with a pyrelational pipeline"""
 
     def __init__(self):
-        super(GenericOracle, self).__init__()
+        super(Oracle, self).__init__()
 
     def update_target_value(self, data_manager: DataManager, idx: int, value: Any) -> None:
         """Update the target value for the observation denoted by the index

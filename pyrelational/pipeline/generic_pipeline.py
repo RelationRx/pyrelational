@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 from pyrelational.data.data_manager import DataManager
 from pyrelational.models.generic_model import ModelManager
 from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
-from pyrelational.oracle.generic_oracle import GenericOracle
+from pyrelational.oracle.generic_oracle import Oracle
 from pyrelational.strategies.generic_al_strategy import Strategy
 
 logger = logging.getLogger()
@@ -48,7 +48,7 @@ class GenericPipeline(ABC):
         data_manager: DataManager,
         model: ModelManager,
         strategy: Strategy,
-        oracle: GenericOracle = None,
+        oracle: Oracle = None,
     ):
         super(GenericPipeline, self).__init__()
         self.data_manager = data_manager
