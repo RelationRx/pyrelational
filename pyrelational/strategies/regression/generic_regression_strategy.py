@@ -2,7 +2,7 @@ from abc import ABC
 
 import torch
 
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.models import GenericModel
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 
@@ -15,7 +15,7 @@ class GenericRegressionStrategy(GenericActiveLearningStrategy, ABC):
         super(GenericRegressionStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
-    def active_learning_step(self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel):
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: GenericModel):
         output = self.train_and_infer(data_manager=data_manager, model=model)
         scores = self.scoring_fn(x=output)
         ixs = torch.argsort(scores, descending=True).tolist()

@@ -4,7 +4,7 @@ between classes in the posterior predictive distribution to
 choose which observations to propose to the oracle
 """
 
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_least_confidence
 from pyrelational.models import GenericModel
 from pyrelational.strategies.classification.generic_classification_strategy import (

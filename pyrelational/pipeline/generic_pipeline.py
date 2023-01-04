@@ -12,7 +12,7 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager
 from pyrelational.models.generic_model import GenericModel
 from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
 from pyrelational.oracle.generic_oracle import GenericOracle
@@ -45,7 +45,7 @@ class GenericPipeline(ABC):
 
     def __init__(
         self,
-        data_manager: GenericDataManager,
+        data_manager: DataManager,
         model: GenericModel,
         strategy: GenericActiveLearningStrategy,
         oracle: GenericOracle = None,

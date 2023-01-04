@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import torch
 
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_bald
 from pyrelational.models import GenericModel
 from pyrelational.strategies.regression.generic_regression_strategy import (
@@ -33,9 +33,7 @@ class SoftBALDStrategy(BALDStrategy):
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)
 
-    def active_learning_step(
-        self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel
-    ) -> List[int]:
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: GenericModel) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
         scores = self.scoring_fn(x=output) / self.T
         scores = torch.softmax(scores, -1).numpy()

@@ -29,14 +29,14 @@ pip install pyrelational
 ```python
 # Active Learning package
 import pyrelational as pal
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
 from pyrelational.models import GenericModel
 
 # Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way
 # In most cases, no change is needed to current workflow to incorporate
 # active learning
-data_manager = GenericDataManager(dataset, train_mask, validation_mask, test_mask)
+data_manager = DataManager(dataset, train_mask, validation_mask, test_mask)
 
 # Create a model class that will handle model instantiation
 model = GenericModel(ModelConstructor, model_config, trainer_config, **kwargs)
@@ -53,7 +53,7 @@ al_manager.full_active_learning_run(num_annotate=100, test_loader=test_loader)
 
 The `PyRelationAL` package decomposes the active learning workflow into four main components: 1) a **data manager**, 2) a **model**, 3) an **AL strategy** built around an informativeness function, and 4) an **oracle** (see Figure above). Note that the oracle is external to the package.
 
-The **data manager** (defined in `pyrelational.data.data_manager.GenericDataManager`) wraps around a PyTorch Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
+The **data manager** (defined in `pyrelational.data.data_manager.DataManager`) wraps around a PyTorch Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 
 The **model** (extending `pyrelational.models.generic_model.GenericModel`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It also enables using ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`).
 

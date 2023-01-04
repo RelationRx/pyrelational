@@ -6,7 +6,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager
 
 
 class GenericOracle(ABC):
@@ -16,7 +16,7 @@ class GenericOracle(ABC):
     def __init__(self):
         super(GenericOracle, self).__init__()
 
-    def update_target_value(self, data_manager: GenericDataManager, idx: int, value: Any) -> None:
+    def update_target_value(self, data_manager: DataManager, idx: int, value: Any) -> None:
         """Update the target value for the observation denoted by the index
 
         :param data_manager: reference to the data_manager whose dataset we want to update
@@ -25,7 +25,7 @@ class GenericOracle(ABC):
         """
         data_manager.set_target_value(idx=idx, value=value)
 
-    def update_target_values(self, data_manager: GenericDataManager, indices: List[int], values: List[Any]) -> None:
+    def update_target_values(self, data_manager: DataManager, indices: List[int], values: List[Any]) -> None:
         """Updates the target values of the observations at the supplied indices
 
         :param data_manager: reference to the data_manager whose dataset we want to update
@@ -35,7 +35,7 @@ class GenericOracle(ABC):
         for idx, val in zip(indices, values):
             data_manager.set_target_value(idx=idx, value=val)
 
-    def update_annotations(self, data_manager: GenericDataManager, indices: List[int]) -> None:
+    def update_annotations(self, data_manager: DataManager, indices: List[int]) -> None:
         """Calls upon the data_manager to update the set of labelled indices with those supplied
         as arguments. It will move the observations associated with the supplied indices from the
         unlabelled set to the labelled set. By default any indices supplied that are already in
@@ -50,7 +50,7 @@ class GenericOracle(ABC):
         data_manager.update_train_labels(indices)
 
     @abstractmethod
-    def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
+    def query_target_value(self, data_manager: DataManager, idx: int) -> Any:
         """Method that needs to be overridden to obtain the annotations for the input index
 
         :param data_manager: reference to the data_manager which will load the observation if necessary
@@ -60,7 +60,7 @@ class GenericOracle(ABC):
         """
         pass
 
-    def update_dataset(self, data_manager: GenericDataManager, indices: List[int]) -> None:
+    def update_dataset(self, data_manager: DataManager, indices: List[int]) -> None:
         """
         This method serves to obtain labels for the supplied indices and update the
         target values in the corresponding observations of the data manager

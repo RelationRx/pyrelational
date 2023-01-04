@@ -1,4 +1,4 @@
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_greedy_score
 from pyrelational.models import GenericModel
 from pyrelational.strategies.regression.generic_regression_strategy import (
