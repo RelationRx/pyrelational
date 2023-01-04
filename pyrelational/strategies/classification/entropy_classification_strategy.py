@@ -8,11 +8,11 @@ from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_entropy
 from pyrelational.models import ModelManager
 from pyrelational.strategies.classification.generic_classification_strategy import (
-    GenericClassificationStrategy,
+    ClassificationStrategy,
 )
 
 
-class EntropyClassificationStrategy(GenericClassificationStrategy):
+class EntropyClassificationStrategy(ClassificationStrategy):
     """Implements Entropy Classification Strategy whereby unlabelled samples are scored and queried based on
     entropy"""
 

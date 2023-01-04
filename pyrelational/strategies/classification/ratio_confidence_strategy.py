@@ -8,11 +8,11 @@ from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_ratio_confidence
 from pyrelational.models import ModelManager
 from pyrelational.strategies.classification.generic_classification_strategy import (
-    GenericClassificationStrategy,
+    ClassificationStrategy,
 )
 
 
-class RatioConfidenceStrategy(GenericClassificationStrategy):
+class RatioConfidenceStrategy(ClassificationStrategy):
     """Implements Ratio Confidence Strategy whereby unlabelled samples are scored and queried based on
     the ratio confidence for classification scorer"""
 

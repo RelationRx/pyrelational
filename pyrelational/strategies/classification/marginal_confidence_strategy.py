@@ -7,11 +7,11 @@ from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_margin_confidence
 from pyrelational.models import ModelManager
 from pyrelational.strategies.classification.generic_classification_strategy import (
-    GenericClassificationStrategy,
+    ClassificationStrategy,
 )
 
 
-class MarginalConfidenceStrategy(GenericClassificationStrategy):
+class MarginalConfidenceStrategy(ClassificationStrategy):
     """Implements Marginal Confidence Strategy whereby unlabelled samples are scored and queried based on
     the marginal confidence for classification scorer"""
 

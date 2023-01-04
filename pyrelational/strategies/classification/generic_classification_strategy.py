@@ -8,12 +8,12 @@ from pyrelational.models import ModelManager
 from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class GenericClassificationStrategy(Strategy, ABC):
+class ClassificationStrategy(Strategy, ABC):
     """A base active learning strategy class for classification in which the top n indices,
     according to user-specified scoring function, are queried at each iteration"""
 
     def __init__(self):
-        super(GenericClassificationStrategy, self).__init__()
+        super(ClassificationStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
     def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
