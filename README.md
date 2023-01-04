@@ -30,7 +30,7 @@ pip install pyrelational
 # Active Learning package
 import pyrelational as pal
 from pyrelational.data import DataManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 from pyrelational.models import ModelManager
 
 # Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way
@@ -42,7 +42,7 @@ data_manager = DataManager(dataset, train_mask, validation_mask, test_mask)
 model = ModelManager(ModelConstructor, model_config, trainer_config, **kwargs)
 
 # Use the various implemented active learning strategies or define your own
-al_manager = GenericActiveLearningStrategy(data_manager=data_manager, model=model)
+al_manager = Strategy(data_manager=data_manager, model=model)
 al_manager.theoretical_performance(test_loader=test_loader)
 al_manager.full_active_learning_run(num_annotate=100, test_loader=test_loader)
 ```
@@ -57,7 +57,7 @@ The **data manager** (defined in `pyrelational.data.data_manager.DataManager`) w
 
 The **model** (extending `pyrelational.models.generic_model.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It also enables using ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`).
 
-The **AL strategy** (extending `pyrelational.strategies.generic_al_strategy.GenericActiveLearningStrategy`) defines an active learning strategy via an *informativeness measure* and a *query selection algorithm*. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `GenericActiveLearningStrategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles.
+The **AL strategy** (extending `pyrelational.strategies.generic_al_strategy.Strategy`) defines an active learning strategy via an *informativeness measure* and a *query selection algorithm*. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles.
 
 In addition to the main modules above we offer tools for **uncertainty estimation**. In recognition of the growing use of deep learning models we offer a suite of methods for Bayesian inference approximation to quantify uncertainty coming from the functional model such as MCDropout and ensembles of models (which may be used to also define query by committee and query by disagreement strategies).
 

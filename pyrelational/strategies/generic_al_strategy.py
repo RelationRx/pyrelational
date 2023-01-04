@@ -22,7 +22,7 @@ from pyrelational.models import ModelManager
 logger = logging.getLogger()
 
 
-class GenericActiveLearningStrategy(ABC):
+class Strategy(ABC):
     """This module defines the interface for a generic active learning strategy
     which is composed of defining an `active_learning_step` function which
     suggests observations to be labeled. In the default case the `active_learning_step`
@@ -33,7 +33,7 @@ class GenericActiveLearningStrategy(ABC):
     """
 
     def __init__(self):
-        super(GenericActiveLearningStrategy, self).__init__()
+        super(Strategy, self).__init__()
 
     @abstractmethod
     def active_learning_step(self, *args, **kwargs) -> List[int]:

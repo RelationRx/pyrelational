@@ -4,10 +4,10 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class GenericRegressionStrategy(GenericActiveLearningStrategy, ABC):
+class GenericRegressionStrategy(Strategy, ABC):
     """A base active learning strategy class for regression in which the top n indices,
     according to user-specified scoring function, are queried at each iteration"""
 

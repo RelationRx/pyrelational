@@ -5,10 +5,10 @@ from typing import List
 import numpy as np
 
 from pyrelational.data import DataManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class RandomAcquisitionStrategy(GenericActiveLearningStrategy):
+class RandomAcquisitionStrategy(Strategy):
     """Implements RandomAcquisition whereby random samples from unlabelled set are chosen at each step"""
 
     def __init__(self):

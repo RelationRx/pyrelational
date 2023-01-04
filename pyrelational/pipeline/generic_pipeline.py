@@ -16,7 +16,7 @@ from pyrelational.data.data_manager import DataManager
 from pyrelational.models.generic_model import ModelManager
 from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
 from pyrelational.oracle.generic_oracle import GenericOracle
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 logger = logging.getLogger()
 
@@ -47,7 +47,7 @@ class GenericPipeline(ABC):
         self,
         data_manager: DataManager,
         model: ModelManager,
-        strategy: GenericActiveLearningStrategy,
+        strategy: Strategy,
         oracle: GenericOracle = None,
     ):
         super(GenericPipeline, self).__init__()

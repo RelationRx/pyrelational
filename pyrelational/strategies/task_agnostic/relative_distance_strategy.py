@@ -4,10 +4,10 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class RelativeDistanceStrategy(GenericActiveLearningStrategy):
+class RelativeDistanceStrategy(Strategy):
     """Diversity sampling based active learning strategy"""
 
     def __init__(self):

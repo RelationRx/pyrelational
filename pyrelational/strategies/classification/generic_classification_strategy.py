@@ -5,10 +5,10 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import softmax
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class GenericClassificationStrategy(GenericActiveLearningStrategy, ABC):
+class GenericClassificationStrategy(Strategy, ABC):
     """A base active learning strategy class for classification in which the top n indices,
     according to user-specified scoring function, are queried at each iteration"""
 

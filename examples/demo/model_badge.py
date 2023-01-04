@@ -17,7 +17,7 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.models import LightningModel
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 # dataset
 dataset = BreastCancerDataset()
@@ -82,7 +82,7 @@ data_manager = DataManager(
 )
 
 
-class BadgeStrategy(GenericActiveLearningStrategy):
+class BadgeStrategy(Strategy):
     """Implementation of BADGE strategy."""
 
     def __init__(self, data_manager: DataManager, model: BadgeLightningModel):

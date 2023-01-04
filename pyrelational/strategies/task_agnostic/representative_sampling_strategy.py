@@ -8,10 +8,10 @@ from sklearn.base import ClusterMixin
 from pyrelational.data import DataManager
 from pyrelational.informativeness import representative_sampling
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class RepresentativeSamplingStrategy(GenericActiveLearningStrategy):
+class RepresentativeSamplingStrategy(Strategy):
     """Representative sampling based active learning strategy"""
 
     def __init__(

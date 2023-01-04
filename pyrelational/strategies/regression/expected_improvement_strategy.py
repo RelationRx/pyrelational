@@ -5,10 +5,10 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_expected_improvement
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class ExpectedImprovementStrategy(GenericActiveLearningStrategy):
+class ExpectedImprovementStrategy(Strategy):
     """Implement Expected Improvement Strategy whereby each unlabelled sample is scored based on the
     expected improvement scoring function. The top samples according to this score are selected at each step"""
 

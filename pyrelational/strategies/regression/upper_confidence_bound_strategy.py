@@ -5,10 +5,10 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_upper_confidence_bound
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class UpperConfidenceBoundStrategy(GenericActiveLearningStrategy):
+class UpperConfidenceBoundStrategy(Strategy):
     """Implements Upper Confidence Bound Strategy whereby unlabelled samples are scored and queried based on the
     UCB scorer"""
 

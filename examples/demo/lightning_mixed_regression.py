@@ -8,10 +8,10 @@ from pyrelational.informativeness import (
     regression_least_confidence,
     representative_sampling,
 )
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class MixedStrategy(GenericActiveLearningStrategy):
+class MixedStrategy(Strategy):
     """
     Implements a strategy that combines least_confidence scorer with representative sampling.
     To this end, 10 times more samples than requested are selected based on least_confidence scorer,
