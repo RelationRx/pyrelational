@@ -3,8 +3,8 @@ from pyrelational.pipeline import GenericPipeline
 from pyrelational.strategies.regression import (
     BALDStrategy,
     ExpectedImprovementStrategy,
-    GreedyStrategy,
     LeastConfidenceStrategy,
+    MeanPredictionStrategy,
     SoftBALDStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,
@@ -18,7 +18,7 @@ def test_regression_strategies():
     lcs = LeastConfidenceStrategy()
     ucbs = UpperConfidenceBoundStrategy(kappa=2)
     tss = ThompsonSamplingStrategy()
-    gs = GreedyStrategy()
+    gs = MeanPredictionStrategy()
     eis = ExpectedImprovementStrategy()
     bs = BALDStrategy()
     sbs = SoftBALDStrategy()

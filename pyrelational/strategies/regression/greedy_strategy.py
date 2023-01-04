@@ -6,10 +6,10 @@ from pyrelational.strategies.regression.generic_regression_strategy import (
 )
 
 
-class GreedyStrategy(GenericRegressionStrategy):
+class MeanPredictionStrategy(GenericRegressionStrategy):
     """Implements Greedy Strategy whereby unlabelled samples are queried based on their predicted mean value
     by the model"""
 
     def __init__(self):
-        super(GreedyStrategy, self).__init__()
+        super(MeanPredictionStrategy, self).__init__()
         self.scoring_fn = regression_greedy_score
