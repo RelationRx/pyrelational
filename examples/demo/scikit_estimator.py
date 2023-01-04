@@ -20,7 +20,7 @@ from pyrelational.data import DataManager
 # Model, strategy, oracle, and pipeline
 from pyrelational.models import ModelManager
 from pyrelational.oracle import DummyOracle
-from pyrelational.pipeline.generic_pipeline import GenericPipeline
+from pyrelational.pipeline.generic_pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 
@@ -92,7 +92,7 @@ oracle = DummyOracle()
 
 # Given that we have a data manager, a model, and an active learning strategy
 # we may create an active learning pipeline
-pipeline = GenericPipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
 pipeline.theoretical_performance()

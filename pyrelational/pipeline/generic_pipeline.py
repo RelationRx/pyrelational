@@ -21,7 +21,7 @@ from pyrelational.strategies.generic_al_strategy import Strategy
 logger = logging.getLogger()
 
 
-class GenericPipeline(ABC):
+class Pipeline(ABC):
     """The pipeline facilitates the communication between
     - DataManager
     - Model,
@@ -50,7 +50,7 @@ class GenericPipeline(ABC):
         strategy: Strategy,
         oracle: Oracle = None,
     ):
-        super(GenericPipeline, self).__init__()
+        super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy

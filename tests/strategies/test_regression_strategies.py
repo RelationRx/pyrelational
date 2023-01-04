@@ -1,5 +1,5 @@
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
-from pyrelational.pipeline import GenericPipeline
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import (
     BALDStrategy,
     ExpectedImprovementStrategy,
@@ -23,13 +23,13 @@ def test_regression_strategies():
     bs = BALDStrategy()
     sbs = SoftBALDStrategy()
 
-    GenericPipeline(data_manager=data_manager, model=model, strategy=lcs).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=ucbs).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=tss).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=gs).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=eis).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=bs).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=sbs).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=lcs).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=ucbs).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=tss).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=gs).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=eis).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=bs).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=sbs).active_learning_step(num_annotate=5)
 
 
 def get_model():
