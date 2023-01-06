@@ -16,7 +16,9 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 # Active Learning package
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
-from pyrelational.models import LightningModel
+from pyrelational.models import LightningModel, ModelManager
+from pyrelational.oracle import BenchmarkOracle
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.generic_al_strategy import Strategy
 
 # dataset
@@ -28,8 +30,6 @@ test_indices = test_ds.indices
 
 
 # model
-
-
 class BadgeLightningModel(LightningModel):
     """Model compatible with BADGE strategy"""
 
@@ -85,34 +85,40 @@ data_manager = DataManager(
 class BadgeStrategy(Strategy):
     """Implementation of BADGE strategy."""
 
-    def __init__(self, data_manager: DataManager, model: BadgeLightningModel):
-        super(BadgeStrategy, self).__init__(data_manager, model)
+    def __init__(self):
+        super(BadgeStrategy, self).__init__()
 
-    def active_learning_step(self, num_annotate: int) -> List[int]:
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         """
         :param num_annotate: Number of samples to label
         :return: indices of samples to label
         """
-        self.model.train(self.l_loader, self.valid_loader)
-        u_grads = self.model.get_gradients(self.u_loader)
-        l_grads = self.model.get_gradients(self.l_loader)
+        l_loader = data_manager.get_labelled_loader()
+        u_loader = data_manager.get_unlabelled_loader()
+        valid_loader = data_manager.get_validation_loader()
+        model.train(l_loader, valid_loader)
+        u_grads = model.get_gradients(u_loader)
+        l_grads = model.get_gradients(l_loader)
         scores = relative_distance(u_grads, l_grads)
         ixs = torch.argsort(scores, descending=True).tolist()
-        return [self.u_indices[i] for i in ixs[:num_annotate]]
+        return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
 
 
-strategy = BadgeStrategy(data_manager=data_manager, model=model)
+# Set the instantiated custom model and strategy into the Pipeline object
+strategy = BadgeStrategy()
+oracle = BenchmarkOracle()
+pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 # performance with the full trainset labelled
-strategy.theoretical_performance()
+pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = strategy.active_learning_step(num_annotate=100)
-strategy.active_learning_update(indices=to_annotate, update_tag="Manual Update")
+to_annotate = pipeline.active_learning_step(num_annotate=100)
+pipeline.active_learning_update(indices=to_annotate, update_tag="Manual Update")
 
 # Annotating data step by step until the trainset is fully annotated
-strategy.full_active_learning_run(num_annotate=100)
-print(strategy)
+pipeline.full_active_learning_run(num_annotate=100)
+print(pipeline)
