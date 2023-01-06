@@ -5,13 +5,13 @@ from typing import Any, List, Optional, Union
 import torch
 from sklearn.base import ClusterMixin
 
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import representative_sampling
-from pyrelational.models import GenericModel
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.models import ModelManager
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class RepresentativeSamplingStrategy(GenericActiveLearningStrategy):
+class RepresentativeSamplingStrategy(Strategy):
     """Representative sampling based active learning strategy"""
 
     def __init__(
@@ -25,7 +25,7 @@ class RepresentativeSamplingStrategy(GenericActiveLearningStrategy):
 
     def active_learning_step(
         self,
-        data_manager: GenericDataManager,
+        data_manager: DataManager,
         num_annotate: Optional[int] = None,
     ) -> List[int]:
         unlabelled_features = torch.stack(data_manager.get_sample_feature_vectors(data_manager.u_indices))

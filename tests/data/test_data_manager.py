@@ -6,7 +6,7 @@ import pytest
 import torch
 from parameterized import parameterized
 
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from tests.test_utils import (
     DiabetesDataset,
     get_classification_dataset,
@@ -26,9 +26,9 @@ class TestDataManager(TestCase):
     def test_repr_and_print(self) -> None:
         """Check __repr__ and pretty print are correct."""
         gdm = get_classification_dataset(50)
-        self.assertEqual(repr(gdm), "GenericDataManager")
+        self.assertEqual(repr(gdm), "DataManager")
 
-        out = "GenericDataManager\nTraining set size: 400\nLabelled: 50, Unlabelled: 350\nPercentage Labelled: 0.125"
+        out = "DataManager\nTraining set size: 400\nLabelled: 50, Unlabelled: 350\nPercentage Labelled: 0.125"
         self.assertEqual(str(gdm), out)
 
     def test_get_split_sets(self) -> None:
@@ -133,7 +133,7 @@ class TestDataManager(TestCase):
         """Test if no test and no train indices are supplied, error is raised."""
         valid_indices = list(range(50)) if use_validation else None
         with pytest.raises(ValueError) as case:
-            GenericDataManager(
+            DataManager(
                 DiabetesDataset(),
                 validation_indices=valid_indices,
                 loader_batch_size=10,
@@ -147,7 +147,7 @@ class TestDataManager(TestCase):
         valid_indices = valid_ds.indices
         train_indices = train_ds.indices
         with pytest.raises(ValueError) as e_info:
-            GenericDataManager(
+            DataManager(
                 ds,
                 validation_indices=valid_indices,
                 train_indices=train_indices,
@@ -172,7 +172,7 @@ class TestDataManager(TestCase):
         ds = DiabetesDataset()
         train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [0, 400, 42])
         with pytest.raises(ValueError) as e_info:
-            GenericDataManager(
+            DataManager(
                 ds,
                 train_indices=train_ds.indices if feed_empty_train_set else None,
                 validation_indices=valid_ds.indices,
@@ -188,7 +188,7 @@ class TestDataManager(TestCase):
         train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [350, 50, 42])
         # Check no leaks
         with pytest.raises(ValueError) as e_info:
-            GenericDataManager(
+            DataManager(
                 ds,
                 train_indices=train_ds.indices,
                 validation_indices=valid_ds.indices,

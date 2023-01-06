@@ -17,7 +17,7 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.models import LightningMCDropoutModel
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
@@ -37,7 +37,7 @@ model = LightningMCDropoutModel(
 )
 
 # data_manager and defining strategy
-data_manager = GenericDataManager(
+data_manager = DataManager(
     dataset=dataset,
     train_indices=train_indices,
     validation_indices=val_indices,

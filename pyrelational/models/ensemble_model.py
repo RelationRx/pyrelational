@@ -7,12 +7,12 @@ from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
-from .generic_model import GenericModel
+from .generic_model import ModelManager
 from .lightning_model import LightningModel
 from .model_utils import _determine_device
 
 
-class GenericEnsembleModel(GenericModel, ABC):
+class EnsembleManager(ModelManager, ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
@@ -24,7 +24,7 @@ class GenericEnsembleModel(GenericModel, ABC):
         trainer_config: Union[str, Dict],
         n_estimators: int = 10,
     ):
-        super(GenericEnsembleModel, self).__init__(model_class, model_config, trainer_config)
+        super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
@@ -58,7 +58,7 @@ class GenericEnsembleModel(GenericModel, ABC):
         return predictions
 
 
-class LightningEnsembleModel(GenericEnsembleModel, LightningModel):
+class LightningEnsembleModel(EnsembleManager, LightningModel):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 

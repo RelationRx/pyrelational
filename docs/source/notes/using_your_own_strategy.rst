@@ -5,9 +5,9 @@ Creating your own active learning strategies with PyRelationAL
 
 While PyRelationAL already implements multiple standard active learning strategies, it is not exhaustive.
 However, users can easily define their own strategies by subclassing
-:py:class:`pyrelational.strategies.generic_al_strategy.GenericActiveLearningStrategy`
+:py:class:`pyrelational.strategies.generic_al_strategy.Strategy`
 and overriding the methods necessary to compute the new strategy.
-Typically only the :py:meth:`pyrelational.strategies.generic_al_strategy.GenericActiveLearningStrategy.active_learning_step`
+Typically only the :py:meth:`pyrelational.strategies.generic_al_strategy.Strategy.active_learning_step`
 need to be overriden.
 
 Let's look at some examples.
@@ -27,10 +27,10 @@ subset based on euclidean distance between input features.
     import torch
     from pyrelational.informativeness import regression_least_confidence
     from pyrelational.informativeness.task_agnostic import representative_sampling
-    from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+    from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-    class MixedStrategy(GenericActiveLearningStrategy):
+    class MixedStrategy(Strategy):
         """
         Implements a strategy that combines least_confidence scorer with representative sampling.
         To this end, 10 times more samples than requested are selected based on least_confidence scorer,
@@ -62,10 +62,10 @@ random from the remaining queryable set.
     import torch
     import numpy as np
     from pyrelational.informativeness import regression_greedy_score
-    from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+    from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-    class EpsilonGreedyStrategy(GenericActiveLearningStrategy):
+    class EpsilonGreedyStrategy(Strategy):
         """
         Implements an epsilon-greedy strategy, whereby a percentage of the samples to annotate
         are selected randomly while the remaining are selected greedily.

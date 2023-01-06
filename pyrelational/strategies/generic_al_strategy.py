@@ -16,13 +16,13 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from pyrelational.data import GenericDataManager
-from pyrelational.models import GenericModel
+from pyrelational.data import DataManager
+from pyrelational.models import ModelManager
 
 logger = logging.getLogger()
 
 
-class GenericActiveLearningStrategy(ABC):
+class Strategy(ABC):
     """This module defines the interface for a generic active learning strategy
     which is composed of defining an `active_learning_step` function which
     suggests observations to be labeled. In the default case the `active_learning_step`
@@ -33,7 +33,7 @@ class GenericActiveLearningStrategy(ABC):
     """
 
     def __init__(self):
-        super(GenericActiveLearningStrategy, self).__init__()
+        super(Strategy, self).__init__()
 
     @abstractmethod
     def active_learning_step(self, *args, **kwargs) -> List[int]:
@@ -44,7 +44,7 @@ class GenericActiveLearningStrategy(ABC):
         """
         pass
 
-    def train_and_infer(self, data_manager: GenericDataManager, model: GenericModel) -> Any:
+    def train_and_infer(self, data_manager: DataManager, model: ModelManager) -> Any:
         """Trains the model on the currently labelled subset of the data and produces
         an output that can be used in model uncertainty based strategies
 

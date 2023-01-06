@@ -12,16 +12,16 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from pyrelational.data.data_manager import GenericDataManager
-from pyrelational.models.generic_model import GenericModel
+from pyrelational.data.data_manager import DataManager
+from pyrelational.models.generic_model import ModelManager
 from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
-from pyrelational.oracle.generic_oracle import GenericOracle
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.oracle.generic_oracle import Oracle
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 logger = logging.getLogger()
 
 
-class GenericPipeline(ABC):
+class Pipeline(ABC):
     """The pipeline facilitates the communication between
     - DataManager
     - Model,
@@ -45,12 +45,12 @@ class GenericPipeline(ABC):
 
     def __init__(
         self,
-        data_manager: GenericDataManager,
-        model: GenericModel,
-        strategy: GenericActiveLearningStrategy,
-        oracle: GenericOracle = None,
+        data_manager: DataManager,
+        model: ModelManager,
+        strategy: Strategy,
+        oracle: Oracle = None,
     ):
-        super(GenericPipeline, self).__init__()
+        super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy

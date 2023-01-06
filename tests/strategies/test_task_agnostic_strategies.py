@@ -1,7 +1,7 @@
 from sklearn.cluster import AgglomerativeClustering
 
 from pyrelational.models.lightning_model import LightningModel
-from pyrelational.pipeline import GenericPipeline
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.task_agnostic import (
     RandomAcquisitionStrategy,
     RelativeDistanceStrategy,
@@ -22,13 +22,13 @@ def test_diversity_strategies():
     agg = AgglomerativeClustering(n_clusters=10)
     rss_agg = RepresentativeSamplingStrategy(clustering_method=agg)
 
-    GenericPipeline(data_manager=data_manager, model=model, strategy=rds).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=rds_cosine).active_learning_step(
+    Pipeline(data_manager=data_manager, model=model, strategy=rds).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=rds_cosine).active_learning_step(
         num_annotate=5, metric="cosine"
     )
-    GenericPipeline(data_manager=data_manager, model=model, strategy=ras).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=rss).active_learning_step(num_annotate=5)
-    GenericPipeline(data_manager=data_manager, model=model, strategy=rss_agg).active_learning_step()
+    Pipeline(data_manager=data_manager, model=model, strategy=ras).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=rss).active_learning_step(num_annotate=5)
+    Pipeline(data_manager=data_manager, model=model, strategy=rss_agg).active_learning_step()
 
 
 def get_model():

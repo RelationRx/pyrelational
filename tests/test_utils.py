@@ -9,7 +9,7 @@ from sklearn.datasets import load_breast_cancer, load_diabetes
 from torch import Tensor
 from torch.utils.data import Dataset
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager
 
 
 def get_regression_dataset(
@@ -18,7 +18,7 @@ def get_regression_dataset(
     use_validation: bool = True,
     use_test: bool = True,
     train_val_test_split: Tuple[int, int, int] = (350, 50, 42),
-) -> GenericDataManager:
+) -> DataManager:
     """
     Get datamanager which wraps diabetes regression dataset.
 
@@ -35,7 +35,7 @@ def get_regression_dataset(
     train_indices = train_ds.indices
     valid_indices = valid_ds.indices
     test_indices = test_ds.indices
-    return GenericDataManager(
+    return DataManager(
         ds,
         train_indices=train_indices if use_train else None,
         validation_indices=valid_indices if use_validation else None,
@@ -49,7 +49,7 @@ def get_classification_dataset(
     labelled_size: Optional[int] = None,
     hit_ratio_at: Optional[Union[int, float]] = None,
     train_val_test_split: Tuple[int, int, int] = (400, 100, 69),
-) -> GenericDataManager:
+) -> DataManager:
     """
     Get datamanager which wraps sklearn breast cancer dataset.
 
@@ -67,7 +67,7 @@ def get_classification_dataset(
     test_indices = test_ds.indices
     labelled_indices = None if labelled_size is None else train_indices[:labelled_size]
 
-    return GenericDataManager(
+    return DataManager(
         ds,
         train_indices=train_indices,
         validation_indices=valid_indices,

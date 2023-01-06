@@ -2,20 +2,20 @@ from abc import ABC
 
 import torch
 
-from pyrelational.data import GenericDataManager
-from pyrelational.models import GenericModel
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.data import DataManager
+from pyrelational.models import ModelManager
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 
-class GenericRegressionStrategy(GenericActiveLearningStrategy, ABC):
+class RegressionStrategy(Strategy, ABC):
     """A base active learning strategy class for regression in which the top n indices,
     according to user-specified scoring function, are queried at each iteration"""
 
     def __init__(self):
-        super(GenericRegressionStrategy, self).__init__()
+        super(RegressionStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
-    def active_learning_step(self, num_annotate: int, data_manager: GenericDataManager, model: GenericModel):
+    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
         output = self.train_and_infer(data_manager=data_manager, model=model)
         scores = self.scoring_fn(x=output)
         ixs = torch.argsort(scores, descending=True).tolist()

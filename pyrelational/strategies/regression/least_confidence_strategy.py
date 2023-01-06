@@ -1,12 +1,12 @@
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_least_confidence
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.strategies.regression.generic_regression_strategy import (
-    GenericRegressionStrategy,
+    RegressionStrategy,
 )
 
 
-class LeastConfidenceStrategy(GenericRegressionStrategy):
+class LeastConfidenceStrategy(RegressionStrategy):
     """Implements Least Confidence Strategy whereby unlabelled samples are queried based on their predicted variance
     by the model"""
 

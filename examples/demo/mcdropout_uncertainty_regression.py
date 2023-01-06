@@ -15,7 +15,7 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.models import LightningMCDropoutModel
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
@@ -30,7 +30,7 @@ test_indices = test_ds.indices
 model = LightningMCDropoutModel(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 4})
 
 # data_manager and defining strategy
-data_manager = GenericDataManager(
+data_manager = DataManager(
     dataset=dataset, train_indices=train_indices, validation_indices=val_indices, test_indices=test_indices
 )
 

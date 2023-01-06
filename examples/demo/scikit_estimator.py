@@ -15,12 +15,12 @@ from torch.utils.data import Dataset
 
 # Data and data manager
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 
 # Model, strategy, oracle, and pipeline
-from pyrelational.models import GenericModel
+from pyrelational.models import ModelManager
 from pyrelational.oracle import DummyOracle
-from pyrelational.pipeline.generic_pipeline import GenericPipeline
+from pyrelational.pipeline.generic_pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 
@@ -36,7 +36,7 @@ def get_breastcancer_data_manager():
     valid_indices = valid_ds.indices
     test_indices = test_ds.indices
 
-    return GenericDataManager(
+    return DataManager(
         ds,
         train_indices=train_indices,
         validation_indices=valid_indices,
@@ -46,10 +46,10 @@ def get_breastcancer_data_manager():
     )
 
 
-# Wrapping the RFC with pyrelational's GenericModel
-class SKRFC(GenericModel):
+# Wrapping the RFC with pyrelational's ModelManager
+class SKRFC(ModelManager):
     """
-    Scikit learn RandomForestClassifier implementing the interface of our GenericModel
+    Scikit learn RandomForestClassifier implementing the interface of our ModelManager
     for active learning.
     """
 
@@ -92,7 +92,7 @@ oracle = DummyOracle()
 
 # Given that we have a data manager, a model, and an active learning strategy
 # we may create an active learning pipeline
-pipeline = GenericPipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
 pipeline.theoretical_performance()

@@ -26,7 +26,7 @@ T = TypeVar("T")
 logger = logging.getLogger()
 
 
-class GenericDataManager(object):
+class DataManager(object):
     """
     DataManager for active learning pipelines
 
@@ -79,7 +79,7 @@ class GenericDataManager(object):
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
-        super(GenericDataManager, self).__init__()
+        super(DataManager, self).__init__()
         dataset = self._check_is_sized(dataset)
 
         self.dataset = dataset

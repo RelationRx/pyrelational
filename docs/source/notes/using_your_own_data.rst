@@ -3,7 +3,7 @@
 Using your own datasets with PyRelationAL
 =========================================
 
-The :py:class:`pyrelational.data.data_manager.GenericDataManager` module enables users to integrate any pytorch Dataset
+The :py:class:`pyrelational.data.data_manager.DataManager` module enables users to integrate any pytorch Dataset
 into PyRelationAL easily. The module expects the full dataset, i.e. the union of labelled, unlabelled,
 validation (optional), and test sets. The indices of each sets should be provided to the class constructor that
 then proceeds to construct the subset Datasets object under the hood. Throughout the experiment, the data manager will
@@ -13,7 +13,7 @@ keep track of indices and handle updates to the labelled/unlabelled pools of sam
 
    import torch
    from torchvision import datasets, transforms
-   from pyrelational.data.data_manager import GenericDataManager
+   from pyrelational.data.data_manager import DataManager
 
     mnist_dataset = datasets.MNIST(
         "mnist_data",
@@ -27,7 +27,7 @@ keep track of indices and handle updates to the labelled/unlabelled pools of sam
     test_indices = test_ds.indices
     labelled_indices = train_indices[:10000]
 
-    data_manager = GenericDataManager(
+    data_manager = DataManager(
         mnist_dataset,
         train_indices=train_indices,
         labelled_indices=labelled_indices,
@@ -44,7 +44,7 @@ the data manager constructor, such as
 .. code-block:: python
     :emphasize-lines: 7,8,9
 
-    data_manager = GenericDataManager(
+    data_manager = DataManager(
         mnist_dataset,
         train_indices=train_indices,
         labelled_indices=labelled_indices,
@@ -68,7 +68,7 @@ the collate function. For instance, using the following collate function enables
         """Collate function for a Pytorch to Numpy DataLoader"""
         return [np.stack(el) for el in zip(*batch)]
 
-    data_manager = GenericDataManager(
+    data_manager = DataManager(
         mnist_dataset,
         train_indices=train_indices,
         labelled_indices=labelled_indices,
@@ -87,7 +87,7 @@ entire underlying dataset. This can be specified as such,
 .. code-block:: python
     :emphasize-lines: 7
 
-    data_manager = GenericDataManager(
+    data_manager = DataManager(
         mnist_dataset,
         train_indices=train_indices,
         labelled_indices=labelled_indices,

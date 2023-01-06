@@ -14,10 +14,10 @@ from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.models import LightningModel
-from pyrelational.strategies.generic_al_strategy import GenericActiveLearningStrategy
+from pyrelational.strategies.generic_al_strategy import Strategy
 
 # dataset
 dataset = BreastCancerDataset()
@@ -73,7 +73,7 @@ class BadgeLightningModel(LightningModel):
 model = BadgeLightningModel(model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 5})
 
 # data_manager and defining strategy
-data_manager = GenericDataManager(
+data_manager = DataManager(
     dataset=dataset,
     train_indices=train_indices,
     validation_indices=val_indices,
@@ -82,10 +82,10 @@ data_manager = GenericDataManager(
 )
 
 
-class BadgeStrategy(GenericActiveLearningStrategy):
+class BadgeStrategy(Strategy):
     """Implementation of BADGE strategy."""
 
-    def __init__(self, data_manager: GenericDataManager, model: BadgeLightningModel):
+    def __init__(self, data_manager: DataManager, model: BadgeLightningModel):
         super(BadgeStrategy, self).__init__(data_manager, model)
 
     def active_learning_step(self, num_annotate: int) -> List[int]:

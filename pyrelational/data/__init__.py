@@ -1,1 +1,1 @@
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager

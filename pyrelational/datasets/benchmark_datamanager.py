@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from sklearn.metrics import pairwise_distances
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager
 
 
 def pick_one_sample_per_class(dataset, train_indices):
@@ -49,7 +49,7 @@ def create_warm_start(dataset, **dm_args):
     :param dm_args: kwargs for any additional keyword arguments to be passed
         into the initialisation of the datamanager.
     """
-    dm = GenericDataManager(dataset, **dm_args)
+    dm = DataManager(dataset, **dm_args)
     return dm
 
 
@@ -71,7 +71,7 @@ def create_classification_cold_start(dataset, train_indices, test_indices, **dm_
         into the initialisation of the datamanager.
     """
     labelled_indices = pick_one_sample_per_class(dataset, train_indices)
-    dm = GenericDataManager(
+    dm = DataManager(
         dataset, train_indices=train_indices, test_indices=test_indices, labelled_indices=labelled_indices, **dm_args
     )
     return dm
@@ -100,7 +100,7 @@ def create_regression_cold_start(dataset, train_indices, test_indices, **dm_args
     sample2_idx = train_indices[sample2_idx]
 
     labelled_indices = [sample1_idx, sample2_idx]
-    dm = GenericDataManager(
+    dm = DataManager(
         dataset,
         train_indices=train_indices,
         test_indices=test_indices,

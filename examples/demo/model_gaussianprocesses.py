@@ -16,7 +16,7 @@ import torch
 from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import GenericDataManager
+from pyrelational.data import DataManager
 from pyrelational.models import LightningModel
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
@@ -103,7 +103,7 @@ class GPLightningModel(LightningModel):
 model = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})
 
 # data_manager and defining strategy
-data_manager = GenericDataManager(
+data_manager = DataManager(
     dataset=dataset,
     train_indices=train_indices,
     validation_indices=val_indices,

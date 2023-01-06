@@ -4,7 +4,7 @@ import pytest
 
 from pyrelational.models.mcdropout_model import LightningMCDropoutModel
 from pyrelational.oracle import BenchmarkOracle
-from pyrelational.pipeline import GenericPipeline
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import (
     EntropyClassificationStrategy,
     LeastConfidenceStrategy,
@@ -21,7 +21,7 @@ def test_performances():
     gdm = get_classification_dataset()
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+    pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy)
     pipeline.theoretical_performance()
     assert "full" in pipeline.performances
 
@@ -35,7 +35,7 @@ def test_full_active_learning_run():
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
     oracle = BenchmarkOracle()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy, oracle=oracle)
+    pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy, oracle=oracle)
     pipeline.theoretical_performance()
 
     pipeline.full_active_learning_run(num_annotate=200)
@@ -55,7 +55,7 @@ def test_full_active_learning_run():
 #     gdm = get_classification_dataset()
 #     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
 #     al_strategy = LeastConfidenceStrategy()
-#     pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+#     pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy)
 #     pipeline.theoretical_performance()
 
 #     random_u_sindex = gdm.u_indices[0]
@@ -72,7 +72,7 @@ def test_get_percentage_labelled():
     gdm = get_classification_dataset()
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+    pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy)
     percentage = pipeline.percentage_labelled
     assert percentage == pytest.approx(0.1, 0.05)
 
@@ -81,7 +81,7 @@ def test_get_dataset_size():
     gdm = get_classification_dataset()
     model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
     al_strategy = LeastConfidenceStrategy()
-    pipeline = GenericPipeline(data_manager=gdm, model=model, strategy=al_strategy)
+    pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy)
     al_ds_size = pipeline.dataset_size
     assert al_ds_size <= 60000
 
@@ -94,9 +94,9 @@ def test_strategies():
     rcs = RatioConfidenceStrategy()
     ecs = EntropyClassificationStrategy()
 
-    pipeline_mcs = GenericPipeline(data_manager=gdm, model=model, strategy=mcs)
-    pipeline_rcs = GenericPipeline(data_manager=gdm, model=model, strategy=rcs)
-    pipeline_ecs = GenericPipeline(data_manager=gdm, model=model, strategy=ecs)
+    pipeline_mcs = Pipeline(data_manager=gdm, model=model, strategy=mcs)
+    pipeline_rcs = Pipeline(data_manager=gdm, model=model, strategy=rcs)
+    pipeline_ecs = Pipeline(data_manager=gdm, model=model, strategy=ecs)
 
     pipeline_mcs.current_performance()
     pipeline_rcs.current_performance()

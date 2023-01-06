@@ -2,12 +2,12 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-from pyrelational.data.data_manager import GenericDataManager
+from pyrelational.data.data_manager import DataManager
 
-from .generic_oracle import GenericOracle
+from .generic_oracle import Oracle
 
 
-class BenchmarkOracle(GenericOracle):
+class BenchmarkOracle(Oracle):
     """An dummy oracle designed for evaluating strategies in R&D settings,
     it assumes that all of the observations are sufficiently annotated and
     returns those annotations when queried.
@@ -16,7 +16,7 @@ class BenchmarkOracle(GenericOracle):
     def __init__(self):
         super(BenchmarkOracle, self).__init__()
 
-    def query_target_value(self, data_manager: GenericDataManager, idx: int) -> Any:
+    def query_target_value(self, data_manager: DataManager, idx: int) -> Any:
         """Default method is to simply return the target in the dataset
 
         :param data_manager: reference to the data_manager which will load the observation if necessary

@@ -5,7 +5,7 @@ from typing import Any, Dict, Type, Union
 from torch.utils.data import DataLoader
 
 
-class GenericModel(ABC):
+class ModelManager(ABC):
     def __init__(
         self,
         model_class: Type[Any],
@@ -22,7 +22,7 @@ class GenericModel(ABC):
                 constructor)
         :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
         """
-        super(GenericModel, self).__init__()
+        super(ModelManager, self).__init__()
 
         self.model_class = model_class
         self.model_config = json.load(open(model_config, "r")) if isinstance(model_config, str) else model_config
