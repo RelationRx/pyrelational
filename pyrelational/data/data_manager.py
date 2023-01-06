@@ -396,8 +396,8 @@ class DataManager(object):
         str_out = self.__repr__()
         if self.train_indices is not None:
             str_out += "\nTraining set size: {}\n".format(len(self.train_indices))
-        if self.labelled_indices is not None:
-            str_out += "Labelled: {}, Unlabelled: {}\n".format(len(self.labelled_indices), len(self.unlabelled_indices))
+        if self.l_indices is not None:
+            str_out += "Labelled: {}, Unlabelled: {}\n".format(len(self.l_indices), len(self.u_indices))
         str_out += "Percentage Labelled: {}".format(str_percentage_labelled)
 
         return str_out
