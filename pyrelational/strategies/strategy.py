@@ -74,10 +74,11 @@ class Strategy(ABC):
         return output
 
     def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
-        """filter kwargs such that they match the active_learning_step signature of the concrete strategy."""
+        """
+        Filter kwargs such that they match the active_learning_step signature of the concrete strategy.
 
-        # filter all parameters based on update signature except those of
-        # type VAR_POSITIONAL (*args) and VAR_KEYWORD (**kwargs)
+        type VAR_POSITIONAL (*args) and VAR_KEYWORD (**kwargs)
+        """
         _params = (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
         _sign_params = inspect.signature(self.__call__).parameters
         filtered_kwargs = {
@@ -86,6 +87,7 @@ class Strategy(ABC):
         return filtered_kwargs
 
     def __repr__(self):
+        """Return name of class."""
         return self.__class__.__name__
 
     def __str__(self) -> str:
