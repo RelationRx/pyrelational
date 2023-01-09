@@ -17,9 +17,9 @@ from torch.utils.data import Dataset
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data import DataManager
 
-# Model, strategy, oracle, and pipeline
+# Model, strategy, oracles, and pipeline
 from pyrelational.models import ModelManager
-from pyrelational.oracle import DummyOracle
+from pyrelational.oracles import DummyOracle
 from pyrelational.pipeline.generic_pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
@@ -87,7 +87,7 @@ model = SKRFC(RandomForestClassifier, model_config, trainer_config)
 # Instantiate an active learning strategy
 al_strategy = LeastConfidenceStrategy()
 
-# Instantiate an oracle (in this case a dummy one)
+# Instantiate an oracles (in this case a dummy one)
 oracle = DummyOracle()
 
 # Given that we have a data manager, a model, and an active learning strategy

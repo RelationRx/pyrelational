@@ -1,7 +1,7 @@
 """
 Active learning using least confidence uncertainty measure
 between classes in the posterior predictive distribution to
-choose which observations to propose to the oracle
+choose which observations to propose to the oracles
 """
 
 from pyrelational.data import DataManager

@@ -7,7 +7,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
-from .generic_model import ModelManager
+from .model_manager import ModelManager
 from .model_utils import _determine_device
 
 

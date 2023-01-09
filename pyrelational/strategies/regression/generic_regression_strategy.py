@@ -4,7 +4,7 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.strategy import Strategy
 
 
 class RegressionStrategy(Strategy, ABC):
@@ -15,7 +15,7 @@ class RegressionStrategy(Strategy, ABC):
         super(RegressionStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
         output = self.train_and_infer(data_manager=data_manager, model=model)
         scores = self.scoring_fn(x=output)
         ixs = torch.argsort(scores, descending=True).tolist()
