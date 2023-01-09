@@ -110,6 +110,7 @@ data_manager = DataManager(
     validation_indices=val_indices,
     test_indices=test_indices,
     loader_batch_size="full",
+    loader_shuffle=False,
 )  # all the labelled data points have to be used for training
 
 # Set up strategy and rest of the pipeline
