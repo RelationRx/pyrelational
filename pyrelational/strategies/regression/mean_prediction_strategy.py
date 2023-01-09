@@ -1,5 +1,5 @@
 from pyrelational.informativeness import regression_greedy_score
-from pyrelational.strategies.regression.generic_regression_strategy import (
+from pyrelational.strategies.regression.abstract_regression_strategy import (
     RegressionStrategy,
 )
 
