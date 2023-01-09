@@ -3,7 +3,7 @@ which is composed of defining an `active_learning_step` function which
 suggests observations to be labeled. In the default case the `active_learning_step`
 is the composition of a informativeness function which assigns a measure of
 informativenes to unlabelled observations and a selection algorithm which chooses
-what observations to present to the oracles
+what observations to present to the oracle
 """
 import inspect
 import logging
@@ -37,7 +37,7 @@ class Strategy(ABC):
     suggests observations to be labeled. In the default case the `active_learning_step`
     is the composition of a informativeness function which assigns a measure of
     informativenes to unlabelled observations and a selection algorithm which chooses
-    what observations to present to the oracles
+    what observations to present to the oracle
 
     """
 

@@ -30,7 +30,7 @@ class Pipeline(ABC):
 
     To enact a generic active learning cycle.
 
-    :param data_manager: an pyrelational data manager
+    :param data_manager: a pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
     :param model: A pyrelational model
@@ -38,8 +38,8 @@ class Pipeline(ABC):
             data manager
     :param strategy: A pyrelational active learning strategy
             implements the informativeness measure and the selection algorithm being used
-    :param oracle: An oracles instance
-            interfaces with various concrete oracles to obtain labels for observations
+    :param oracle: An oracle instance
+            interfaces with various concrete oracle to obtain labels for observations
             suggested by the strategy
     """
 
@@ -133,7 +133,7 @@ class Pipeline(ABC):
 
     def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
         """
-        Ask the strategy to provide indices of unobserved observations for labelling by the oracles
+        Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
@@ -186,7 +186,7 @@ class Pipeline(ABC):
         while len(self.u_indices) > 0:
             iter_count += 1
 
-            # Obtain samples for labelling and pass to the oracles interface if supplied
+            # Obtain samples for labelling and pass to the oracle interface if supplied
             observations_for_labelling = self.active_learning_step(
                 num_annotate=num_annotate, *strategy_args, **strategy_kwargs
             )
