@@ -74,7 +74,7 @@ def test_get_percentage_labelled():
     al_strategy = LeastConfidenceStrategy()
     pipeline = Pipeline(data_manager=gdm, model=model, strategy=al_strategy)
     percentage = pipeline.percentage_labelled
-    assert percentage == pytest.approx(0.1, 0.05)
+    assert percentage == pytest.approx(10, 5)
 
 
 def test_get_dataset_size():

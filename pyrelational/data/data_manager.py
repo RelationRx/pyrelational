@@ -338,7 +338,7 @@ class DataManager(object):
         """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
-        return num_labelled / float(total_len)
+        return (num_labelled / float(total_len)) * 100
 
     def get_sample(self, ds_index: int) -> Tuple[torch.Tensor]:
         return self[ds_index]

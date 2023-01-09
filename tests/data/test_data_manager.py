@@ -28,7 +28,7 @@ class TestDataManager(TestCase):
         gdm = get_classification_dataset(50)
         self.assertEqual(repr(gdm), "DataManager")
 
-        out = "DataManager\nTraining set size: 400\nLabelled: 50, Unlabelled: 350\nPercentage Labelled: 0.125"
+        out = "DataManager\nTraining set size: 400\nLabelled: 50, Unlabelled: 350\nPercentage Labelled: 12.500"
         self.assertEqual(str(gdm), out)
 
     def test_get_split_sets(self) -> None:
@@ -59,7 +59,7 @@ class TestDataManager(TestCase):
         """Check default labelled percentage."""
         gdm = get_classification_dataset()
         percentage = gdm.percentage_labelled()
-        self.assertEqual(percentage, pytest.approx(0.1, 0.05))
+        self.assertEqual(percentage, pytest.approx(10, 5))
 
     def test_get_dataset_size(self) -> None:
         """Check dataset size returned is correct."""
