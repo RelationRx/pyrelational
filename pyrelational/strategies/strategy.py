@@ -32,13 +32,13 @@ def _call_unimplemented(self, *input: Any) -> None:
 
 
 class Strategy(ABC):
-    """This module defines the interface for a generic active learning strategy
+    """
+    This module defines the interface for a generic active learning strategy
     which is composed of defining an `active_learning_step` function which
     suggests observations to be labeled. In the default case the `active_learning_step`
     is the composition of a informativeness function which assigns a measure of
     informativenes to unlabelled observations and a selection algorithm which chooses
-    what observations to present to the oracle
-
+    what observations to present to the oracle.
     """
 
     def __init__(self, *args, **kwargs):
