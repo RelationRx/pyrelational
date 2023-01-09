@@ -56,10 +56,11 @@ class Strategy(ABC):
         :param kwargs: any kwargs (filtered to match internal _active_learning_step inputs)
         :return: list of indices of samples to query from oracle
         """
-        filtered_kwargs = self.filter_kwargs(**kwargs)
+        filtered_kwargs = self._filter_kwargs(**kwargs)
         return self(num_annotate=num_annotate, *args, **filtered_kwargs)
 
-    def train_and_infer(self, data_manager: DataManager, model: ModelManager) -> Any:
+    @staticmethod
+    def train_and_infer(data_manager: DataManager, model: ModelManager) -> Any:
         """Trains the model on the currently labelled subset of the data and produces
         an output that can be used in model uncertainty based strategies
 
@@ -72,7 +73,7 @@ class Strategy(ABC):
         output = model(data_manager.get_unlabelled_loader())
         return output
 
-    def filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
+    def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
         """filter kwargs such that they match the active_learning_step signature of the concrete strategy."""
 
         # filter all parameters based on update signature except those of
