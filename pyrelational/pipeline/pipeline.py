@@ -22,7 +22,8 @@ logger = logging.getLogger()
 
 
 class Pipeline(ABC):
-    """The pipeline facilitates the communication between
+    """
+    The pipeline facilitates the communication between
     - DataManager
     - Model,
     - ALStrategy,
@@ -54,19 +55,15 @@ class Pipeline(ABC):
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy
-
-        if oracle is None:
-            self.oracle = BenchmarkOracle()  # Pattern for linter not allowing call in arguments
-        else:
-            self.oracle = oracle
+        self.oracle = BenchmarkOracle() if oracle is None else oracle
 
         # Pipeline meta properties
         self.iteration = 0
 
         # Data structures for logging values of interest
         self.performances = defaultdict(dict)
-        self.labelled_by = {}
-        self.log_labelled_by(data_manager.l_indices, tag="Initialisation")
+        self.labelled_by = defaultdict(dict)
+        self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
     def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> Dict:
         """Returns the performance of the full labelled dataset against the
@@ -93,20 +90,18 @@ class Pipeline(ABC):
 
         # make sure that theoretical best model is not stored
         self.model.current_model = None
-
         return self.performances["full"]
 
     def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
         """
-        Current performance of model
+        Compute performance of model.
+
         :param test_loader: Pytorch Data Loader with
                 test data compatible with model, optional as often the test loader can be
                 generated from data_manager but is here for case when it hasn't been defined
                 or there is a new test set.
-
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
-
         """
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
@@ -114,14 +109,14 @@ class Pipeline(ABC):
         # use test loader in data_manager if there is one
         result = self.model.test(self.test_loader if test_loader is None else test_loader)
         result = self.compute_hit_ratio(result, query)
-        return result
+        self.performances[self.iteration] = result
 
     def compute_hit_ratio(self, result: Dict, query: Optional[List[int]] = None) -> Dict:
         """Utility function for computing the hit ratio as used within the current performance
         and theoretical performance methods.
 
         :param result: Dict or Dict-like of metrics
-        :param query: List of indices selected for labelling. Usef for calculating hit ratio metric
+        :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         """
         if self.data_manager.top_unlabelled is not None:
             result["hit_ratio"] = (
@@ -140,12 +135,11 @@ class Pipeline(ABC):
         observations_for_labelling = self.strategy.active_learning_step(num_annotate=num_annotate, *args, **kwargs)
         return observations_for_labelling
 
-    def active_learning_update(self, indices: List[int], update_tag: str = "") -> None:
+    def active_learning_update(self, indices: List[int]) -> None:
         """
         Updates labels based on indices selected for labelling
 
         :param indices: List of indices selected for labelling
-        :param update_tag: tag which records what the observations(indices) were labelled by.
         Default behaviour is to map to iteration at which it was labelled
         """
         self.oracle.update_dataset(data_manager=self.data_manager, indices=indices)
@@ -155,34 +149,30 @@ class Pipeline(ABC):
         logger.info("Length of labelled %s" % (len(self.l_indices)))
         logger.info("Length of unlabelled %s" % (len(self.u_indices)))
         logger.info("Percentage labelled %s" % self.percentage_labelled)
-        self.log_labelled_by(indices, tag=update_tag)
+        self.log_labelled_by(indices)
 
     def full_active_learning_run(
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
-        test_loader: DataLoader = None,
-        return_query_history: bool = False,
+        test_loader: Optional[DataLoader] = None,
         *strategy_args,
         **strategy_kwargs,
-    ) -> Optional[Dict]:
-        """Given the number of samples to annotate and a test loader
-        this method will go through the entire active learning process of training
-        the model on the labelled set, and recording the current performance
-        based on this. Then it will proceed to compute uncertainties for the
-        unlabelled observations, rank them, and get the top num_annotate observations
-        labelled to be added to the next iteration's labelled dataset L'. This
-        process repeats until there are no observations left in the unlabelled set.
+    ) -> None:
+        """
+        Given the number of samples to annotate and a test loader this method will go through the entire
+        active learning process of training the model on the labelled set, and recording the current performance
+        based on this. Then it will proceed to compute uncertainties for the unlabelled observations, rank them,
+        and get the top num_annotate observations labelled to be added to the next iteration's labelled dataset L'.
+        This process repeats until there are no observations left in the unlabelled set.
 
         :param num_annotate: number of observations to get annotated per iteration
         :param num_iterations: number of active learning loop to perform
         :param test_loader: test data with which we evaluate the current state of the model given the labelled set L
-        :param return_query_history: whether to return the history of queries or not
-        :return: optionally returns a dictionary storing the indices of queries at each iteration
+        :param strategy_args: optional additional args for strategy call
+        :param strategy_kwargs: optional additional kwargs for strategy call
         """
         iter_count = 0
-        if return_query_history:
-            query_history = {}
         while len(self.u_indices) > 0:
             iter_count += 1
 
@@ -190,18 +180,14 @@ class Pipeline(ABC):
             observations_for_labelling = self.active_learning_step(
                 num_annotate=num_annotate, *strategy_args, **strategy_kwargs
             )
-            if return_query_history:
-                query_history[iter_count] = observations_for_labelling
 
             # Record the current performance
-            self.performances[self.iteration] = self.current_performance(
+            self.current_performance(
                 test_loader=test_loader,
                 query=observations_for_labelling,
             )
-
             self.active_learning_update(
                 observations_for_labelling,
-                update_tag=str(self.iteration),
             )
             if (num_iterations is not None) and iter_count == num_iterations:
                 break
@@ -209,13 +195,9 @@ class Pipeline(ABC):
         # Final update the model and check final test performance
         self.model.train(self.l_loader, self.valid_loader)
         self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
-        if return_query_history:
-            return query_history
 
     def performance_history(self) -> pd.DataFrame:
-        """Constructs a pandas table of performances of the model over the
-        active learning iterations
-        """
+        """Construct a pandas table of performances of the model over the active learning iterations."""
         keys = sorted(set(self.performances.keys()) - {"full"})
         logger.info("KEYS: {}".format(keys))
         df = []
@@ -243,7 +225,7 @@ class Pipeline(ABC):
         pd_df = pd.DataFrame(df, columns=columns)
         return pd_df
 
-    def log_labelled_by(self, indices: List[int], tag: str = ""):
+    def log_labelled_by(self, indices: List[int], tag: Optional[str] = None):
         """
         Update the dictionary that records what the observation
         was labelled by. Default behaviour is to map observation to
@@ -253,7 +235,8 @@ class Pipeline(ABC):
         :param tag: string which indicates what the observations where labelled by
         """
         for indx in indices:
-            self.labelled_by[indx] = tag
+            self.labelled_by[indx]["iteration"] = self.iteration
+            self.labelled_by[indx]["source"] = str(self.oracle) if tag is None else tag
 
     @property
     def u_indices(self) -> List[int]:
@@ -310,5 +293,4 @@ class Pipeline(ABC):
             str_out += "Theoretical performance: %s \n" % str(self.performances["full"])
         str_out += "Performance history \n"
         str_out += tabulate(self.performance_history(), tablefmt="pipe", headers="keys")
-
         return str_out
