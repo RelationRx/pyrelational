@@ -16,7 +16,7 @@ from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 # Active Learning package
 from pyrelational.data import DataManager
 from pyrelational.models import LightningModel
-from pyrelational.oracle import BenchmarkOracle
+from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.task_agnostic.relative_distance_strategy import (
     RelativeDistanceStrategy,

@@ -17,9 +17,9 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.models import LightningModel, ModelManager
-from pyrelational.oracle import BenchmarkOracle
+from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 # dataset
 dataset = BreastCancerDataset()
@@ -88,7 +88,7 @@ class BadgeStrategy(Strategy):
     def __init__(self):
         super(BadgeStrategy, self).__init__()
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         """
         :param num_annotate: Number of samples to label
         :return: indices of samples to label

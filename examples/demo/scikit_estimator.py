@@ -19,7 +19,7 @@ from pyrelational.data import DataManager
 
 # Model, strategy, oracle, and pipeline
 from pyrelational.models import ModelManager
-from pyrelational.oracle import BenchmarkOracle
+from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
