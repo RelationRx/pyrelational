@@ -5,7 +5,7 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import softmax
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class ClassificationStrategy(Strategy, ABC):
@@ -16,7 +16,7 @@ class ClassificationStrategy(Strategy, ABC):
         super(ClassificationStrategy, self).__init__()
         self.scoring_fn = NotImplementedError
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager):
         output = self.train_and_infer(data_manager=data_manager, model=model).mean(0)
         if not torch.allclose(output.sum(1), torch.tensor(1.0)):
             output = softmax(output)

@@ -5,9 +5,11 @@ from pyrelational.strategies.regression.bald_strategy import (
 from pyrelational.strategies.regression.expected_improvement_strategy import (
     ExpectedImprovementStrategy,
 )
-from pyrelational.strategies.regression.greedy_strategy import MeanPredictionStrategy
 from pyrelational.strategies.regression.least_confidence_strategy import (
     LeastConfidenceStrategy,
+)
+from pyrelational.strategies.regression.mean_prediction_strategy import (
+    MeanPredictionStrategy,
 )
 from pyrelational.strategies.regression.thompson_sampling_strategy import (
     ThompsonSamplingStrategy,

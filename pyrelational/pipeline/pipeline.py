@@ -3,7 +3,7 @@ the data manager, sampling functions, and model to create acquisition
 functions and general arbiters of the active learning pipeline
 """
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections import defaultdict
 from typing import Dict, List, Optional
 
@@ -13,10 +13,10 @@ from tabulate import tabulate
 from torch.utils.data import DataLoader
 
 from pyrelational.data.data_manager import DataManager
-from pyrelational.models.generic_model import ModelManager
-from pyrelational.oracle.benchmark_oracle import BenchmarkOracle
-from pyrelational.oracle.generic_oracle import Oracle
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.models.abstract_model_manager import ModelManager
+from pyrelational.oracles.abstract_oracle import Oracle
+from pyrelational.oracles.benchmark_oracle import BenchmarkOracle
+from pyrelational.strategies.abstract_strategy import Strategy
 
 logger = logging.getLogger()
 
@@ -30,7 +30,7 @@ class Pipeline(ABC):
 
     To enact a generic active learning cycle.
 
-    :param data_manager: an pyrelational data manager
+    :param data_manager: a pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
     :param model: A pyrelational model
@@ -39,7 +39,7 @@ class Pipeline(ABC):
     :param strategy: A pyrelational active learning strategy
             implements the informativeness measure and the selection algorithm being used
     :param oracle: An oracle instance
-            interfaces with various concrete oracles to obtain labels for observations
+            interfaces with various concrete oracle to obtain labels for observations
             suggested by the strategy
     """
 
@@ -131,13 +131,13 @@ class Pipeline(ABC):
             )
         return result
 
-    def active_learning_step(self, *args, **kwargs) -> List[int]:
+    def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
-        defaultKwargs = self.__dict__
-        kwargs = {**defaultKwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.active_learning_step(*args, **self.strategy._filter_kwargs(**kwargs))
+        default_kwargs = self.__dict__
+        kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
+        observations_for_labelling = self.strategy.active_learning_step(num_annotate=num_annotate, *args, **kwargs)
         return observations_for_labelling
 
     def active_learning_update(self, indices: List[int], update_tag: str = "") -> None:

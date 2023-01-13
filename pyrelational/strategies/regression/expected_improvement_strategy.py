@@ -5,7 +5,7 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_expected_improvement
 from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class ExpectedImprovementStrategy(Strategy):
@@ -15,7 +15,7 @@ class ExpectedImprovementStrategy(Strategy):
     def __init__(self):
         super(ExpectedImprovementStrategy, self).__init__()
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
         max_label = max(data_manager.get_sample_labels(data_manager.l_indices))
         uncertainty = regression_expected_improvement(x=output, max_label=max_label)

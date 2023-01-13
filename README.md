@@ -30,7 +30,7 @@ pip install pyrelational
 # Active Learning package
 import pyrelational as pal
 from pyrelational.data import DataManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 from pyrelational.models import ModelManager
 
 # Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way

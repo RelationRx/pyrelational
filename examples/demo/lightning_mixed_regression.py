@@ -8,7 +8,7 @@ from pyrelational.informativeness import (
     regression_least_confidence,
     representative_sampling,
 )
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class MixedStrategy(Strategy):

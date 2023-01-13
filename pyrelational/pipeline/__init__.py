@@ -1,1 +1,1 @@
-from pyrelational.pipeline.generic_pipeline import Pipeline
+from pyrelational.pipeline.pipeline import Pipeline

@@ -2,13 +2,13 @@
 """
 from typing import Any, List, Optional, Union
 
+import numpy as np
 import torch
 from sklearn.base import ClusterMixin
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import representative_sampling
-from pyrelational.models import ModelManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RepresentativeSamplingStrategy(Strategy):
@@ -23,7 +23,7 @@ class RepresentativeSamplingStrategy(Strategy):
         self.clustering_method = clustering_method
         self.clustering_kwargs = clustering_kwargs
 
-    def active_learning_step(
+    def __call__(
         self,
         data_manager: DataManager,
         num_annotate: Optional[int] = None,
@@ -34,5 +34,10 @@ class RepresentativeSamplingStrategy(Strategy):
             num_annotate=num_annotate,
             clustering_method=self.clustering_method,
             **self.clustering_kwargs,
+        )
+        representative_samples = np.random.choice(  # in case there are more that num_annotates samples
+            representative_samples,
+            size=(min(num_annotate, len(representative_samples)),),
+            replace=False,
         )
         return [data_manager.u_indices[i] for i in representative_samples]

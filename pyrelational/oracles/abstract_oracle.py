@@ -1,22 +1,23 @@
 """
-This file contains the implementation of a generic oracle interface for PyRelationAL
+This file contains the implementation of an abstract oracle interface for PyRelationAL
 """
-
-import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, List
 
 from pyrelational.data.data_manager import DataManager
 
 
 class Oracle(ABC):
-    """An abstract class acting as an interface for implementing concrete oracles
-    that can interact with a pyrelational pipeline"""
+    """
+    An abstract class acting as an interface for implementing concrete oracles
+    that can interact with a pyrelational pipeline
+    """
 
     def __init__(self):
         super(Oracle, self).__init__()
 
-    def update_target_value(self, data_manager: DataManager, idx: int, value: Any) -> None:
+    @staticmethod
+    def update_target_value(data_manager: DataManager, idx: int, value: Any) -> None:
         """Update the target value for the observation denoted by the index
 
         :param data_manager: reference to the data_manager whose dataset we want to update
@@ -25,7 +26,8 @@ class Oracle(ABC):
         """
         data_manager.set_target_value(idx=idx, value=value)
 
-    def update_target_values(self, data_manager: DataManager, indices: List[int], values: List[Any]) -> None:
+    @staticmethod
+    def update_target_values(data_manager: DataManager, indices: List[int], values: List[Any]) -> None:
         """Updates the target values of the observations at the supplied indices
 
         :param data_manager: reference to the data_manager whose dataset we want to update
@@ -35,10 +37,11 @@ class Oracle(ABC):
         for idx, val in zip(indices, values):
             data_manager.set_target_value(idx=idx, value=val)
 
-    def update_annotations(self, data_manager: DataManager, indices: List[int]) -> None:
+    @staticmethod
+    def update_annotations(data_manager: DataManager, indices: List[int]) -> None:
         """Calls upon the data_manager to update the set of labelled indices with those supplied
         as arguments. It will move the observations associated with the supplied indices from the
-        unlabelled set to the labelled set. By default any indices supplied that are already in
+        unlabelled set to the labelled set. By default, any indices supplied that are already in
         the labelled set are untouched.
 
         Note this does not change the target values of the indices, this is handled by a method
@@ -56,7 +59,7 @@ class Oracle(ABC):
         :param data_manager: reference to the data_manager which will load the observation if necessary
         :param idx: index to observation which we want to query an annotation
 
-        :return: the output of the oracle
+        :return: the output of the oracles
         """
         pass
 

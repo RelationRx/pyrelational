@@ -3,11 +3,8 @@ Active learning using entropy based confidence uncertainty measure
 between classes in the posterior predictive distribution to
 choose which observations to propose to the oracle
 """
-
-from pyrelational.data import DataManager
 from pyrelational.informativeness import classification_entropy
-from pyrelational.models import ModelManager
-from pyrelational.strategies.classification.generic_classification_strategy import (
+from pyrelational.strategies.classification.abstract_classification_strategy import (
     ClassificationStrategy,
 )
 
