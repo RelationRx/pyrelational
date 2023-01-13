@@ -17,7 +17,7 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.models import LightningModel
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 # dataset
 dataset = BreastCancerDataset()

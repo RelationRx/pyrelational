@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 
 from pyrelational.data import DataManager
-from pyrelational.strategies.generic_al_strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RandomAcquisitionStrategy(Strategy):
@@ -14,6 +14,6 @@ class RandomAcquisitionStrategy(Strategy):
     def __init__(self):
         super(RandomAcquisitionStrategy, self).__init__()
 
-    def active_learning_step(self, num_annotate: int, data_manager: DataManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager) -> List[int]:
         num_annotate = min(num_annotate, len(data_manager.u_indices))
         return np.random.choice(data_manager.u_indices, size=num_annotate, replace=False).tolist()

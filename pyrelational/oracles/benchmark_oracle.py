@@ -1,15 +1,14 @@
-import logging
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pyrelational.data.data_manager import DataManager
 
-from .generic_oracle import Oracle
+from .abstract_oracle import Oracle
 
 
 class BenchmarkOracle(Oracle):
-    """An dummy oracle designed for evaluating strategies in R&D settings,
-    it assumes that all of the observations are sufficiently annotated and
+    """
+    An oracle designed for evaluating strategies in R&D settings,
+    it assumes that all the observations are sufficiently annotated and
     returns those annotations when queried.
     """
 

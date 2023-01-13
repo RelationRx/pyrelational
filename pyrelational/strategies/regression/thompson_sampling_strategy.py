@@ -1,7 +1,5 @@
-from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_thompson_sampling
-from pyrelational.models import ModelManager
-from pyrelational.strategies.regression.generic_regression_strategy import (
+from pyrelational.strategies.regression.abstract_regression_strategy import (
     RegressionStrategy,
 )
 

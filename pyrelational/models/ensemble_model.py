@@ -7,7 +7,7 @@ from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
-from .generic_model import ModelManager
+from .abstract_model_manager import ModelManager
 from .lightning_model import LightningModel
 from .model_utils import _determine_device
 

@@ -7,7 +7,7 @@ from pytorch_lightning import LightningModule
 from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
-from .generic_model import ModelManager
+from .abstract_model_manager import ModelManager
 from .lightning_model import LightningModel
 from .model_utils import _determine_device
 
