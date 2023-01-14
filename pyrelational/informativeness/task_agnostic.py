@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader
 logging.basicConfig()
 logger = logging.getLogger()
 
-Array = Union[torch.Tensor, NDArray[float], List[float]]
+Array = Union[torch.Tensor, NDArray, List]
 
 
 def relative_distance(
@@ -145,9 +145,9 @@ def representative_sampling(
 
 
 def get_closest_query_to_centroids(
-    centroids: NDArray[float],
-    query: NDArray[float],
-    cluster_assignment: NDArray[int],
+    centroids: NDArray,
+    query: NDArray,
+    cluster_assignment: NDArray,
 ) -> List[int]:
     """
     Find the closest sample in query to centroids.
@@ -167,7 +167,7 @@ def get_closest_query_to_centroids(
     return out
 
 
-def get_random_query_from_cluster(cluster_assignment: NDArray[int]) -> List[int]:
+def get_random_query_from_cluster(cluster_assignment: NDArray) -> List[int]:
     """
     Get random indices drawn from each cluster.
 
