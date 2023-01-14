@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Type, Union
+from typing import Any, Dict, Optional, Type, Union
 
 from torch.utils.data import DataLoader
 
@@ -9,8 +9,8 @@ class ModelManager(ABC):
     def __init__(
         self,
         model_class: Type[Any],
-        model_config: Union[str, Dict],
-        trainer_config: Union[str, Dict],
+        model_config: Union[str, Dict[str, Any]],
+        trainer_config: Union[str, Dict[str, Any]],
     ):
         """
         Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
@@ -33,6 +33,7 @@ class ModelManager(ABC):
 
     def init_trainer(self, trainer_config: Dict) -> Any:
         """
+        Initialise trainer.
 
         :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
         :return: trainer module/function
@@ -41,35 +42,38 @@ class ModelManager(ABC):
 
     def init_model(self) -> Any:
         """
+        Initialise model instance(s).
 
         :return: an instance of self.model_class based on self.model_config
         """
         return self.model_class(**self.model_config)
 
     @abstractmethod
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         """
+        Run train routine.
 
         :param train_loader: pytorch dataloader for training set
         :param valid_loader: pytorch dataloader for validation set
-        :return: none
         """
         pass
 
     @abstractmethod
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict:
         """
+        Run test routine.
 
         :param loader: pytorch dataloader for test set
         :return: performance metrics
         """
         pass
 
-    def __call__(self, loader: DataLoader) -> Any:
+    def __call__(self, loader: DataLoader[Any]) -> Any:
         """
+        Compute predictions for each sample in dataloader.
 
         :param loader: pytorch dataloader
-        :return: uncertainties for each sample in dataloader
+        :return: predictions
         """
         pass
 

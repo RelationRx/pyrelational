@@ -1,7 +1,7 @@
-from typing import Sized
+from typing import Any, Sized
 
 from torch.utils.data import Dataset
 
 
-class SizedDataset(Dataset, Sized):
+class SizedDataset(Dataset[Any], Sized):
     ...
