@@ -21,9 +21,9 @@ Array = Union[torch.Tensor, np.ndarray, List]
 
 
 def relative_distance(
-    query_set: Union[Array, DataLoader],
-    reference_set: Union[Array, DataLoader],
-    metric: Optional[Union[str, Callable]] = "euclidean",
+    query_set: Union[Array, DataLoader[Any]],
+    reference_set: Union[Array, DataLoader[Any]],
+    metric: Optional[Union[str, Callable[..., Any]]] = "euclidean",
     axis: int = -1,
 ) -> torch.Tensor:
     """
@@ -85,7 +85,7 @@ def relative_distance(
 
 
 def representative_sampling(
-    query_set: Union[Array, DataLoader],
+    query_set: Union[Array, DataLoader[Any]],
     num_annotate: Optional[int] = None,
     clustering_method: Union[str, ClusterMixin] = "KMeans",
     **clustering_kwargs: Optional[Any],

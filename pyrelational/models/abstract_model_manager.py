@@ -31,7 +31,7 @@ class ModelManager(ABC):
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
 
-    def init_trainer(self, trainer_config: Dict) -> Any:
+    def init_trainer(self, trainer_config: Dict[str, Any]) -> Any:
         """
         Initialise trainer.
 
@@ -59,7 +59,7 @@ class ModelManager(ABC):
         pass
 
     @abstractmethod
-    def test(self, loader: DataLoader[Any]) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         """
         Run test routine.
 
