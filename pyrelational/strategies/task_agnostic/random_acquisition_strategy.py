@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 
 from pyrelational.data import DataManager
-from pyrelational.strategies.strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RandomAcquisitionStrategy(Strategy):

@@ -8,7 +8,7 @@ from sklearn.base import ClusterMixin
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import representative_sampling
-from pyrelational.strategies.strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RepresentativeSamplingStrategy(Strategy):

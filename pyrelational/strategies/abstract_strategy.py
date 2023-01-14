@@ -33,12 +33,12 @@ def _call_unimplemented(self, *input: Any) -> None:
 
 class Strategy(ABC):
     """
-    This module defines the interface for a generic active learning strategy
-    which is composed of defining an `active_learning_step` function which
-    suggests observations to be labeled. In the default case the `active_learning_step`
-    is the composition of a informativeness function which assigns a measure of
-    informativenes to unlabelled observations and a selection algorithm which chooses
-    what observations to present to the oracle.
+    This module defines an abstract active learning strategy.
+
+    Any strategy should be a subclass of this class and override the `__call__` method to suggest observations
+    to be labeled. In the general case `__call__` would be the composition of an informativeness function,
+    which assigns a measure of informativeness to unlabelled observations, and a selection algorithm which
+    chooses what observations to present to the oracle.
     """
 
     def __init__(self, *args, **kwargs):
@@ -48,8 +48,8 @@ class Strategy(ABC):
 
     def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
         """
-        Implement a single step of the active learning strategy stopping and returning the
-        unlabelled observations to be labelled as a list of dataset indices.
+        Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
+        as a list of dataset indices.
 
         :param num_annotate: number of samples to annotate
         :param args: any arguments needed by private _active_learning_step method
@@ -61,13 +61,15 @@ class Strategy(ABC):
 
     @staticmethod
     def train_and_infer(data_manager: DataManager, model: ModelManager) -> Any:
-        """Trains the model on the currently labelled subset of the data and produces
-        an output that can be used in model uncertainty based strategies
+        """
+        Train the model on the currently labelled subset of the data and produces an output that can be used in
+        model uncertainty based strategies.
 
         :param data_manager: reference to data_manager which will supply data to train model
             and the unlabelled observations
         :param model: Model with generic model interface that will be trained and used to produce
             output of this method
+        :return: output of the model
         """
         model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
         output = model(data_manager.get_unlabelled_loader())
@@ -77,7 +79,8 @@ class Strategy(ABC):
         """
         Filter kwargs such that they match the active_learning_step signature of the concrete strategy.
 
-        type VAR_POSITIONAL (*args) and VAR_KEYWORD (**kwargs)
+        :param kwargs: keyword arguments to filter
+        :return: filtered keyword arguments
         """
         _params = (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
         _sign_params = inspect.signature(self.__call__).parameters

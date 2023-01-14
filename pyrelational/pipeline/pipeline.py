@@ -13,10 +13,10 @@ from tabulate import tabulate
 from torch.utils.data import DataLoader
 
 from pyrelational.data.data_manager import DataManager
-from pyrelational.models.model_manager import ModelManager
+from pyrelational.models.abstract_model_manager import ModelManager
 from pyrelational.oracles.abstract_oracle import Oracle
 from pyrelational.oracles.benchmark_oracle import BenchmarkOracle
-from pyrelational.strategies.strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 logger = logging.getLogger()
 

@@ -5,7 +5,7 @@ import torch
 from pyrelational.data import DataManager
 from pyrelational.informativeness import softmax
 from pyrelational.models import ModelManager
-from pyrelational.strategies.strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class ClassificationStrategy(Strategy, ABC):

@@ -4,7 +4,7 @@ import torch
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import relative_distance
-from pyrelational.strategies.strategy import Strategy
+from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RelativeDistanceStrategy(Strategy):

@@ -43,7 +43,7 @@ class TestStrategies(TestCase):
         self.strategy = self.strategy_class(**self.strategy_kwargs)
 
     def test_active_learning_step(self) -> None:
-        """Test active learning step."""
+        """Test active learning step return the required number of sample indices."""
         out = self.strategy.active_learning_step(
             num_annotate=5, model=self.model, data_manager=self.datamanager, **self.step_kwargs
         )
