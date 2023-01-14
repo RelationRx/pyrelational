@@ -10,6 +10,7 @@ from typing import Any, Callable, List, Optional, Union, get_args
 import numpy as np
 import sklearn.cluster as sklust
 import torch
+from numpy.typing import NDArray
 from sklearn.base import ClusterMixin
 from sklearn.metrics import pairwise_distances_argmin, pairwise_distances_argmin_min
 from torch.utils.data import DataLoader
@@ -17,7 +18,7 @@ from torch.utils.data import DataLoader
 logging.basicConfig()
 logger = logging.getLogger()
 
-Array = Union[torch.Tensor, np.ndarray, List]
+Array = Union[torch.Tensor, NDArray[float], List[float]]
 
 
 def relative_distance(
@@ -50,17 +51,17 @@ def relative_distance(
         reference_set = np.array(reference_set)
         reference_set = reference_set.reshape((reference_set.shape[0], -1))
 
-    if isinstance(reference_set, np.ndarray) and isinstance(query_set, np.ndarray):
+    if isinstance(reference_set, NDArray) and isinstance(query_set, NDArray):
 
         _, distances = pairwise_distances_argmin_min(query_set, reference_set, metric=metric, axis=axis)
-    elif isinstance(reference_set, np.ndarray) and isinstance(query_set, DataLoader):
+    elif isinstance(reference_set, NDArray) and isinstance(query_set, DataLoader):
         distances = []
         for q in query_set:
             q = q[0].reshape((q[0].shape[0], -1))
             distances.append(pairwise_distances_argmin_min(q, reference_set, metric=metric, axis=axis)[1])
         distances = np.hstack(distances)
 
-    elif isinstance(reference_set, DataLoader) and isinstance(query_set, np.ndarray):
+    elif isinstance(reference_set, DataLoader) and isinstance(query_set, NDArray):
         distances = []
         for r in reference_set:
             r = r[0].reshape((r[0].shape[0], -1))
@@ -136,7 +137,8 @@ def representative_sampling(
 
     lbls = clustering_cls.fit_predict(query_set)
     if hasattr(clustering_cls, "cluster_centers_indices_"):
-        return clustering_cls.cluster_centers_indices_
+        indices: List[int] = clustering_cls.cluster_centers_indices_
+        return indices
     elif hasattr(clustering_cls, "cluster_centers_"):
         return get_closest_query_to_centroids(clustering_cls.cluster_centers_, query_set, lbls)
     else:
@@ -147,7 +149,19 @@ def representative_sampling(
         return get_random_query_from_cluster(lbls)
 
 
-def get_closest_query_to_centroids(centroids: np.ndarray, query: np.ndarray, cluster_assignment: np.ndarray) -> List:
+def get_closest_query_to_centroids(
+    centroids: NDArray[float],
+    query: NDArray[float],
+    cluster_assignment: NDArray[int],
+) -> List[int]:
+    """
+    Find the closest sample in query to centroids.
+
+    :param centroids: array containing centroids
+    :param query: array containing query samples
+    :param cluster_assignment: indicate what cluster each query sample is associated with
+    :return: list of indices of query samples
+    """
     out = []
     for i in np.unique(cluster_assignment):
         ixs = np.where(cluster_assignment == i)[0]
@@ -158,7 +172,13 @@ def get_closest_query_to_centroids(centroids: np.ndarray, query: np.ndarray, clu
     return out
 
 
-def get_random_query_from_cluster(cluster_assignment: np.ndarray) -> List:
+def get_random_query_from_cluster(cluster_assignment: NDArray[int]) -> List[int]:
+    """
+    Get random indices drawn from each cluster.
+
+    :param cluster_assignment: array indicating what cluster each sample is associated with.
+    :return: list of indices of query samples
+    """
     out = []
     for i in np.unique(cluster_assignment):
         ixs = np.where(cluster_assignment == i)[0]
