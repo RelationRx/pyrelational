@@ -51,17 +51,17 @@ def relative_distance(
         reference_set = np.array(reference_set)
         reference_set = reference_set.reshape((reference_set.shape[0], -1))
 
-    if isinstance(reference_set, NDArray) and isinstance(query_set, NDArray):
+    if isinstance(reference_set, np.ndarray) and isinstance(query_set, np.ndarray):
 
         _, distances = pairwise_distances_argmin_min(query_set, reference_set, metric=metric, axis=axis)
-    elif isinstance(reference_set, NDArray) and isinstance(query_set, DataLoader):
+    elif isinstance(reference_set, np.ndarray) and isinstance(query_set, DataLoader):
         distances = []
         for q in query_set:
             q = q[0].reshape((q[0].shape[0], -1))
             distances.append(pairwise_distances_argmin_min(q, reference_set, metric=metric, axis=axis)[1])
         distances = np.hstack(distances)
 
-    elif isinstance(reference_set, DataLoader) and isinstance(query_set, NDArray):
+    elif isinstance(reference_set, DataLoader) and isinstance(query_set, np.ndarray):
         distances = []
         for r in reference_set:
             r = r[0].reshape((r[0].shape[0], -1))
@@ -87,7 +87,7 @@ def relative_distance(
 
 def representative_sampling(
     query_set: Union[Array, DataLoader[Any]],
-    num_annotate: Optional[int] = None,
+    num_annotate: int,
     clustering_method: Union[str, ClusterMixin] = "KMeans",
     **clustering_kwargs: Optional[Any],
 ) -> Array:
@@ -112,12 +112,7 @@ def representative_sampling(
         query_set = torch.cat(out, 0)
     query_set = np.array(query_set)
 
-    if num_annotate is None and hasattr(clustering_method, "n_clusters"):
-        num_annotate = clustering_method.n_clusters
-
-    if num_annotate is not None and (
-        num_annotate >= query_set.shape[0]
-    ):  # if there are less samples than sought queries, return everything
+    if num_annotate >= query_set.shape[0]:  # if there are less samples than sought queries, return everything
         return np.arange(query_set.shape[0])
 
     if isinstance(clustering_method, str) and hasattr(sklust, clustering_method):
