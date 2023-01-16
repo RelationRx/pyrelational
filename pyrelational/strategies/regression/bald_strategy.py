@@ -35,7 +35,7 @@ class SoftBALDStrategy(BALDStrategy):
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
-        scores = self.scoring_fn(x=output) / self.T
+        scores = self.scoring_fn(x=output.squeeze(-1)) / self.T
         scores = torch.softmax(scores, -1).numpy()
         num_annotate = min(num_annotate, len(data_manager.u_indices))
         return np.random.choice(data_manager.u_indices, size=num_annotate, replace=False, p=scores).tolist()
