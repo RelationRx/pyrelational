@@ -90,7 +90,7 @@ class TestPipeline(TestCase):
     def test_get_percentage_labelled(self) -> None:
         """Test get percentage labelled method return correct output."""
         percentage = self.pipeline.percentage_labelled
-        self.assertEqual(percentage, pytest.approx(0.1, 0.05))
+        self.assertEqual(percentage, pytest.approx(10, 5))
 
     def test_get_dataset_size(self) -> None:
         """Test get dataset size."""

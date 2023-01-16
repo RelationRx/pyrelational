@@ -18,6 +18,8 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 # Active Learning package
 from pyrelational.data import DataManager
 from pyrelational.models import LightningModel
+from pyrelational.oracles import BenchmarkOracle
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
 # dataset
@@ -90,7 +92,6 @@ class GPLightningModel(LightningModel):
         trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
         if valid_loader is not None:
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
-
         self.current_model = model
 
     def __call__(self, loader):
@@ -109,20 +110,24 @@ data_manager = DataManager(
     validation_indices=val_indices,
     test_indices=test_indices,
     loader_batch_size="full",
+    loader_shuffle=False,
 )  # all the labelled data points have to be used for training
 
-strategy = LeastConfidenceStrategy(data_manager=data_manager, model=model)
+# Set up strategy and rest of the pipeline
+strategy = LeastConfidenceStrategy()
+oracle = BenchmarkOracle()
+pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 # performance with the full trainset labelled
-strategy.theoretical_performance()
+pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = strategy.active_learning_step(num_annotate=100)
-strategy.active_learning_update(indices=to_annotate, update_tag="Manual Update")
+to_annotate = pipeline.active_learning_step(num_annotate=100)
+pipeline.active_learning_update(indices=to_annotate, update_tag="Manual Update")
 
 # Annotating data step by step until the trainset is fully annotated
-strategy.full_active_learning_run(num_annotate=100)
-print(strategy)
+pipeline.full_active_learning_run(num_annotate=100)
+print(pipeline)

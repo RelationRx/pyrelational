@@ -19,8 +19,8 @@ from pyrelational.data import DataManager
 
 # Model, strategy, oracle, and pipeline
 from pyrelational.models import ModelManager
-from pyrelational.oracles import DummyOracle
-from pyrelational.pipeline.generic_pipeline import Pipeline
+from pyrelational.oracles import BenchmarkOracle
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 
 
@@ -87,8 +87,8 @@ model = SKRFC(RandomForestClassifier, model_config, trainer_config)
 # Instantiate an active learning strategy
 al_strategy = LeastConfidenceStrategy()
 
-# Instantiate an oracle (in this case a dummy one)
-oracle = DummyOracle()
+# Instantiate an oracle
+oracle = BenchmarkOracle()
 
 # Given that we have a data manager, a model, and an active learning strategy
 # we may create an active learning pipeline

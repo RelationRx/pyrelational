@@ -338,7 +338,7 @@ class DataManager(object):
         """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
-        return num_labelled / float(total_len)
+        return (num_labelled / float(total_len)) * 100
 
     def get_sample(self, ds_index: int) -> Tuple[torch.Tensor]:
         return self[ds_index]
@@ -396,8 +396,8 @@ class DataManager(object):
         str_out = self.__repr__()
         if self.train_indices is not None:
             str_out += "\nTraining set size: {}\n".format(len(self.train_indices))
-        if self.labelled_indices is not None:
-            str_out += "Labelled: {}, Unlabelled: {}\n".format(len(self.labelled_indices), len(self.unlabelled_indices))
+        if self.l_indices is not None:
+            str_out += "Labelled: {}, Unlabelled: {}\n".format(len(self.l_indices), len(self.u_indices))
         str_out += "Percentage Labelled: {}".format(str_percentage_labelled)
 
         return str_out
