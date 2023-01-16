@@ -10,6 +10,7 @@ in PyTorch is useful for defining the different active learning strategies
 from typing import Optional, Union
 
 import torch
+from torch import Tensor
 from torch.distributions import Distribution
 
 
@@ -23,7 +24,7 @@ def regression_greedy_score(
     Either x or mean should be provided as input.
 
     :param x: 2D pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
-    :param std: 1D pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
+    :param mean: 1D pytorch tensor corresponding to the average of a model's predictions for each sample
     :param axis: index of the axis along which the repeats are
     :return: 1D pytorch tensor of scores
     """
@@ -99,7 +100,6 @@ def regression_upper_confidence_bound(
     :param axis: index of the axis along which the repeats are
     :return: 1D pytorch tensor of scores
     """
-
     _, mean, std = _check_regression_informativeness_input(x, mean, std, axis=axis)
     return mean + kappa * std
 
@@ -133,7 +133,21 @@ def regression_bald(x: torch.Tensor, axis: int = 0) -> torch.Tensor:
     return torch.log(1 + x.mean(axis)) / torch.tensor(2.0)
 
 
-def _check_regression_informativeness_input(x=None, mean=None, std=None, axis=0):
+def _check_regression_informativeness_input(
+    x: Optional[Union[Tensor, Distribution]] = None,
+    mean: Tensor = None,
+    std: Tensor = None,
+    axis: int = 0,
+) -> Union[Optional[Tensor], Optional[Tensor], Optional[Tensor]]:
+    """
+    Check inputs
+
+    :param x:
+    :param mean:
+    :param std:
+    :param axis:
+    :return:
+    """
     if x is None and mean is None and std is None:
         raise ValueError("Not all of x, mean, and std can be None.")
 
