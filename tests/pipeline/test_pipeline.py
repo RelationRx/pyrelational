@@ -70,7 +70,7 @@ class TestPipeline(TestCase):
         """Test theoretical and current performance returns."""
         self.pipeline.theoretical_performance()
         self.assertIn("full", self.pipeline.performances)
-        self.assertEqual(len(list(self.pipeline.performances.keys())), 2)
+        self.assertEqual(len(list(self.pipeline.performances.keys())), 1)
 
     def test_full_active_learning_run(self) -> None:
         """Test that full run completes and attributes have the expected shapes."""
