@@ -194,7 +194,7 @@ class Pipeline(ABC):
 
         # Final update the model and check final test performance
         self.model.train(self.l_loader, self.valid_loader)
-        self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
+        self.current_performance(test_loader=test_loader)
 
     def performance_history(self) -> pd.DataFrame:
         """Construct a pandas table of performances of the model over the active learning iterations."""
