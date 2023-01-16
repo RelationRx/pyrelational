@@ -9,36 +9,31 @@ from pyrelational.strategies.regression import (
 )
 
 REGRESSION_TEST_CASES = [
-    {"task_type": "regression", "strategy_class": BALDStrategy, "strategy_kwargs": {}, "step_kwargs": {}},
-    {"task_type": "regression", "strategy_class": LeastConfidenceStrategy, "strategy_kwargs": {}, "step_kwargs": {}},
+    {"task_type": "regression", "strategy_class": BALDStrategy, "strategy_kwargs": {}},
+    {"task_type": "regression", "strategy_class": LeastConfidenceStrategy, "strategy_kwargs": {}},
     {
         "task_type": "regression",
         "strategy_class": ExpectedImprovementStrategy,
         "strategy_kwargs": {},
-        "step_kwargs": {},
     },
     {
         "task_type": "regression",
         "strategy_class": MeanPredictionStrategy,
         "strategy_kwargs": {},
-        "step_kwargs": {},
     },
     {
         "task_type": "regression",
         "strategy_class": SoftBALDStrategy,
         "strategy_kwargs": {"temperature": 0.42},
-        "step_kwargs": {},
     },
     {
         "task_type": "regression",
         "strategy_class": ThompsonSamplingStrategy,
         "strategy_kwargs": {},
-        "step_kwargs": {},
     },
     {
         "task_type": "regression",
         "strategy_class": UpperConfidenceBoundStrategy,
         "strategy_kwargs": {"kappa": 0.42},
-        "step_kwargs": {},
     },
 ]
