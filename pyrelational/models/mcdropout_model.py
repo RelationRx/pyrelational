@@ -54,8 +54,8 @@ class MCDropoutManager(ModelManager, ABC):
                     x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
-            predictions = torch.stack(predictions)
-        return predictions
+            ret = torch.stack(predictions)
+        return ret
 
 
 class LightningMCDropoutModel(MCDropoutManager, LightningModel):

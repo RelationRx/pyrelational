@@ -1,14 +1,17 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 from torch.utils.data import DataLoader
 
+ModelType = TypeVar("ModelType")
+E = TypeVar("E")
 
-class ModelManager(ABC):
+
+class ModelManager(ABC, Generic[ModelType, E]):
     def __init__(
         self,
-        model_class: Type[Any],
+        model_class: Type[ModelType],
         model_config: Union[str, Dict[str, Any]],
         trainer_config: Union[str, Dict[str, Any]],
     ):
@@ -26,21 +29,12 @@ class ModelManager(ABC):
 
         self.model_class = model_class
         self.model_config = json.load(open(model_config, "r")) if isinstance(model_config, str) else model_config
-        self.current_model = None
+        self.current_model: Optional[E] = None
         self.trainer_config = (
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
 
-    def init_trainer(self, trainer_config: Dict[str, Any]) -> Any:
-        """
-        Initialise trainer.
-
-        :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
-        :return: trainer module/function
-        """
-        pass
-
-    def init_model(self) -> Any:
+    def init_model(self) -> E:
         """
         Initialise model instance(s).
 
@@ -68,12 +62,10 @@ class ModelManager(ABC):
         """
         pass
 
-    def __call__(self, loader: DataLoader[Any]) -> Any:
+    def __call__(self, loader: DataLoader) -> Any:
         """
-        Compute predictions for each sample in dataloader.
-
         :param loader: pytorch dataloader
-        :return: predictions
+        :return: uncertainties for each sample in dataloader
         """
         pass
 

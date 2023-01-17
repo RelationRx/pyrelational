@@ -1,8 +1,8 @@
-from typing import Dict, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning import LightningModule, Trainer
+from pytorch_lightning import Callback, LightningModule, Trainer
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
@@ -11,7 +11,7 @@ from .abstract_model_manager import ModelManager
 from .model_utils import _determine_device
 
 
-class LightningModel(ModelManager):
+class LightningModel(ModelManager[LightningModule, LightningModule]):
     r"""
     A wrapper for pytorch lightning modules that instantiates and uses a pytorch lightning trainer.
 
@@ -54,7 +54,7 @@ class LightningModel(ModelManager):
         """
         config = self.trainer_config
         config = _check_pyl_trainer_config(config)
-        callbacks = []
+        callbacks: List[Callback] = []
         if config["use_early_stopping"]:
             callbacks.append(
                 EarlyStopping(
@@ -84,7 +84,7 @@ class LightningModel(ModelManager):
         )
         return trainer, checkpoint_callback
 
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         trainer, ckpt_callback = self.init_trainer()
 
         model = self.init_model()

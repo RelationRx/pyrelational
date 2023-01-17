@@ -1,10 +1,11 @@
 from abc import ABC
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Type, Union
 
 import numpy as np
 import torch
 from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.model_helpers import is_overridden
+from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
@@ -12,14 +13,14 @@ from .lightning_model import LightningModel
 from .model_utils import _determine_device
 
 
-class EnsembleManager(ModelManager, ABC):
+class EnsembleManager(ModelManager[Module, List[Module]], ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
 
     def __init__(
         self,
-        model_class: Type[Any],
+        model_class: Type[Module],
         model_config: Union[str, Dict],
         trainer_config: Union[str, Dict],
         n_estimators: int = 10,
@@ -28,7 +29,7 @@ class EnsembleManager(ModelManager, ABC):
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
-    def init_model(self) -> List[Any]:
+    def init_model(self) -> List[Module]:
         """
 
         :return: list of models
@@ -54,8 +55,8 @@ class EnsembleManager(ModelManager, ABC):
                     x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
-            predictions = torch.stack(predictions)
-        return predictions
+            ret = torch.stack(predictions)
+        return ret
 
 
 class LightningEnsembleModel(EnsembleManager, LightningModel):
@@ -86,9 +87,6 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
         wrapper.train(train_loader, valid_loader)
         predictions = wrapper(loader)
         assert predictions.size(0) == 10
-
-
-
     """
 
     def __init__(

@@ -26,7 +26,7 @@ class RepresentativeSamplingStrategy(Strategy):
     def __call__(
         self,
         data_manager: DataManager,
-        num_annotate: Optional[int] = None,
+        num_annotate: int,
     ) -> List[int]:
         unlabelled_features = torch.stack(data_manager.get_sample_feature_vectors(data_manager.u_indices))
         representative_samples = representative_sampling(
@@ -35,9 +35,10 @@ class RepresentativeSamplingStrategy(Strategy):
             clustering_method=self.clustering_method,
             **self.clustering_kwargs,
         )
+        num_samples = min(num_annotate, len(representative_samples))
         representative_samples = np.random.choice(  # in case there are more that num_annotates samples
             representative_samples,
-            size=(min(num_annotate, len(representative_samples)),),
+            size=(num_samples,),
             replace=False,
         )
         return [data_manager.u_indices[i] for i in representative_samples]

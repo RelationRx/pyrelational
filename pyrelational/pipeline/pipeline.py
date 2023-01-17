@@ -5,7 +5,7 @@ functions and general arbiters of the active learning pipeline
 import logging
 from abc import ABC
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -48,7 +48,7 @@ class Pipeline(ABC):
         data_manager: DataManager,
         model: ModelManager,
         strategy: Strategy,
-        oracle: Oracle = None,
+        oracle: Optional[Oracle] = None,
     ):
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
@@ -56,7 +56,7 @@ class Pipeline(ABC):
         self.strategy = strategy
 
         if oracle is None:
-            self.oracle = BenchmarkOracle()  # Pattern for linter not allowing call in arguments
+            self.oracle: Oracle = BenchmarkOracle()  # Pattern for linter not allowing call in arguments
         else:
             self.oracle = oracle
 
@@ -64,8 +64,8 @@ class Pipeline(ABC):
         self.iteration = 0
 
         # Data structures for logging values of interest
-        self.performances = defaultdict(dict)
-        self.labelled_by = {}
+        self.performances: Dict[Union[int, str], Dict[str, float]] = defaultdict(dict)
+        self.labelled_by: Dict[int, str] = {}
         self.log_labelled_by(data_manager.l_indices, tag="Initialisation")
 
     def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> Dict:
@@ -131,7 +131,7 @@ class Pipeline(ABC):
             )
         return result
 
-    def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
+    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
@@ -161,7 +161,7 @@ class Pipeline(ABC):
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
-        test_loader: DataLoader = None,
+        test_loader: Optional[DataLoader] = None,
         return_query_history: bool = False,
         *strategy_args,
         **strategy_kwargs,
@@ -211,6 +211,7 @@ class Pipeline(ABC):
         self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
         if return_query_history:
             return query_history
+        return
 
     def performance_history(self) -> pd.DataFrame:
         """Constructs a pandas table of performances of the model over the

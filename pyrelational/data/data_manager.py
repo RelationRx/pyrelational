@@ -346,8 +346,8 @@ class DataManager(object):
     def get_sample_feature_vector(self, ds_index: int) -> torch.Tensor:
         """To be reviewed for deprecation (for datasets without tensors)"""
         sample = self.get_sample(ds_index)
-        sample = sample[0].flatten()
-        return sample
+        ret = sample[0].flatten()
+        return ret
 
     def get_sample_feature_vectors(self, ds_indices: List[int]) -> List[torch.Tensor]:
         """To be reviewed for deprecation (for datasets without tensors)"""
@@ -362,7 +362,7 @@ class DataManager(object):
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return res
 
-    def create_loader(self, dataset: Dataset, shuffle: bool = False) -> DataLoader:
+    def create_loader(self, dataset: Subset, shuffle: bool = False) -> DataLoader:
         """
         Utility to help create dataloader with specifications set at initialisation.
 

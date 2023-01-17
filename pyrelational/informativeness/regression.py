@@ -7,7 +7,7 @@ Most of these functions are simple but giving them a name and implementation
 in PyTorch is useful for defining the different active learning strategies
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import torch
 from torch import Tensor
@@ -58,7 +58,7 @@ def regression_expected_improvement(
     x: Optional[Union[Tensor, Distribution]] = None,
     mean: Optional[Tensor] = None,
     std: Optional[Tensor] = None,
-    max_label: float = 0.0,
+    max_label: Union[float, Tensor] = 0.0,
     axis: int = 0,
     xi: float = 0.01,
 ) -> Tensor:
@@ -168,7 +168,7 @@ def _check_regression_informativeness_input(
         assert std.ndim == 1, "std input should be a 1D tensor"
 
 
-def _compute_mean(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
+def _compute_mean(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Tensor:
     """
     Compute mean of input.
 
@@ -184,7 +184,7 @@ def _compute_mean(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
         raise TypeError(f"Expected torch Tensor or Distribution, got {type(x)} instead.")
 
 
-def _compute_std(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
+def _compute_std(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Tensor:
     """
     Compute standard deviation of input.
 
