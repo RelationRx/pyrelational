@@ -17,6 +17,8 @@ from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 # Active Learning package
 from pyrelational.data import DataManager
 from pyrelational.models import LightningMCDropoutModel
+from pyrelational.oracles import BenchmarkOracle
+from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import LeastConfidenceStrategy
 
 # dataset
@@ -34,18 +36,21 @@ data_manager = DataManager(
     dataset=dataset, train_indices=train_indices, validation_indices=val_indices, test_indices=test_indices
 )
 
-strategy = LeastConfidenceStrategy(data_manager=data_manager, model=model)
+
+strategy = LeastConfidenceStrategy()
+oracle = BenchmarkOracle()
+pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 # performance with the full trainset labelled
-strategy.theoretical_performance()
+pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = strategy.active_learning_step(num_annotate=100)
-strategy.active_learning_update(indices=to_annotate, update_tag="Manual Update")
+to_annotate = pipeline.active_learning_step(num_annotate=100)
+pipeline.active_learning_update(indices=to_annotate, update_tag="Manual Update")
 
 # Annotating data step by step until the trainset is fully annotated
-strategy.full_active_learning_run(num_annotate=100)
-print(strategy)
+pipeline.full_active_learning_run(num_annotate=100)
+print(pipeline)
