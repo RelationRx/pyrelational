@@ -4,9 +4,22 @@
 [![PyPI version](https://badge.fury.io/py/pyrelational.svg)](https://badge.fury.io/py/pyrelational)
 [![Documentation Status](https://readthedocs.org/projects/pyrelational/badge/?version=stable)](https://pyrelational.readthedocs.io/en/stable/?badge=stable)
 
-PyRelationAL is an open source Python library for the rapid and reliable construction of active learning (AL) pipelines and strategies. The toolkit offers a modular design for a flexible workflow that enables active learning with as little change to your models and datasets as possible. The package is primarily aimed at researchers so that they can rapidly reimplement, adapt, and create novel active learning strategies. For more information on how we achieve this you can consult the sections below, our comprehensive docs, or our paper. PyRelationAL is principally designed with PyTorch workflows in mind but can easily be extended to work with other ML frameworks.
+PyRelationAL is an open source Python library for the rapid and reliable construction of active learning (AL) pipelines and strategies. The toolkit offers a modular design for a flexible workflow that enables active learning with as little change to your models and datasets as possible. The package is primarily aimed at researchers so that they can rapidly reimplement, adapt, and create novel active learning strategies. For more information on how we achieve this you can consult the sections below, our comprehensive docs, or our paper. PyRelationAL is principally designed with PyTorch workflows in mind (for Bayesian inference approximation with neural networks) but is designed from the start to be agnostic to the user's choice of ML framework for model implementation.
 
-Detailed in the **overview** section below, PyRelationAL offers:
+Detailed in the *overview* section below, PyRelationAL is centered around 5 modules for the development of AL pipelines and strategies. Allowing the user to freely focus on different aspects of the active learning cycle whilst ensuring other components adhere to a consistent API.
+
+- **DataManager**: Data management in AL pipelines.
+- **ModelManager**: Framework agnostic wrappers for ML models to work with PyRelationAL.
+- **Strategy**: Module for developing active learning strategies.
+- **Oracle**: Interfaces for different oracles and labelling tools.
+- **Pipeline**: Facilitate the communication between different PyRelationAL modules to run an active learning cycle.
+- *Uncertainty*: PyRelationAL also offers special wrappers for PyTorch modules that enable Bayesian inference approximation for deep active learning.
+
+Furthermore, the package comes with a growing number of **benchmark datasets and default AL tasks** based on literature with associated public licenses to help researchers test their AL strategies and build on a common set of benchmarks.
+
+One of our main incentives for making this library is to get more people interested in research and development of AL. hence we have made primers, tutorials, and examples available on our website for newcomers (and experienced AL practitioners alike). Experienced users can refer to our numerous examples to get started on creating custom pipelines and strategies in their AL projects.
+
+<!-- Detailed in the **overview** section below, PyRelationAL offers:
 
 - Data management in AL pipelines (*DataManager*)
 - Wrappers for models to be used in AL workflows and strategies (*Model Manager*)
@@ -15,6 +28,7 @@ Detailed in the **overview** section below, PyRelationAL offers:
 - Benchmark datasets: an API for downloading datasets and AL task configurations based on literature for more standardised and painfree benchmarking.
 
 One of our main incentives for making this library is to get more people interested in research and development of AL. Hence we have made primers, tutorials, and examples available on our website for newcomers (and experience AL practitioners alike). Experienced users can refer to our numerous examples to get started on their AL projects.
+ -->
 
 ## Quick install
 
@@ -26,7 +40,7 @@ pip install pyrelational
 
 ### Example
 
-```python
+<!-- ```python
 # Active Learning package
 import pyrelational as pal
 from pyrelational.data import DataManager
@@ -45,6 +59,38 @@ model = ModelManager(ModelConstructor, model_config, trainer_config, **kwargs)
 al_manager = Strategy(data_manager=data_manager, model=model)
 al_manager.theoretical_performance(test_loader=test_loader)
 al_manager.full_active_learning_run(num_annotate=100, test_loader=test_loader)
+```
+ -->
+```python
+# Active Learning package
+from pyrelational.data import DataManager
+from pyrelational.models import ModelManager
+from pyrelational.strategies.classification import LeastConfidenceStrategy
+from pyrelational.oracles import BenchmarkOracle
+from pyrelational.pipeline import Pipeline
+
+# Instantiate data-loaders, models, trainers the usual Pytorch/PytorchLightning way
+# In most cases, no change is needed to current workflow to incorporate
+# active learning
+data_manager = DataManager(dataset, train_indices, validation_indices,
+  test_indices, labelled_indices)
+
+# Create a ModelManager that will handle model instantiation, training and evaluation
+model = ModelManager(ModelConstructor, model_config, trainer_config, **kwargs)
+
+# Use the various implemented active learning strategies or define your own
+strategy = LeastConfidenceStrategy()
+
+# Interface with various dataset annotation tools or use an oracle for Benchmarking
+oracle = BenchmarkOracle()
+
+# Bring it all together within a Pipeline that manages the active learning cycle
+pipeline = Pipeline(data_manager, model, strategy, oracle)
+
+# Use the pipeline to run active learning cycles and log performance data
+to_annotate = pipeline.active_learning_step(num_annotate=5)
+pipeline.full_active_learning_run(num_annotate=10)
+print(pipeline)
 ```
 
 ## Overview
