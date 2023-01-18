@@ -95,15 +95,28 @@ print(pipeline)
 
 ## Overview
 
-![Overview](docs/images/active_learning_loop.png "Overview")
+<!-- ![Overview](docs/images/active_learning_loop.png "Overview")
+ -->
 
-The `PyRelationAL` package decomposes the active learning workflow into four main components: 1) a **data manager**, 2) a **model**, 3) an **AL strategy** built around an informativeness function, and 4) an **oracle** (see Figure above). Note that the oracle is external to the package.
+The `PyRelationAL` package decomposes the active learning workflow into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
+
+The **DataManager** (`pyrelational.data.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
+
+The **ModelManager** (`pyrelational.models.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and primarily handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It enables the use of ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`) with PyRelationAL workflows.
+
+The AL **Strategy** (`pyrelational.strategies.abstract_strategy.Strategy`) defines an active learning strategy. We like to typically think of strategies being compositions of an *informativeness measure* and a *query selection algorithm* that selects observations based on the perceived informativeness. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles. Users can implement their own strategies by overriding the `.__call__()` method. Look at `examples/demo/model_badge.py` for an example.
+
+The **Oracle** (`pyrelational.oracles.abstract_oracle.Oracle`) is an entity which provides annotations to observations, as suggested by an active learning strategy. In PyRelationAL, the oracle is an interface to whatever annotation tool is being used (e.g. LabelStudio or a bespoke lab-in-the-loop setup). For benchmarking active learning strategies this is not necessary, and we provide a `BenchmarkOracle` for this purpose.
+
+The **Pipeline** (`pyrelational.pipeline.Pipeline`) arbitrates the active learning cycle and the communication between its `DataManager`, `ModelManager`, `Strategy`, `Oracle` components. It also logs various data for the evaluation of different active learning strategies such as the performance of the model at each iteration.
+
+<!-- The `PyRelationAL` package decomposes the active learning workflow into four main components: 1) a **data manager**, 2) a **model**, 3) an **AL strategy** built around an informativeness function, and 4) an **oracle** (see Figure above). Note that the oracle is external to the package.
 
 The **data manager** (defined in `pyrelational.data.data_manager.DataManager`) wraps around a PyTorch Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 
 The **model** (extending `pyrelational.models.generic_model.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It also enables using ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`).
 
-The **AL strategy** (extending `pyrelational.strategies.generic_al_strategy.Strategy`) defines an active learning strategy via an *informativeness measure* and a *query selection algorithm*. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles.
+The **AL strategy** (extending `pyrelational.strategies.generic_al_strategy.Strategy`) defines an active learning strategy via an *informativeness measure* and a *query selection algorithm*. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles. -->
 
 In addition to the main modules above we offer tools for **uncertainty estimation**. In recognition of the growing use of deep learning models we offer a suite of methods for Bayesian inference approximation to quantify uncertainty coming from the functional model such as MCDropout and ensembles of models (which may be used to also define query by committee and query by disagreement strategies).
 
@@ -189,6 +202,9 @@ The diverse examples scripts and notebooks aim to showcase how to use pyrelation
   - `model_gaussianprocesses.py`
   - `scikit_estimator.py`
 
+## Datasets and Active Learning Tasks
+
+
 
 ## Contributing to PyRelationAL
 
@@ -217,3 +233,5 @@ Make sure you have `sphinx` and `sphinx-rtd-theme` packages installed (`pip inst
 
 To generate the docs, `cd` into the `docs/` directory and run `make html`. This will generate the docs
 at `docs/_build/html/index.html`.
+
+## Citing our work
