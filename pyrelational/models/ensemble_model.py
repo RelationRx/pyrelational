@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, Generic, List, Optional, Type, TypeVar, Union
 
 import numpy as np
 import torch
@@ -12,15 +12,17 @@ from .abstract_model_manager import ModelManager
 from .lightning_model import LightningModel
 from .model_utils import _determine_device
 
+ModelType = TypeVar("ModelType", bound=Module)
 
-class EnsembleManager(ModelManager[Module, List[Module]], ABC):
+
+class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
 
     def __init__(
         self,
-        model_class: Type[Module],
+        model_class: Type[ModelType],
         model_config: Union[str, Dict],
         trainer_config: Union[str, Dict],
         n_estimators: int = 10,
@@ -28,13 +30,6 @@ class EnsembleManager(ModelManager[Module, List[Module]], ABC):
         super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
-
-    def init_model(self) -> List[Module]:
-        """
-
-        :return: list of models
-        """
-        return [self.model_class(**self.model_config) for _ in range(self.n_estimators)]
 
     def __call__(self, loader: DataLoader) -> torch.Tensor:
         """
@@ -59,7 +54,7 @@ class EnsembleManager(ModelManager[Module, List[Module]], ABC):
         return ret
 
 
-class LightningEnsembleModel(EnsembleManager, LightningModel):
+class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 
@@ -101,9 +96,9 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
         )
 
     def train(self, train_loader: DataLoader, valid_loader: Optional[DataLoader] = None) -> None:
-        models = self.init_model()
         self.current_model = []
-        for model in models:
+        for _ in range(self.n_estimators):
+            model = self.init_model()
             trainer, ckpt_callback = self.init_trainer()
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
             if valid_loader is not None and is_overridden("validation_step", model):

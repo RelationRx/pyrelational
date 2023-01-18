@@ -137,7 +137,7 @@ class Pipeline(ABC):
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.active_learning_step(num_annotate=num_annotate, *args, **kwargs)
+        observations_for_labelling = self.strategy.active_learning_step(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
     def active_learning_update(self, indices: List[int], update_tag: str = "") -> None:
@@ -187,9 +187,7 @@ class Pipeline(ABC):
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
-            observations_for_labelling = self.active_learning_step(
-                num_annotate=num_annotate, *strategy_args, **strategy_kwargs
-            )
+            observations_for_labelling = self.active_learning_step(num_annotate, *strategy_args, **strategy_kwargs)
             if return_query_history:
                 query_history[iter_count] = observations_for_labelling
 
@@ -211,7 +209,7 @@ class Pipeline(ABC):
         self.performances[self.iteration] = self.current_performance(test_loader=test_loader)
         if return_query_history:
             return query_history
-        return
+        return None
 
     def performance_history(self) -> pd.DataFrame:
         """Constructs a pandas table of performances of the model over the

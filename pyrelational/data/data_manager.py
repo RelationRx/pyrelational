@@ -250,7 +250,7 @@ class DataManager(object):
             assert 0 < percentage < 1, "hit ratio's percentage should be strictly between 0 and 1 (or 0 and 100)"
             ixs = np.array(self.u_indices)
             percentage = int(percentage * len(ixs))
-            y = torch.stack(self.get_sample_labels(ixs)).squeeze()
+            y = self.get_sample_labels(ixs)
             threshold = np.sort(y.abs())[-percentage]
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
@@ -356,11 +356,11 @@ class DataManager(object):
             res.append(self.get_sample_feature_vector(ds_index))
         return res
 
-    def get_sample_labels(self, ds_indices: Collection[int]) -> List[torch.Tensor]:
+    def get_sample_labels(self, ds_indices: Collection[int]) -> torch.Tensor:
         res = []
         for ds_index in ds_indices:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
-        return res
+        return torch.cat(res)
 
     def create_loader(self, dataset: Subset, shuffle: bool = False) -> DataLoader:
         """

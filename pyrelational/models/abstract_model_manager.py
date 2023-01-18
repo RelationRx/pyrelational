@@ -34,7 +34,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
 
-    def init_model(self) -> E:
+    def init_model(self) -> ModelType:
         """
         Initialise model instance(s).
 
