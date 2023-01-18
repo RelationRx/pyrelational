@@ -360,7 +360,7 @@ class DataManager(object):
         res = []
         for ds_index in ds_indices:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
-        return torch.cat(res)
+        return torch.stack(res)
 
     def create_loader(self, dataset: Subset[Any], shuffle: bool = False) -> DataLoader[Any]:
         """

@@ -44,11 +44,11 @@ def relative_distance(
     :return: pytorch tensor of dimension the number of samples in query_set containing the minimum distance from each
         sample to the reference set
     """
-    if isinstance(query_set, get_args(Array)):
+    if isinstance(query_set, (Tensor, np.ndarray, list)):
         query_set = np.array(query_set)
         query_set = query_set.reshape((query_set.shape[0], -1))
 
-    if isinstance(reference_set, get_args(Array)):
+    if isinstance(reference_set, (Tensor, np.ndarray, list)):
         reference_set = np.array(reference_set)
         reference_set = reference_set.reshape((reference_set.shape[0], -1))
 
@@ -91,7 +91,7 @@ def representative_sampling(
     num_annotate: int,
     clustering_method: Union[str, ClusterMixin] = "KMeans",
     **clustering_kwargs: Optional[Any],
-) -> Array:
+) -> List[int]:
     """
     Function that selects representative samples of the query set. Representative selection relies on clustering
     algorithms in scikit-learn.
@@ -114,7 +114,8 @@ def representative_sampling(
     query_set = np.array(query_set)
 
     if num_annotate >= query_set.shape[0]:  # if there are less samples than sought queries, return everything
-        return np.arange(query_set.shape[0])
+        ret: List[int] = np.arange(query_set.shape[0]).tolist()
+        return ret
 
     if isinstance(clustering_method, str) and hasattr(sklust, clustering_method):
         clustering_method = getattr(sklust, clustering_method)
@@ -134,15 +135,23 @@ def representative_sampling(
     lbls = clustering_cls.fit_predict(query_set)
     if hasattr(clustering_cls, "cluster_centers_indices_"):
         indices: List[int] = clustering_cls.cluster_centers_indices_
-        return indices
+        representative_samples = indices
     elif hasattr(clustering_cls, "cluster_centers_"):
-        return get_closest_query_to_centroids(clustering_cls.cluster_centers_, query_set, lbls)
+        representative_samples = get_closest_query_to_centroids(clustering_cls.cluster_centers_, query_set, lbls)
     else:
         logger.warning(
             """Clustering method does not return centroids to identify closest samples,
             returning random sample from each cluster"""
         )
-        return get_random_query_from_cluster(lbls)
+        representative_samples = get_random_query_from_cluster(lbls)
+
+    num_samples = min(num_annotate, len(representative_samples))
+    ret = np.random.choice(  # in case there are more that num_annotates samples
+        representative_samples,
+        size=(num_samples,),
+        replace=False,
+    ).tolist()
+    return ret
 
 
 def get_closest_query_to_centroids(

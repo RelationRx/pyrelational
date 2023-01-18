@@ -35,10 +35,4 @@ class RepresentativeSamplingStrategy(Strategy):
             clustering_method=self.clustering_method,
             **self.clustering_kwargs,
         )
-        num_samples = min(num_annotate, len(representative_samples))
-        representative_samples = np.random.choice(  # in case there are more that num_annotates samples
-            representative_samples,
-            size=(num_samples,),
-            replace=False,
-        )
         return [data_manager.u_indices[i] for i in representative_samples]
