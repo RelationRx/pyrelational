@@ -28,6 +28,8 @@ jobs:
           source env/bin/activate
           flake8 --exclude env
           black . --exclude env --check 2>&1 >/dev/null
+      - name: Run mypy
+        run: |
           mypy pyrelational/ --allow-redefinition --disable-error-code import --disable-error-code no-untyped-call --implicit-reexport --strict --install-types --non-interactive --ignore-missing-imports --follow-imports=silent
       - name: clean venv
         run: |
