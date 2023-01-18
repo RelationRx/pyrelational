@@ -202,9 +202,6 @@ The diverse examples scripts and notebooks aim to showcase how to use pyrelation
   - `model_gaussianprocesses.py`
   - `scikit_estimator.py`
 
-## Datasets and Active Learning Tasks
-
-
 
 ## Contributing to PyRelationAL
 
@@ -235,3 +232,12 @@ To generate the docs, `cd` into the `docs/` directory and run `make html`. This 
 at `docs/_build/html/index.html`.
 
 ## Citing our work
+
+```
+@article{scherer2022pyrelational,
+  title={PyRelationAL: A Library for Active Learning Research and Development},
+  author={Scherer, Paul and Gaudelet, Thomas and Pouplin, Alison and Soman, Jyothish and Edwards, Lindsay and Taylor-King, Jake P and others},
+  journal={arXiv preprint arXiv:2205.11117},
+  year={2022}
+}
+```
