@@ -75,3 +75,7 @@ class Oracle(ABC):
             target_val = self.query_target_value(data_manager=data_manager, idx=idx)
             self.update_target_value(data_manager=data_manager, idx=idx, value=target_val)
         self.update_annotations(data_manager=data_manager, indices=indices)
+
+    def __str__(self):
+        """Return class name."""
+        return self.__class__.__name__
