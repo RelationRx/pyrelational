@@ -41,7 +41,8 @@ class SynthReg1(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -84,7 +85,8 @@ class SynthReg2(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -112,7 +114,8 @@ class DiabetesDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]

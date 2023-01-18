@@ -98,7 +98,8 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        return trainer.test(self.current_model, dataloaders=loader)[0]
+        ret: Dict[str, float] = trainer.test(self.current_model, dataloaders=loader)[0]
+        return ret
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """

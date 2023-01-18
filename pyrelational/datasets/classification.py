@@ -260,7 +260,8 @@ class FashionMNIST(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -289,7 +290,8 @@ class UCIClassification(Dataset[Tuple[Tensor, Tensor]]):
         self.y = torch_dataset[:][1].squeeze()
 
     def __len__(self) -> int:
-        return self.len_dataset
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -415,7 +417,8 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.y = remap_to_int(self.y).long()
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -489,7 +492,8 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -552,7 +556,8 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
         self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -615,7 +620,8 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
         self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
@@ -675,7 +681,8 @@ class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
-        return self.x.size(0)
+        ret: int = self.x.shape[0]
+        return ret
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]

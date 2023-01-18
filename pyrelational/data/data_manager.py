@@ -403,8 +403,8 @@ class DataManager(object):
         return str_out
 
     @staticmethod
-    def _check_is_sized(dataset: Dataset[Any]) -> SizedDataset:
+    def _check_is_sized(dataset: Dataset[Any]) -> SizedDataset[Any]:
         """Check Dataset is Sized (has a __len__ method)"""
         if not isinstance(dataset, Sized):
             raise AttributeError("dataset must have __len__ method defined")
-        return cast(SizedDataset, dataset)
+        return cast(SizedDataset[Any], dataset)
