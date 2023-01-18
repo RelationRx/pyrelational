@@ -30,6 +30,7 @@ jobs:
           black . --exclude env --check 2>&1 >/dev/null
       - name: Run mypy
         run: |
+          source env/bin/activate
           mypy pyrelational/ --allow-redefinition --disable-error-code import --disable-error-code no-untyped-call --implicit-reexport --strict --install-types --non-interactive --ignore-missing-imports --follow-imports=silent
       - name: clean venv
         run: |
