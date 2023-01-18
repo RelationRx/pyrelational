@@ -30,6 +30,7 @@ def regression_greedy_score(
     """
     _check_regression_informativeness_input(x, mean=mean)
     if mean is None:
+        assert x is not None, "both x and mean are None, cannot compute."
         return _compute_mean(x, axis)
     return mean
 
@@ -50,6 +51,7 @@ def regression_least_confidence(
     """
     _check_regression_informativeness_input(x, std=std)
     if std is None:
+        assert x is not None, "both x and std are None, cannot compute."
         return _compute_std(x, axis)
     return std
 
@@ -108,8 +110,10 @@ def regression_upper_confidence_bound(
     """
     _check_regression_informativeness_input(x, mean, std)
     if mean is None:
+        assert x is not None, "both x and mean are None, cannot compute."
         mean = _compute_mean(x, axis)
     if std is None:
+        assert x is not None, "both x and std are None, cannot compute."
         std = _compute_std(x, axis)
     return mean + kappa * std
 

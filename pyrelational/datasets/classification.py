@@ -4,7 +4,7 @@
 import os
 import urllib.request
 from os import path
-from typing import Any, Generator, Sized, Tuple
+from typing import Any, Dict, Generator, Sequence, Tuple
 
 import numpy as np
 import pyreadr
@@ -14,7 +14,7 @@ import torch.distributions as distributions
 from sklearn.datasets import load_breast_cancer, load_digits
 from sklearn.model_selection import StratifiedKFold
 from torch import Tensor
-from torch.utils.data import Dataset
+from torch.utils.data import ConcatDataset, Dataset
 from torchvision import datasets, transforms
 
 from .uci_datasets import UCIDatasets
@@ -118,7 +118,7 @@ class SynthClass2(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     @staticmethod
-    def _split(iterable: Sized, n: int) -> Generator[Sized]:
+    def _split(iterable: Sequence[Any], n: int) -> Generator[Sequence[Any], None, None]:
         # split the iterable into n approximately same size parts
         k, m = divmod(len(iterable), n)
         return (iterable[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
@@ -172,7 +172,7 @@ class SynthClass3(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
     @staticmethod
-    def _split(iterable: Sized, n: int) -> Generator[Sized]:
+    def _split(iterable: Sequence[Any], n: int) -> Generator[Sequence[Any], None, None]:
         # split the iterable into n approximately same size parts
         k, m = divmod(len(iterable), n)
         return (iterable[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
@@ -251,7 +251,7 @@ class FashionMNIST(Dataset[Tuple[Tensor, Tensor]]):
         super(FashionMNIST, self).__init__()
         train_dataset = datasets.FashionMNIST(root=data_dir, train=True, download=True, transform=transforms.ToTensor())
         test_dataset = datasets.FashionMNIST(root=data_dir, train=False, download=True, transform=transforms.ToTensor())
-        dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+        dataset: ConcatDataset[Tuple[Tensor, Tensor]] = ConcatDataset([train_dataset, test_dataset])
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
         self.y = torch.stack([torch.tensor(dataset[i][1]) for i in range(len(dataset))])
 
@@ -303,7 +303,7 @@ def remap_to_int(torch_class_array: Tensor) -> Tensor:
         mapped to contiguous ints
     """
     remapped_array = []
-    tca2idx = {}
+    tca2idx: Dict[int, int] = {}
     mapping_value = 0
     for val in torch_class_array:
         val = int(val)
@@ -401,17 +401,17 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
         train_label = scipy.io.loadmat(self.data_dir + "striatum_train_labels_mini.mat")["labels"]
         test_label = scipy.io.loadmat(self.data_dir + "striatum_test_labels_mini.mat")["labels"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
         self.y = remap_to_int(self.y).long()
 
     def __len__(self) -> int:
@@ -438,7 +438,7 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.n_splits = n_splits
         self._load_dataset()
 
-    def _load_dataset(self, size=1000, n_dim: int = 2, random_balance: bool = False, n_splits: int = 10):
+    def _load_dataset(self, size: int = 1000, n_dim: int = 2, random_balance: bool = False, n_splits: int = 10) -> None:
         if random_balance:
             # proportion of class 1 to vary from 10% to 90%
             cl1_prop = np.random.rand()
@@ -476,17 +476,17 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
         test_data = np.concatenate((testX1, testX2), axis=0)
         test_labels = np.concatenate((testY1, testY2))
 
-        self.x = np.vstack([train_data, test_data])
-        self.y = np.vstack([train_labels, test_labels]).squeeze()
+        x = np.vstack([train_data, test_data])
+        y = np.vstack([train_labels, test_labels]).squeeze()
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
         return self.x.shape[0]
@@ -539,17 +539,17 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
         return self.x.shape[0]
@@ -602,17 +602,17 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
         return self.x.shape[0]
@@ -664,8 +664,6 @@ class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
         x = data[xcols].to_numpy()
         y = data[ycol].to_numpy()
         _, y = np.unique(y, return_inverse=True)  # map string classes to ints
-        self.x = x
-        self.y = y
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
         self.in_dim = len(xcols)
@@ -673,11 +671,11 @@ class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
         self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
     def __len__(self) -> int:
-        return self.x.shape[0]
+        return self.x.size(0)
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]

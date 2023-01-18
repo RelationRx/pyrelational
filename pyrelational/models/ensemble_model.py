@@ -113,5 +113,5 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         # return average score across ensemble
         performances: Dict[str, float] = {}
         for k in output[0].keys():
-            performances[k] = np.mean([o[k] for o in output])
+            performances[k] = np.mean([o[k] for o in output]).item()
         return performances

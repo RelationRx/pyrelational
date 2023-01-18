@@ -60,7 +60,7 @@ class Strategy(ABC):
         return self(num_annotate=num_annotate, *args, **filtered_kwargs)
 
     @staticmethod
-    def train_and_infer(data_manager: DataManager, model: ModelManager) -> Any:
+    def train_and_infer(data_manager: DataManager, model: ModelManager[Any, Any]) -> Any:
         """
         Train the model on the currently labelled subset of the data and produces an output that can be used in
         model uncertainty based strategies.

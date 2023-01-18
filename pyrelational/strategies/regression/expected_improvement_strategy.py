@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 import torch
 
@@ -15,7 +15,7 @@ class ExpectedImprovementStrategy(Strategy):
     def __init__(self) -> None:
         super(ExpectedImprovementStrategy, self).__init__()
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
         max_label = torch.max(data_manager.get_sample_labels(data_manager.l_indices))
         uncertainty = regression_expected_improvement(x=output.squeeze(-1), max_label=max_label)

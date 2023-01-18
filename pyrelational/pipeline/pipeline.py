@@ -48,7 +48,7 @@ class Pipeline(ABC):
     def __init__(
         self,
         data_manager: DataManager,
-        model: ModelManager,
+        model: ModelManager[Any, Any],
         strategy: Strategy,
         oracle: Optional[Oracle] = None,
     ):
@@ -66,7 +66,7 @@ class Pipeline(ABC):
         self.labelled_by: Dict[int, Dict[str, Union[str, int]]] = defaultdict(dict)
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
-    def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> RETURN_TYPE:
+    def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> RETURN_TYPE:
         """Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
@@ -93,7 +93,9 @@ class Pipeline(ABC):
         self.model.current_model = None
         return self.performances["full"]
 
-    def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> None:
+    def current_performance(
+        self, test_loader: Optional[DataLoader[Any]] = None, query: Optional[List[int]] = None
+    ) -> None:
         """
         Compute performance of model.
 
@@ -115,7 +117,7 @@ class Pipeline(ABC):
         self.performances[self.iteration] = result
         return None
 
-    def compute_hit_ratio(self, result: Dict, query: Optional[List[int]] = None) -> Dict:
+    def compute_hit_ratio(self, result: Dict[str, float], query: Optional[List[int]] = None) -> Dict[str, float]:
         """Utility function for computing the hit ratio as used within the current performance
         and theoretical performance methods.
 
@@ -159,9 +161,9 @@ class Pipeline(ABC):
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
-        test_loader: Optional[DataLoader] = None,
-        *strategy_args,
-        **strategy_kwargs,
+        test_loader: Optional[DataLoader[Any]] = None,
+        *strategy_args: Any,
+        **strategy_kwargs: Any,
     ) -> None:
         """
         Given the number of samples to annotate and a test loader this method will go through the entire
@@ -224,7 +226,7 @@ class Pipeline(ABC):
         pd_df = pd.DataFrame(df, columns=columns)
         return pd_df
 
-    def log_labelled_by(self, indices: List[int], tag: Optional[str] = None):
+    def log_labelled_by(self, indices: List[int], tag: Optional[str] = None) -> None:
         """
         Update the dictionary that records what the observation
         was labelled by. Default behaviour is to map observation to
@@ -242,7 +244,7 @@ class Pipeline(ABC):
         return self.data_manager.u_indices
 
     @property
-    def u_loader(self) -> DataLoader:
+    def u_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_unlabelled_loader()
 
     @property
@@ -250,19 +252,19 @@ class Pipeline(ABC):
         return self.data_manager.l_indices
 
     @property
-    def l_loader(self) -> DataLoader:
+    def l_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_labelled_loader()
 
     @property
-    def train_loader(self) -> DataLoader:
+    def train_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_train_loader(full=True)
 
     @property
-    def valid_loader(self) -> Optional[DataLoader]:
+    def valid_loader(self) -> Optional[DataLoader[Any]]:
         return self.data_manager.get_validation_loader()
 
     @property
-    def test_loader(self) -> DataLoader:
+    def test_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_test_loader()
 
     @property
