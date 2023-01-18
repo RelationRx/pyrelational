@@ -19,6 +19,7 @@ from pyrelational.oracles.benchmark_oracle import BenchmarkOracle
 from pyrelational.strategies.abstract_strategy import Strategy
 
 logger = logging.getLogger()
+RETURN_TYPE = Dict[str, float]
 
 
 class Pipeline(ABC):
@@ -49,23 +50,23 @@ class Pipeline(ABC):
         data_manager: DataManager,
         model: ModelManager,
         strategy: Strategy,
-        oracle: Oracle = None,
+        oracle: Optional[Oracle] = None,
     ):
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy
-        self.oracle = BenchmarkOracle() if oracle is None else oracle
+        self.oracle: Oracle = BenchmarkOracle() if oracle is None else oracle
 
         # Pipeline meta properties
         self.iteration = 0
 
         # Data structures for logging values of interest
-        self.performances: Dict[Union[int, str], Dict[str, float]] = defaultdict(dict)
-        self.labelled_by: Dict[Union[int, str], Dict[str, float]] = defaultdict(dict)
+        self.performances: Dict[Union[int, str], RETURN_TYPE] = defaultdict(dict)
+        self.labelled_by: Dict[int, Dict[str, Union[str, int]]] = defaultdict(dict)
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
-    def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> Dict:
+    def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> RETURN_TYPE:
         """Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
@@ -90,10 +91,9 @@ class Pipeline(ABC):
 
         # make sure that theoretical best model is not stored
         self.model.current_model = None
-
         return self.performances["full"]
 
-    def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
+    def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> None:
         """
         Compute performance of model.
 
@@ -113,6 +113,7 @@ class Pipeline(ABC):
         result = self.model.test(self.test_loader if test_loader is None else test_loader)
         result = self.compute_hit_ratio(result, query)
         self.performances[self.iteration] = result
+        return None
 
     def compute_hit_ratio(self, result: Dict, query: Optional[List[int]] = None) -> Dict:
         """Utility function for computing the hit ratio as used within the current performance
@@ -214,13 +215,10 @@ class Pipeline(ABC):
             logger.info("COLUMNS: {}".format(columns))
             logger.info("Full Missing")
         for k in keys:
-            row = [k]
+            row: List[Union[str, float]] = [k]
             logger.info(self.performances[k])
             for c in columns[1:]:
-                if isinstance(self.performances[k], list):
-                    row.append(self.performances[k][0][c])
-                else:
-                    row.append(self.performances[k][c])
+                row.append(self.performances[k][c])
             df.append(row)
 
         pd_df = pd.DataFrame(df, columns=columns)
@@ -260,7 +258,7 @@ class Pipeline(ABC):
         return self.data_manager.get_train_loader(full=True)
 
     @property
-    def valid_loader(self) -> DataLoader:
+    def valid_loader(self) -> Optional[DataLoader]:
         return self.data_manager.get_validation_loader()
 
     @property
