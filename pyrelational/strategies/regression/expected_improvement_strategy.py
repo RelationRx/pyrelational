@@ -12,7 +12,7 @@ class ExpectedImprovementStrategy(Strategy):
     """Implement Expected Improvement Strategy whereby each unlabelled sample is scored based on the
     expected improvement scoring function. The top samples according to this score are selected at each step"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(ExpectedImprovementStrategy, self).__init__()
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:

@@ -62,7 +62,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
         """
         pass
 
-    def __call__(self, loader: DataLoader) -> Any:
+    def __call__(self, loader: DataLoader[Any]) -> Any:
         """
         :param loader: pytorch dataloader
         :return: uncertainties for each sample in dataloader

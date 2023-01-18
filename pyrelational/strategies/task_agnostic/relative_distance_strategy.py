@@ -10,7 +10,7 @@ from pyrelational.strategies.abstract_strategy import Strategy
 class RelativeDistanceStrategy(Strategy):
     """Diversity sampling based active learning strategy"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(RelativeDistanceStrategy, self).__init__()
 
     def __call__(self, num_annotate: int, data_manager: DataManager, metric: str = "euclidean") -> List[int]:

@@ -40,8 +40,8 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
     def __init__(
         self,
         model_class: Type[LightningModule],
-        model_config: Union[Dict, str],
-        trainer_config: Union[Dict, str],
+        model_config: Union[Dict[str, Any], str],
+        trainer_config: Union[Dict[str, Any], str],
     ):
         super(LightningModel, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
@@ -94,13 +94,13 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
 
         self.current_model = model
 
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
         return trainer.test(self.current_model, dataloaders=loader)[0]
 
-    def __call__(self, loader: DataLoader) -> torch.Tensor:
+    def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
 
         :param loader: pytorch dataloader
@@ -120,7 +120,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         return predictions
 
 
-def _check_pyl_trainer_config(config: Dict) -> Dict:
+def _check_pyl_trainer_config(config: Dict[str, Any]) -> Dict[str, Any]:
     """
     Checks the trainer config for pytorch lightning and adds default values for missing required entries
     :param config: a dictionary with key:values required by the init_trainer function

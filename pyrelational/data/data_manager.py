@@ -60,7 +60,7 @@ class DataManager(object):
 
     def __init__(
         self,
-        dataset: Dataset,
+        dataset: Dataset[Any],
         train_indices: Optional[List[int]] = None,
         labelled_indices: Optional[List[int]] = None,
         unlabelled_indices: Optional[List[int]] = None,
@@ -143,7 +143,7 @@ class DataManager(object):
             raise ValueError(f"The {mode} set is empty")
 
     @staticmethod
-    def _ensure_no_l_u_intersection(labelled_indices: List[int], unlabelled_indices: List[int]):
+    def _ensure_no_l_u_intersection(labelled_indices: List[int], unlabelled_indices: List[int]) -> None:
         if set.intersection(set(labelled_indices), set(unlabelled_indices)):
             raise ValueError("There is overlap between labelled and unlabelled samples")
 
@@ -218,7 +218,7 @@ class DataManager(object):
         # Override this if necessary
         return len(self.dataset)
 
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor]:
+    def __getitem__(self, idx: int) -> Any:
         # So that one can access samples by index directly
         return self.dataset[idx]
 
@@ -254,24 +254,24 @@ class DataManager(object):
             threshold = np.sort(y.abs())[-percentage]
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
-    def get_train_set(self) -> Dataset:
+    def get_train_set(self) -> Dataset[Any]:
         """Get train set from full dataset and train indices."""
         train_subset = Subset(self.dataset, self.train_indices)
         return train_subset
 
-    def get_validation_set(self) -> Optional[Subset]:
+    def get_validation_set(self) -> Optional[Subset[Any]]:
         """Get validation set from full dataset and validation indices."""
         if self.validation_indices is None:
             return None
         validation_subset = Subset(self.dataset, self.validation_indices)
         return validation_subset
 
-    def get_test_set(self) -> Subset:
+    def get_test_set(self) -> Subset[Any]:
         """Get test set from full dataset and test indices."""
         test_subset = Subset(self.dataset, self.test_indices)
         return test_subset
 
-    def get_train_loader(self, full: bool = False) -> DataLoader:
+    def get_train_loader(self, full: bool = False) -> DataLoader[Any]:
         """
         Get train dataloader. Returns full train loader, else return labelled loader
 
@@ -285,26 +285,26 @@ class DataManager(object):
         else:
             return self.get_labelled_loader()
 
-    def get_validation_loader(self) -> Optional[DataLoader]:
+    def get_validation_loader(self) -> Optional[DataLoader[Any]]:
         """Get validation dataloader"""
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
         return self.create_loader(validation_set)
 
-    def get_test_loader(self) -> DataLoader:
+    def get_test_loader(self) -> DataLoader[Any]:
         """Get test dataloader"""
         return self.create_loader(self.get_test_set())
 
-    def get_unlabelled_loader(self) -> DataLoader:
+    def get_unlabelled_loader(self) -> DataLoader[Any]:
         """Get unlabelled dataloader"""
         return self.create_loader(Subset(self.dataset, self.u_indices))
 
-    def get_labelled_loader(self) -> DataLoader:
+    def get_labelled_loader(self) -> DataLoader[Any]:
         """Get labelled dataloader"""
         return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
-    def process_random(self, seed=0) -> None:
+    def process_random(self, seed: int = 0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
@@ -340,10 +340,10 @@ class DataManager(object):
         num_labelled = len(self.l_indices)
         return (num_labelled / float(total_len)) * 100
 
-    def get_sample(self, ds_index: int) -> Tuple[torch.Tensor]:
+    def get_sample(self, ds_index: int) -> Any:
         return self[ds_index]
 
-    def get_sample_feature_vector(self, ds_index: int) -> torch.Tensor:
+    def get_sample_feature_vector(self, ds_index: int) -> Any:
         """To be reviewed for deprecation (for datasets without tensors)"""
         sample = self.get_sample(ds_index)
         ret = sample[0].flatten()
@@ -362,7 +362,7 @@ class DataManager(object):
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return torch.cat(res)
 
-    def create_loader(self, dataset: Subset, shuffle: bool = False) -> DataLoader:
+    def create_loader(self, dataset: Subset[Any], shuffle: bool = False) -> DataLoader[Any]:
         """
         Utility to help create dataloader with specifications set at initialisation.
 
@@ -403,7 +403,7 @@ class DataManager(object):
         return str_out
 
     @staticmethod
-    def _check_is_sized(dataset: Dataset) -> SizedDataset:
+    def _check_is_sized(dataset: Dataset[Any]) -> SizedDataset:
         """Check Dataset is Sized (has a __len__ method)"""
         if not isinstance(dataset, Sized):
             raise AttributeError("dataset must have __len__ method defined")

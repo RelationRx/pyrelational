@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 import numpy as np
 import torch
@@ -23,15 +23,15 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
     def __init__(
         self,
         model_class: Type[ModelType],
-        model_config: Union[str, Dict],
-        trainer_config: Union[str, Dict],
+        model_config: Union[str, Dict[str, Any]],
+        trainer_config: Union[str, Dict[str, Any]],
         n_estimators: int = 10,
     ):
         super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
-    def __call__(self, loader: DataLoader) -> torch.Tensor:
+    def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
 
         :param loader: pytorch dataloader
@@ -87,15 +87,15 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
     def __init__(
         self,
         model_class: Type[LightningModule],
-        model_config: Union[Dict, str],
-        trainer_config: Union[Dict, str],
+        model_config: Union[Dict[str, Any], str],
+        trainer_config: Union[Dict[str, Any], str],
         n_estimators: int = 10,
     ):
         super(LightningEnsembleModel, self).__init__(
             model_class, model_config, trainer_config, n_estimators=n_estimators
         )
 
-    def train(self, train_loader: DataLoader, valid_loader: Optional[DataLoader] = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         self.current_model = []
         for _ in range(self.n_estimators):
             model = self.init_model()
@@ -105,13 +105,13 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
                 model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
             self.current_model.append(model.cpu())
 
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
         output = [trainer.test(model, dataloaders=loader)[0] for model in self.current_model]
         # return average score across ensemble
-        performances = {}
+        performances: Dict[str, float] = {}
         for k in output[0].keys():
             performances[k] = np.mean([o[k] for o in output])
         return performances

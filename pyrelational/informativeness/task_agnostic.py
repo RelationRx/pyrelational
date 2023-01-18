@@ -13,12 +13,13 @@ import torch
 from numpy.typing import NDArray
 from sklearn.base import ClusterMixin
 from sklearn.metrics import pairwise_distances_argmin, pairwise_distances_argmin_min
+from torch import Tensor
 from torch.utils.data import DataLoader
 
 logging.basicConfig()
 logger = logging.getLogger()
 
-Array = Union[torch.Tensor, NDArray, List]
+Array = Union[Tensor, NDArray[Any], List[Any]]
 
 
 def relative_distance(
@@ -26,7 +27,7 @@ def relative_distance(
     reference_set: Union[Array, DataLoader[Any]],
     metric: Optional[Union[str, Callable[..., Any]]] = "euclidean",
     axis: int = -1,
-) -> torch.Tensor:
+) -> Tensor:
     """
     Function that return the minimum distance, according to input metric, from each sample in the query_set to the
     samples in the reference set.
@@ -145,9 +146,9 @@ def representative_sampling(
 
 
 def get_closest_query_to_centroids(
-    centroids: NDArray,
-    query: NDArray,
-    cluster_assignment: NDArray,
+    centroids: NDArray[np.float_],
+    query: NDArray[np.float_],
+    cluster_assignment: NDArray[np.int_],
 ) -> List[int]:
     """
     Find the closest sample in query to centroids.
@@ -167,7 +168,7 @@ def get_closest_query_to_centroids(
     return out
 
 
-def get_random_query_from_cluster(cluster_assignment: NDArray) -> List[int]:
+def get_random_query_from_cluster(cluster_assignment: NDArray[np.int_]) -> List[int]:
     """
     Get random indices drawn from each cluster.
 

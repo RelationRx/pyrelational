@@ -12,7 +12,7 @@ class BenchmarkOracle(Oracle):
     returns those annotations when queried.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(BenchmarkOracle, self).__init__()
 
     def query_target_value(self, data_manager: DataManager, idx: int) -> Any:

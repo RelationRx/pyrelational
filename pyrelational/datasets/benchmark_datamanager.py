@@ -2,20 +2,22 @@
 """
 import random
 from collections import defaultdict
+from typing import Any, List
 
 import numpy as np
-import torch
 from sklearn.metrics import pairwise_distances
+from torch.utils.data import Dataset
 
 from pyrelational.data.data_manager import DataManager
 
 
-def pick_one_sample_per_class(dataset, train_indices):
+def pick_one_sample_per_class(dataset: Dataset[Any], train_indices: List[int]) -> List[int]:
     """Utility function to randomly pick one sample per class in the
     training subset of dataset and return their index in the dataset.
     This is used for defining an initial state of the labelled subset
     in the active learning task
 
+    :param dataset: input dataset
     :param train_indices: list or iterable with the indices corresponding
         to the training samples in the dataset
     """
@@ -32,7 +34,7 @@ def pick_one_sample_per_class(dataset, train_indices):
     return class_reps
 
 
-def create_warm_start(dataset, **dm_args):
+def create_warm_start(dataset: Dataset[Any], **dm_args: Any) -> DataManager:
     """Returns a datamanager with 10% randomly labelled data
     from the train indices. The rest of the observations in the training
     set comprise the unlabelled set of observations. We call this
@@ -53,7 +55,9 @@ def create_warm_start(dataset, **dm_args):
     return dm
 
 
-def create_classification_cold_start(dataset, train_indices, test_indices, **dm_args):
+def create_classification_cold_start(
+    dataset: Dataset[Any], train_indices: List[int], test_indices: List[Any], **dm_args: Any
+) -> DataManager:
     """Returns an AL task for benchmarking classification datasets. The
     AL task will sample an example from each of the classes in the training
     subset of the data.
@@ -77,7 +81,9 @@ def create_classification_cold_start(dataset, train_indices, test_indices, **dm_
     return dm
 
 
-def create_regression_cold_start(dataset, train_indices, test_indices, **dm_args):
+def create_regression_cold_start(
+    dataset: Dataset[Any], train_indices: List[int], test_indices: List[Any], **dm_args: Any
+) -> DataManager:
     """Create data manager with 2 labelled data samples, where the data samples
     labelled are the pair that have the largest distance between them
 
