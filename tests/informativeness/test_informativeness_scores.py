@@ -165,8 +165,7 @@ class TestInformativenessScorer(TestCase):
     def test_regression_input_check_with_distribution_input(self) -> None:
         """Check that the check returns no x tensor and correct shapes."""
         a = torch.distributions.Normal(torch.randn(10), torch.abs(torch.randn(10)))
-        x, m, s = runc._check_regression_informativeness_input(a)
-        self.assertIsNone(x)
+        m, s = runc._compute_mean(a), runc._compute_std(a)
         self.assertEqual(m.numel(), 10)
         self.assertEqual(s.numel(), 10)
 
@@ -177,23 +176,14 @@ class TestInformativenessScorer(TestCase):
             runc._check_regression_informativeness_input(a)
             self.assertEqual(str(err.value), "distribution input should be 1D")
 
-    def test_regression_input_check_with_tensor_input(self) -> None:
+    def test_mean_std_computation(self) -> None:
         """Check output of input check when provided with a 3D tensor."""
-        a = torch.randn(25, 100, 1)
-        x, m, s = runc._check_regression_informativeness_input(a)
-        self.assertEqual(x.ndim, 2)
+        a = torch.randn(25, 100)
+        m, s = runc._compute_mean(a), runc._compute_std(a)
         self.assertEqual(m.ndim, 1)
         self.assertEqual(s.ndim, 1)
         self.assertEqual(m.numel(), 100)
         self.assertEqual(s.numel(), 100)
-
-    def test_regression_input_check_with_mean_std_input(self) -> None:
-        """Check output of input check"""
-        mean, std = torch.randn(10), torch.abs(torch.randn(10))
-        x, m, s = runc._check_regression_informativeness_input(mean=mean, std=std)
-        self.assertIsNone(x)
-        self.assertEqual(m.numel(), mean.numel())
-        self.assertEqual(s.numel(), mean.numel())
 
     @parameterized.expand(
         [
