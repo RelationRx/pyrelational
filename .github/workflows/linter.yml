@@ -20,7 +20,7 @@ jobs:
       - name: Install flake8 and plugins
         run: |
           pip install --upgrade pip==22.2
-          python3.8 -m venv env
+          python3 -m venv env
           source env/bin/activate
           pip install flake8==4.0.1 flake8-bugbear==22.1.11 black==22.3.0 markupsafe==2.0.1 mypy==0.991
       - name: Run linter
