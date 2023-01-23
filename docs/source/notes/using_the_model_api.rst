@@ -79,7 +79,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     import torch.nn as nn
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
-    from pytorch_lightning.core.lightning import LightningModule
+    from pytorch_lightning import LightningModule
     from pyrelational.models.ensemble_model import LightningEnsembleModel
 
     # step 1: define the LightningModule with necessary methods

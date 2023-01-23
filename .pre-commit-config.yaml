@@ -23,6 +23,11 @@ repos:
   rev: v0.991
   hooks:
     - id: mypy
-      exclude: tests, examples, docs
+      exclude: |
+            (?x)(
+                ^tests/ |
+                ^examples/ |
+                ^docs/
+                )
       args: [--strict, --follow-imports=silent, --ignore-missing-imports, --allow-redefinition, --install-types, --non-interactive, --implicit-reexport, --disable-error-code=no-untyped-call]
       additional_dependencies: [torch, pytorch-lightning, numpy]
