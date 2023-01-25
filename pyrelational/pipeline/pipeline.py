@@ -103,10 +103,8 @@ class Pipeline(ABC):
                 test data compatible with model, optional as often the test loader can be
                 generated from data_manager but is here for case when it hasn't been defined
                 or there is a new test set.
-
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
-
         """
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)

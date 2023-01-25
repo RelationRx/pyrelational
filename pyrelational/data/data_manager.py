@@ -10,7 +10,6 @@ from typing import (
     Optional,
     Sequence,
     Sized,
-    Tuple,
     TypeVar,
     Union,
     cast,
