@@ -33,6 +33,8 @@ rapidly implementing active learning pipelines from data management, model devel
    reference/models.rst
    reference/informativeness.rst
    reference/strategies.rst
+   reference/oracles.rst
+   reference/pipeline.rst
 
 Indices and tables
 ==================
