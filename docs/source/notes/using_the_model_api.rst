@@ -3,7 +3,7 @@
 Defining learning models compatible with PyRelationAL
 =====================================================
 
-To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.models`)
+To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL model manager (:mod:`pyrelational.models`)
 that defines required methods for instantiation, training, and testing.
 
 
@@ -11,7 +11,7 @@ that defines required methods for instantiation, training, and testing.
 Using a pytorch module
 ______________________
 
-Let's first look an an example wrapper for a simple pytorch Module
+Let's first look an an example model manager for a simple pytorch Module
 
 .. code-block:: python
 
