@@ -19,7 +19,6 @@ from pyrelational.oracles.benchmark_oracle import BenchmarkOracle
 from pyrelational.strategies.abstract_strategy import Strategy
 
 logger = logging.getLogger()
-RETURN_TYPE = Dict[str, float]
 
 
 class Pipeline(ABC):
@@ -62,11 +61,11 @@ class Pipeline(ABC):
         self.iteration = 0
 
         # Data structures for logging values of interest
-        self.performances: Dict[Union[int, str], RETURN_TYPE] = defaultdict(dict)
+        self.performances: Dict[Union[int, str], Dict[str, float]] = defaultdict(dict)
         self.labelled_by: Dict[int, Dict[str, Union[str, int]]] = defaultdict(dict)
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
-    def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> RETURN_TYPE:
+    def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
         """Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
