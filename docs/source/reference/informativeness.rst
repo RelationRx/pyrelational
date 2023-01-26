@@ -1,15 +1,7 @@
 pyrelational.informativeness
 ============================
 
-pyrelational.informativeness.classification module
---------------------------------------------------
-
-.. automodule:: pyrelational.informativeness.classification
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyrelational.informativeness.regression module
+Informativeness functions for regression tasks
 ----------------------------------------------
 
 .. automodule:: pyrelational.informativeness.regression
@@ -17,8 +9,16 @@ pyrelational.informativeness.regression module
    :undoc-members:
    :show-inheritance:
 
-pyrelational.informativeness.task\_agnostic module
+Informativeness functions for classification tasks
 --------------------------------------------------
+
+.. automodule:: pyrelational.informativeness.classification
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Task agnostic informativeness functions
+----------------------------------------
 
 .. automodule:: pyrelational.informativeness.task_agnostic
    :members:
