@@ -6,6 +6,11 @@ from torch.utils.data import DataLoader
 
 
 class ModelManager(ABC):
+    """
+    Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
+    It handles model instantiation at each iteration, training, testing, and queries.
+    """
+
     def __init__(
         self,
         model_class: Type[Any],
@@ -13,9 +18,6 @@ class ModelManager(ABC):
         trainer_config: Union[str, Dict],
     ):
         """
-        Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
-        It handles model instantiation at each iteration, training, testing, and queries.
-
         :param model_class: a model constructor (e.g. torch.nn.Linear)
         :param model_config: a dictionary containing the config required to instantiate a model form the model_class
                 (e.g. {in_features=100, out_features=34, bias=True, device=None, dtype=None} for a torch.nn.Linear
@@ -33,6 +35,7 @@ class ModelManager(ABC):
 
     def init_trainer(self, trainer_config: Dict) -> Any:
         """
+        Initialise trainer which trains model.
 
         :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
         :return: trainer module/function
@@ -41,6 +44,7 @@ class ModelManager(ABC):
 
     def init_model(self) -> Any:
         """
+        Initialise an instance of the user defined model.
 
         :return: an instance of self.model_class based on self.model_config
         """
@@ -49,6 +53,7 @@ class ModelManager(ABC):
     @abstractmethod
     def train(self, train_loader: DataLoader, valid_loader: DataLoader = None) -> None:
         """
+        Train model.
 
         :param train_loader: pytorch dataloader for training set
         :param valid_loader: pytorch dataloader for validation set
@@ -59,6 +64,7 @@ class ModelManager(ABC):
     @abstractmethod
     def test(self, loader: DataLoader) -> Dict:
         """
+        Test model.
 
         :param loader: pytorch dataloader for test set
         :return: performance metrics
@@ -67,9 +73,10 @@ class ModelManager(ABC):
 
     def __call__(self, loader: DataLoader) -> Any:
         """
+        Call method to output model predictions
 
         :param loader: pytorch dataloader
-        :return: uncertainties for each sample in dataloader
+        :return: model predictions for each sample in dataloader
         """
         pass
 

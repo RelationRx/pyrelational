@@ -27,6 +27,15 @@ class MCDropoutManager(ModelManager, ABC):
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
+        """
+        :param model_class: a model constructor (e.g. torch.nn.Linear)
+        :param model_config: a dictionary containing the config required to instantiate a model form the model_class
+                (e.g. {in_features=100, out_features=34, bias=True, device=None, dtype=None} for a torch.nn.Linear
+                constructor)
+        :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
+        :param n_estimators: number of times to sample a prediction for each input
+        :param eval_dropout_prob: dropout parameter used when accessing model predictions
+        """
         super(MCDropoutManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
@@ -35,9 +44,10 @@ class MCDropoutManager(ModelManager, ABC):
 
     def __call__(self, loader: DataLoader) -> torch.Tensor:
         """
+        Call function which outputs model predictions using dropout
 
         :param loader: pytorch dataloader
-        :return: model predictions
+        :return: model predictions of shape (n_estimators, number of samples in loader, 1)
         """
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
@@ -97,6 +107,14 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
+        """
+        :param model_class: a model constructor class which inherits from pytorch lightning (see above example)
+        :param model_config: a dictionary containing the config required to instantiate a model form the model_class
+                (e.g. see above example)
+        :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
+        :param n_estimators: number of times to sample a prediction for each input
+        :param eval_dropout_prob: dropout parameter used when accessing model predictions
+        """
         super(LightningMCDropoutModel, self).__init__(
             model_class,
             model_config,

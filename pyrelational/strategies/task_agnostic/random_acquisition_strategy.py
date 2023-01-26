@@ -15,5 +15,15 @@ class RandomAcquisitionStrategy(Strategy):
         super(RandomAcquisitionStrategy, self).__init__()
 
     def __call__(self, num_annotate: int, data_manager: DataManager) -> List[int]:
+        """
+        Call function which identifies samples which need to be labelled
+
+        :param num_annotate: number of samples to annotate
+        :param data_manager: A pyrelational data manager
+            which keeps track of what has been labelled and creates data loaders for
+            active learning
+
+        :return: list of indices to annotate
+        """
         num_annotate = min(num_annotate, len(data_manager.u_indices))
         return np.random.choice(data_manager.u_indices, size=num_annotate, replace=False).tolist()

@@ -1,8 +1,8 @@
-"""This module defines the interface for a generic active learning strategy
-which is composed of defining an `active_learning_step` function which
-suggests observations to be labeled. In the default case the `active_learning_step`
+"""This module defines the interface for an abstract active learning strategy
+which is composed of defining a `__call__` function which
+suggests observations to be labelled. In the default case the `__call__`
 is the composition of a informativeness function which assigns a measure of
-informativenes to unlabelled observations and a selection algorithm which chooses
+informativeness to unlabelled observations and a selection algorithm which chooses
 what observations to present to the oracle
 """
 import inspect
@@ -17,18 +17,18 @@ logger = logging.getLogger()
 
 
 # Trick mypy into not applying contravariance rules to inputs by defining
-# forward as a value, rather than a function.  See also
+# __call__ method as a value, rather than a function.  See also
 # https://github.com/python/mypy/issues/8795
 def _call_unimplemented(self, *input: Any) -> None:
     r"""Defines the computation performed at every call.
     Should be overridden by all subclasses.
     .. note::
-        Although the recipe for forward pass needs to be defined within
-        this function, one should call the :class:`Module` instance afterwards
+        Although the recipe for __call__ needs to be defined within
+        this function, one should call the :class:`Strategy` instance afterwards
         instead of this since the former takes care of running the
         registered hooks while the latter silently ignores them.
     """
-    raise NotImplementedError(f'Module [{type(self).__name__}] is missing the required "__call__" function')
+    raise NotImplementedError(f'Strategy [{type(self).__name__}] is missing the required "__call__" function')
 
 
 class Strategy(ABC):
@@ -39,6 +39,8 @@ class Strategy(ABC):
     to be labeled. In the general case `__call__` would be the composition of an informativeness function,
     which assigns a measure of informativeness to unlabelled observations, and a selection algorithm which
     chooses what observations to present to the oracle.
+
+    The user defined __call__ method must have a num_annotate argument
     """
 
     def __init__(self, *args, **kwargs):

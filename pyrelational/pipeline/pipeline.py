@@ -24,23 +24,11 @@ logger = logging.getLogger()
 class Pipeline(ABC):
     """The pipeline facilitates the communication between
     - DataManager
-    - Model,
-    - ALStrategy,
+    - ModelManager,
+    - Strategy,
     - Oracle (Optional)
 
     To enact a generic active learning cycle.
-
-    :param data_manager: a pyrelational data manager
-            which keeps track of what has been labelled and creates data loaders for
-            active learning
-    :param model: A pyrelational model
-            which serves as the machine learning model for the data in the
-            data manager
-    :param strategy: A pyrelational active learning strategy
-            implements the informativeness measure and the selection algorithm being used
-    :param oracle: An oracle instance
-            interfaces with various concrete oracle to obtain labels for observations
-            suggested by the strategy
     """
 
     def __init__(
@@ -50,6 +38,19 @@ class Pipeline(ABC):
         strategy: Strategy,
         oracle: Oracle = None,
     ):
+        """
+        :param data_manager: A pyrelational data manager
+            which keeps track of what has been labelled and creates data loaders for
+            active learning
+        :param model: A pyrelational model manager
+                which wraps a user defined ML model to handle instantiation, training, testing,
+                as well as uncertainty quantification
+        :param strategy: A pyrelational active learning strategy
+                implements the informativeness measure and the selection algorithm being used
+        :param oracle: An oracle instance
+                interfaces with various concrete oracle to obtain labels for observations
+                suggested by the strategy
+        """
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
@@ -82,7 +83,7 @@ class Pipeline(ABC):
                 generated from data_manager but is here for case when it hasn't been defined
                 or there is a new test set.
 
-        :return: performances
+        :return: dictionary containing metric results on test set
         """
         self.model.train(self.train_loader, self.valid_loader)
 
@@ -106,7 +107,6 @@ class Pipeline(ABC):
 
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
-
         """
         if self.model.current_model is None:  # no AL steps taken so far
             self.model.train(self.l_loader, self.valid_loader)
@@ -121,7 +121,9 @@ class Pipeline(ABC):
         and theoretical performance methods.
 
         :param result: Dict or Dict-like of metrics
-        :param query: List of indices selected for labelling. Usef for calculating hit ratio metric
+        :param query: List of indices selected for labelling. Used for calculating hit ratio metric
+
+        :return: updated result dictionary with "hit_ratio" key, corresponding to hit ratio result
         """
         if self.data_manager.top_unlabelled is not None:
             result["hit_ratio"] = (
@@ -134,6 +136,10 @@ class Pipeline(ABC):
     def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
+
+        :param num_annotate: Number of points to annotate
+
+        :return: list of indexes to label from dataset
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones

@@ -24,22 +24,32 @@ class EnsembleManager(ModelManager, ABC):
         trainer_config: Union[str, Dict],
         n_estimators: int = 10,
     ):
+        """
+        :param model_class: a model constructor (e.g. torch.nn.Linear)
+        :param model_config: a dictionary containing the config required to instantiate a model form the model_class
+                (e.g. {in_features=100, out_features=34, bias=True, device=None, dtype=None} for a torch.nn.Linear
+                constructor)
+        :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
+        :param n_estimators: number of models in ensemble
+        """
         super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
     def init_model(self) -> List[Any]:
         """
+        Initialise ensemble, ie a list of model instances
 
-        :return: list of models
+        :return: list of models of length n_estimators
         """
         return [self.model_class(**self.model_config) for _ in range(self.n_estimators)]
 
     def __call__(self, loader: DataLoader) -> torch.Tensor:
         """
+        Call method to output model predictions for each model in the ensemble
 
         :param loader: pytorch dataloader
-        :return: model predictions
+        :return: model predictions of shape (n_estimators, number of samples in loader, 1)
         """
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
@@ -86,9 +96,6 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
         wrapper.train(train_loader, valid_loader)
         predictions = wrapper(loader)
         assert predictions.size(0) == 10
-
-
-
     """
 
     def __init__(
@@ -98,11 +105,21 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
         trainer_config: Union[Dict, str],
         n_estimators: int = 10,
     ):
+        """
+        :param model_class: a model constructor class which inherits from pytorch lightning (see above example)
+        :param model_config: a dictionary containing the config required to instantiate a model form the model_class
+                (e.g. see above example)
+        :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
+        :param n_estimators: number of models in ensemble
+        """
         super(LightningEnsembleModel, self).__init__(
             model_class, model_config, trainer_config, n_estimators=n_estimators
         )
 
     def train(self, train_loader: DataLoader, valid_loader: Optional[DataLoader] = None) -> None:
+        """
+        Train all models in ensemble
+        """
         models = self.init_model()
         self.current_model = []
         for model in models:
@@ -113,6 +130,14 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
             self.current_model.append(model.cpu())
 
     def test(self, loader: DataLoader) -> Dict:
+        """
+        Test ensemble model. The mean performance across all the models in the ensemble is reported
+        for each metric
+
+        :param loader: dataloader for test set
+
+        :return: average performance for each metric (defined in the model_class)
+        """
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
