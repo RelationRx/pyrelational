@@ -4,12 +4,12 @@ import warnings
 from typing import (
     Any,
     Callable,
-    Collection,
     List,
     Literal,
     Optional,
     Sequence,
     Sized,
+    Tuple,
     TypeVar,
     Union,
     cast,
@@ -17,6 +17,7 @@ from typing import (
 
 import numpy as np
 import torch
+from torch import Tensor
 from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
 from pyrelational.types import SizedDataset
@@ -25,7 +26,7 @@ T = TypeVar("T")
 logger = logging.getLogger()
 
 
-class DataManager(object):
+class DataManager:
     """
     DataManager for active learning pipelines
 
@@ -59,7 +60,7 @@ class DataManager(object):
 
     def __init__(
         self,
-        dataset: Dataset[Any],
+        dataset: Dataset[Tuple[Tensor, ...]],
         train_indices: Optional[List[int]] = None,
         labelled_indices: Optional[List[int]] = None,
         unlabelled_indices: Optional[List[int]] = None,
@@ -98,7 +99,7 @@ class DataManager(object):
         self._resolve_dataset_split_indices(train_indices, validation_indices, test_indices)
 
         # Set l and u indices according to mask arguments
-        # and need to check that they arent part of
+        # and need to check that they aren't part of
         if labelled_indices is not None:
             if unlabelled_indices is not None:
                 self._ensure_no_l_u_intersection(labelled_indices, unlabelled_indices)
@@ -217,7 +218,7 @@ class DataManager(object):
         # Override this if necessary
         return len(self.dataset)
 
-    def __getitem__(self, idx: int) -> Any:
+    def __getitem__(self, idx: int) -> Tuple[Tensor, ...]:
         # So that one can access samples by index directly
         return self.dataset[idx]
 
@@ -247,25 +248,25 @@ class DataManager(object):
             if isinstance(percentage, int):
                 percentage /= 100
             assert 0 < percentage < 1, "hit ratio's percentage should be strictly between 0 and 1 (or 0 and 100)"
-            ixs = np.array(self.u_indices)
+            ixs = self.u_indices
             percentage = int(percentage * len(ixs))
             y = self.get_sample_labels(ixs)
             threshold = np.sort(y.abs())[-percentage]
             self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
 
-    def get_train_set(self) -> Dataset[Any]:
+    def get_train_set(self) -> Dataset[Tuple[Tensor, ...]]:
         """Get train set from full dataset and train indices."""
         train_subset = Subset(self.dataset, self.train_indices)
         return train_subset
 
-    def get_validation_set(self) -> Optional[Subset[Any]]:
+    def get_validation_set(self) -> Optional[Subset[Tuple[Tensor, ...]]]:
         """Get validation set from full dataset and validation indices."""
         if self.validation_indices is None:
             return None
         validation_subset = Subset(self.dataset, self.validation_indices)
         return validation_subset
 
-    def get_test_set(self) -> Subset[Any]:
+    def get_test_set(self) -> Subset[Tuple[Tensor, ...]]:
         """Get test set from full dataset and test indices."""
         test_subset = Subset(self.dataset, self.test_indices)
         return test_subset
@@ -348,20 +349,20 @@ class DataManager(object):
         ret = sample[0].flatten()
         return ret
 
-    def get_sample_feature_vectors(self, ds_indices: List[int]) -> List[torch.Tensor]:
+    def get_sample_feature_vectors(self, ds_indices: List[int]) -> List[Tensor]:
         """To be reviewed for deprecation (for datasets without tensors)"""
         res = []
         for ds_index in ds_indices:
             res.append(self.get_sample_feature_vector(ds_index))
         return res
 
-    def get_sample_labels(self, ds_indices: Collection[int]) -> torch.Tensor:
+    def get_sample_labels(self, ds_indices: List[int]) -> Tensor:
         res = []
         for ds_index in ds_indices:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return torch.stack(res)
 
-    def create_loader(self, dataset: Subset[Any], shuffle: bool = False) -> DataLoader[Any]:
+    def create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
         """
         Utility to help create dataloader with specifications set at initialisation.
 
@@ -402,8 +403,8 @@ class DataManager(object):
         return str_out
 
     @staticmethod
-    def _check_is_sized(dataset: Dataset[Any]) -> SizedDataset[Any]:
+    def _check_is_sized(dataset: Dataset[Tuple[Tensor, ...]]) -> SizedDataset[Tuple[Tensor, ...]]:
         """Check Dataset is Sized (has a __len__ method)"""
         if not isinstance(dataset, Sized):
             raise AttributeError("dataset must have __len__ method defined")
-        return cast(SizedDataset[Any], dataset)
+        return cast(SizedDataset[Tuple[Tensor, ...]], dataset)

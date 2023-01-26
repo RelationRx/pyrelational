@@ -1,3 +1,5 @@
+from typing import Dict
+
 from setuptools import find_packages, setup
 
 """
@@ -23,7 +25,7 @@ install_requires = [
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-version = {}
+version: Dict[str, str] = {}
 with open("pyrelational/version.py") as fp:
     exec(fp.read(), version)
 
