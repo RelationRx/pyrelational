@@ -31,7 +31,7 @@ Let's first look an an example wrapper for a simple pytorch Module
            super(Wrapper, self).__init__(model_class,model_config,trainer_config,n_estimators,eval_dropout_prob)
 
        def train(self, train_loader, val_loader=None):
-           model = self.init_model()
+           model = self._init_model()
            criterion = nn.MSELoss()
            optimizer = torch.optim.Adam(model.parameters(), lr=self.trainer_config["lr"])
            for _ in range(self.trainer_config["epochs"]):

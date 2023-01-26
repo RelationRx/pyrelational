@@ -87,7 +87,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
     def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         trainer, ckpt_callback = self.init_trainer()
 
-        model = self.init_model()
+        model = self._init_model()
         trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
         if valid_loader is not None and is_overridden("validation_step", model):
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])

@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from torch.utils.data import DataLoader
 
@@ -34,7 +34,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
 
-    def init_model(self) -> ModelType:
+    def _init_model(self) -> ModelType:
         """
         Initialise model instance(s).
 

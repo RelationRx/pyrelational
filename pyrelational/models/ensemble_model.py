@@ -98,7 +98,7 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
     def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         self.current_model = []
         for _ in range(self.n_estimators):
-            model = self.init_model()
+            model = self._init_model()
             trainer, ckpt_callback = self.init_trainer()
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
             if valid_loader is not None and is_overridden("validation_step", model):
