@@ -252,7 +252,8 @@ class DataManager:
             percentage = int(percentage * len(ixs))
             y = self.get_sample_labels(ixs)
             threshold = np.sort(y.abs())[-percentage]
-            self.top_unlabelled = set(ixs[(y.abs() >= threshold).numpy().astype(bool)])
+            indices = torch.where(y.abs() >= threshold)[0]
+            self.top_unlabelled = set(ixs[i] for i in indices)
 
     def get_train_set(self) -> Dataset[Tuple[Tensor, ...]]:
         """Get train set from full dataset and train indices."""
