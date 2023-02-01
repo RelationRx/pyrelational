@@ -49,7 +49,7 @@ pipeline.theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
 to_annotate = pipeline.active_learning_step(num_annotate=100)
-pipeline.active_learning_update(indices=to_annotate, update_tag="Manual Update")
+pipeline.active_learning_update(indices=to_annotate)
 
 # Annotating data step by step until the trainset is fully annotated
 pipeline.full_active_learning_run(num_annotate=100)
