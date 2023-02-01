@@ -28,7 +28,6 @@ def regression_greedy_score(
     :param axis: index of the axis along which the repeats are
     :return: 1D pytorch tensor of scores
     """
-    x = x.squeeze(-1)
     _check_regression_informativeness_input(x, mean=mean)
     if mean is None:
         return _compute_mean(x, axis)
@@ -124,7 +123,6 @@ def regression_thompson_sampling(x: Tensor, axis: int = 0) -> Tensor:
     :return: 1D pytorch tensor of scores
     """
     assert isinstance(x, Tensor), f"x input should be a torch Tensor, got {type(x)} instead."
-    x = x.squeeze(-1)
     other_axis = (axis - 1) % 2
     idx = torch.randint(high=x.size(axis), size=(x.size(other_axis), 1))
     return x.gather(axis, idx).flatten()
@@ -140,7 +138,6 @@ def regression_bald(x: Tensor, axis: int = 0) -> Tensor:
     :return: 1D pytorch tensor of scores
     """
     assert isinstance(x, Tensor), f"x input should be a torch Tensor, got {type(x)} instead."
-    x = x.squeeze(-1)
     x_mean = x.mean(axis, keepdim=True)
     x = (x - x_mean) ** 2
     return torch.log(1 + x.mean(axis)) / torch.tensor(2.0)
@@ -163,7 +160,6 @@ def _check_regression_informativeness_input(
 
     if isinstance(x, Tensor):
         assert x.ndim == 2, "x input should be a 2D tensor"
-        x = x.squeeze(-1)
 
     if isinstance(mean, Tensor):
         assert mean.ndim == 1, "mean input should be a 1D tensor"
