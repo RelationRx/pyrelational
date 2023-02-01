@@ -2,6 +2,7 @@ from abc import ABC
 from typing import List
 
 import torch
+from torch import Tensor
 
 from pyrelational.data import DataManager
 from pyrelational.models import ModelManager
@@ -18,6 +19,8 @@ class RegressionStrategy(Strategy, ABC):
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
+        if isinstance(output, Tensor):
+            output = output.squeeze(-1)
         scores = self.scoring_fn(x=output)
         ixs = torch.argsort(scores, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
