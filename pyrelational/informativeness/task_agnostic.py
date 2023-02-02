@@ -10,22 +10,24 @@ from typing import Any, Callable, List, Optional, Union, get_args
 import numpy as np
 import sklearn.cluster as sklust
 import torch
+from numpy.typing import NDArray
 from sklearn.base import ClusterMixin
 from sklearn.metrics import pairwise_distances_argmin, pairwise_distances_argmin_min
+from torch import Tensor
 from torch.utils.data import DataLoader
 
 logging.basicConfig()
 logger = logging.getLogger()
 
-Array = Union[torch.Tensor, np.ndarray, List]
+Array = Union[Tensor, NDArray[Any], List[Any]]
 
 
 def relative_distance(
-    query_set: Union[Array, DataLoader],
-    reference_set: Union[Array, DataLoader],
-    metric: Optional[Union[str, Callable]] = "euclidean",
+    query_set: Union[Array, DataLoader[Any]],
+    reference_set: Union[Array, DataLoader[Any]],
+    metric: Optional[Union[str, Callable[..., Any]]] = "euclidean",
     axis: int = -1,
-) -> torch.Tensor:
+) -> Tensor:
     """
     Function that return the minimum distance, according to input metric, from each sample in the query_set to the
     samples in the reference set.
@@ -42,11 +44,11 @@ def relative_distance(
     :return: pytorch tensor of dimension the number of samples in query_set containing the minimum distance from each
         sample to the reference set
     """
-    if isinstance(query_set, get_args(Array)):
+    if isinstance(query_set, (Tensor, np.ndarray, list)):
         query_set = np.array(query_set)
         query_set = query_set.reshape((query_set.shape[0], -1))
 
-    if isinstance(reference_set, get_args(Array)):
+    if isinstance(reference_set, (Tensor, np.ndarray, list)):
         reference_set = np.array(reference_set)
         reference_set = reference_set.reshape((reference_set.shape[0], -1))
 
@@ -85,11 +87,11 @@ def relative_distance(
 
 
 def representative_sampling(
-    query_set: Union[Array, DataLoader],
-    num_annotate: Optional[int] = None,
+    query_set: Union[Array, DataLoader[Any]],
+    num_annotate: int,
     clustering_method: Union[str, ClusterMixin] = "KMeans",
     **clustering_kwargs: Optional[Any],
-) -> Array:
+) -> List[int]:
     """
     Function that selects representative samples of the query set. Representative selection relies on clustering
     algorithms in scikit-learn.
@@ -111,13 +113,9 @@ def representative_sampling(
         query_set = torch.cat(out, 0)
     query_set = np.array(query_set)
 
-    if num_annotate is None and hasattr(clustering_method, "n_clusters"):
-        num_annotate = clustering_method.n_clusters
-
-    if num_annotate is not None and (
-        num_annotate >= query_set.shape[0]
-    ):  # if there are less samples than sought queries, return everything
-        return np.arange(query_set.shape[0])
+    if num_annotate >= query_set.shape[0]:  # if there are less samples than sought queries, return everything
+        ret: List[int] = np.arange(query_set.shape[0]).tolist()
+        return ret
 
     if isinstance(clustering_method, str) and hasattr(sklust, clustering_method):
         clustering_method = getattr(sklust, clustering_method)
@@ -136,18 +134,39 @@ def representative_sampling(
 
     lbls = clustering_cls.fit_predict(query_set)
     if hasattr(clustering_cls, "cluster_centers_indices_"):
-        return clustering_cls.cluster_centers_indices_
+        indices: List[int] = clustering_cls.cluster_centers_indices_
+        representative_samples = indices
     elif hasattr(clustering_cls, "cluster_centers_"):
-        return get_closest_query_to_centroids(clustering_cls.cluster_centers_, query_set, lbls)
+        representative_samples = get_closest_query_to_centroids(clustering_cls.cluster_centers_, query_set, lbls)
     else:
         logger.warning(
             """Clustering method does not return centroids to identify closest samples,
             returning random sample from each cluster"""
         )
-        return get_random_query_from_cluster(lbls)
+        representative_samples = get_random_query_from_cluster(lbls)
+
+    num_samples = min(num_annotate, len(representative_samples))
+    ret = np.random.choice(  # in case there are more that num_annotates samples
+        representative_samples,
+        size=(num_samples,),
+        replace=False,
+    ).tolist()
+    return ret
 
 
-def get_closest_query_to_centroids(centroids: np.ndarray, query: np.ndarray, cluster_assignment: np.ndarray) -> List:
+def get_closest_query_to_centroids(
+    centroids: NDArray[np.float_],
+    query: NDArray[np.float_],
+    cluster_assignment: NDArray[np.int_],
+) -> List[int]:
+    """
+    Find the closest sample in query to centroids.
+
+    :param centroids: array containing centroids
+    :param query: array containing query samples
+    :param cluster_assignment: indicate what cluster each query sample is associated with
+    :return: list of indices of query samples
+    """
     out = []
     for i in np.unique(cluster_assignment):
         ixs = np.where(cluster_assignment == i)[0]
@@ -158,7 +177,13 @@ def get_closest_query_to_centroids(centroids: np.ndarray, query: np.ndarray, clu
     return out
 
 
-def get_random_query_from_cluster(cluster_assignment: np.ndarray) -> List:
+def get_random_query_from_cluster(cluster_assignment: NDArray[np.int_]) -> List[int]:
+    """
+    Get random indices drawn from each cluster.
+
+    :param cluster_assignment: array indicating what cluster each sample is associated with.
+    :return: list of indices of query samples
+    """
     out = []
     for i in np.unique(cluster_assignment):
         ixs = np.where(cluster_assignment == i)[0]

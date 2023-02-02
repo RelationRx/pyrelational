@@ -14,9 +14,10 @@ def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
     if isinstance(gpus, list):
         gpus = str(gpus[0])
         warnings.warn("Multiple GPUs provided, setting the first GPU to be device used in call function of model")
+        return torch.device(f"cuda:{gpus}")
     elif isinstance(gpus, str):
         return torch.device(f"cuda:{gpus}")
     elif isinstance(gpus, int) and (gpus > 0):
         return torch.device("cuda")
-    elif gpus is None or (gpus == 0):
+    else:
         return torch.device("cpu")

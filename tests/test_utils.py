@@ -4,7 +4,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from pytorch_lightning.core.lightning import LightningModule
+from pytorch_lightning import LightningModule
 from sklearn.datasets import load_breast_cancer, load_diabetes
 from torch import Tensor
 from torch.utils.data import Dataset

@@ -19,7 +19,7 @@ logger = logging.getLogger()
 # Trick mypy into not applying contravariance rules to inputs by defining
 # forward as a value, rather than a function.  See also
 # https://github.com/python/mypy/issues/8795
-def _call_unimplemented(self, *input: Any) -> None:
+def _call_unimplemented(self: Any, *input: Any) -> List[int]:
     r"""Defines the computation performed at every call.
     Should be overridden by all subclasses.
     .. note::
@@ -41,12 +41,12 @@ class Strategy(ABC):
     chooses what observations to present to the oracle.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(Strategy, self).__init__()
 
-    __call__: Callable[..., Any] = _call_unimplemented
+    __call__: Callable[..., List[int]] = _call_unimplemented
 
-    def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
+    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
         as a list of dataset indices.
@@ -60,7 +60,7 @@ class Strategy(ABC):
         return self(num_annotate=num_annotate, *args, **filtered_kwargs)
 
     @staticmethod
-    def train_and_infer(data_manager: DataManager, model: ModelManager) -> Any:
+    def train_and_infer(data_manager: DataManager, model: ModelManager[Any, Any]) -> Any:
         """
         Train the model on the currently labelled subset of the data and produces an output that can be used in
         model uncertainty based strategies.
@@ -89,7 +89,7 @@ class Strategy(ABC):
         }
         return filtered_kwargs
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return name of class."""
         return self.__class__.__name__
 

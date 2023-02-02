@@ -58,7 +58,7 @@ class SKRFC(ModelManager):
 
     def train(self, train_loader, valid_loader):
         train_x, train_y = next(iter(train_loader))
-        estimator = self.init_model()
+        estimator = self._init_model()
         estimator.fit(train_x, train_y, **trainer_config)
         self.current_model = estimator
 

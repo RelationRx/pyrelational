@@ -7,7 +7,7 @@ Most of these functions are simple but giving them a name and implementation
 in PyTorch is useful for defining the different active learning strategies
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import torch
 from torch import Tensor
@@ -30,6 +30,7 @@ def regression_greedy_score(
     """
     _check_regression_informativeness_input(x, mean=mean)
     if mean is None:
+        assert x is not None, "both x and mean are None, cannot compute."
         return _compute_mean(x, axis)
     return mean
 
@@ -50,6 +51,7 @@ def regression_least_confidence(
     """
     _check_regression_informativeness_input(x, std=std)
     if std is None:
+        assert x is not None, "both x and std are None, cannot compute."
         return _compute_std(x, axis)
     return std
 
@@ -58,7 +60,7 @@ def regression_expected_improvement(
     x: Optional[Union[Tensor, Distribution]] = None,
     mean: Optional[Tensor] = None,
     std: Optional[Tensor] = None,
-    max_label: float = 0.0,
+    max_label: Union[float, Tensor] = 0.0,
     axis: int = 0,
     xi: float = 0.01,
 ) -> Tensor:
@@ -108,8 +110,10 @@ def regression_upper_confidence_bound(
     """
     _check_regression_informativeness_input(x, mean, std)
     if mean is None:
+        assert x is not None, "both x and mean are None, cannot compute."
         mean = _compute_mean(x, axis)
     if std is None:
+        assert x is not None, "both x and std are None, cannot compute."
         std = _compute_std(x, axis)
     return mean + kappa * std
 
@@ -168,7 +172,7 @@ def _check_regression_informativeness_input(
         assert std.ndim == 1, "std input should be a 1D tensor"
 
 
-def _compute_mean(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
+def _compute_mean(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Tensor:
     """
     Compute mean of input.
 
@@ -179,12 +183,12 @@ def _compute_mean(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
     if isinstance(x, Tensor):
         return x.mean(axis)
     elif isinstance(x, Distribution):
-        return x.mean
+        return cast(Tensor, x.mean)
     else:
         raise TypeError(f"Expected torch Tensor or Distribution, got {type(x)} instead.")
 
 
-def _compute_std(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
+def _compute_std(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Tensor:
     """
     Compute standard deviation of input.
 
@@ -195,6 +199,6 @@ def _compute_std(x: Union[Distribution, Tensor], axis: int = 0) -> Tensor:
     if isinstance(x, Tensor):
         return x.std(axis)
     elif isinstance(x, Distribution):
-        return x.stddev
+        return cast(Tensor, x.stddev)
     else:
         raise TypeError(f"Expected torch Tensor or Distribution, got {type(x)} instead.")
