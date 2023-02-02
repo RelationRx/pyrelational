@@ -2,7 +2,7 @@ name: lint-task
 # Run this workflow every time a new commit pushed to your repository
 on:
   pull_request:
-  
+
 jobs:
 
   # Set the job key. The key is displayed as the job name
@@ -16,18 +16,23 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.10"
       - name: Install flake8 and plugins
         run: |
           pip install --upgrade pip==22.2
-          python3.8 -m venv env
+          python3 -m venv env
           source env/bin/activate
-          pip install flake8==4.0.1 flake8-bugbear==22.1.11 black==22.3.0 markupsafe==2.0.1
+          pip install flake8==4.0.1 flake8-bugbear==22.1.11 black==22.3.0 markupsafe==2.0.1 mypy==0.991
+          pip install torch pytorch-lightning numpy
       - name: Run linter
         run: |
           source env/bin/activate
           flake8 --exclude env
           black . --exclude env --check 2>&1 >/dev/null
+      - name: Run mypy
+        run: |
+          source env/bin/activate
+          mypy pyrelational/ --allow-redefinition --disable-error-code import --disable-error-code no-untyped-call --implicit-reexport --strict --install-types --non-interactive --ignore-missing-imports --follow-imports=silent
       - name: clean venv
         run: |
           rm -r env

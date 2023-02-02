@@ -5,7 +5,7 @@ functions and general arbiters of the active learning pipeline
 import logging
 from abc import ABC
 from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -47,25 +47,25 @@ class Pipeline(ABC):
     def __init__(
         self,
         data_manager: DataManager,
-        model: ModelManager,
+        model: ModelManager[Any, Any],
         strategy: Strategy,
-        oracle: Oracle = None,
+        oracle: Optional[Oracle] = None,
     ):
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model = model
         self.strategy = strategy
-        self.oracle = BenchmarkOracle() if oracle is None else oracle
+        self.oracle: Oracle = BenchmarkOracle() if oracle is None else oracle
 
         # Pipeline meta properties
         self.iteration = 0
 
         # Data structures for logging values of interest
-        self.performances = defaultdict(dict)
-        self.labelled_by = defaultdict(dict)
+        self.performances: Dict[Union[int, str], Dict[str, float]] = defaultdict(dict)
+        self.labelled_by: Dict[int, Dict[str, Union[str, int]]] = defaultdict(dict)
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
-    def theoretical_performance(self, test_loader: Optional[DataLoader] = None) -> Dict:
+    def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
         """Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
@@ -92,7 +92,9 @@ class Pipeline(ABC):
         self.model.current_model = None
         return self.performances["full"]
 
-    def current_performance(self, test_loader: Optional[DataLoader] = None, query: Optional[List[int]] = None) -> Dict:
+    def current_performance(
+        self, test_loader: Optional[DataLoader[Any]] = None, query: Optional[List[int]] = None
+    ) -> None:
         """
         Compute performance of model.
 
@@ -110,8 +112,9 @@ class Pipeline(ABC):
         result = self.model.test(self.test_loader if test_loader is None else test_loader)
         result = self.compute_hit_ratio(result, query)
         self.performances[self.iteration] = result
+        return None
 
-    def compute_hit_ratio(self, result: Dict, query: Optional[List[int]] = None) -> Dict:
+    def compute_hit_ratio(self, result: Dict[str, float], query: Optional[List[int]] = None) -> Dict[str, float]:
         """Utility function for computing the hit ratio as used within the current performance
         and theoretical performance methods.
 
@@ -126,13 +129,13 @@ class Pipeline(ABC):
             )
         return result
 
-    def active_learning_step(self, num_annotate: int, *args, **kwargs) -> List[int]:
+    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.active_learning_step(num_annotate=num_annotate, *args, **kwargs)
+        observations_for_labelling = self.strategy.active_learning_step(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
     def active_learning_update(self, indices: List[int]) -> None:
@@ -155,9 +158,9 @@ class Pipeline(ABC):
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
-        test_loader: Optional[DataLoader] = None,
-        *strategy_args,
-        **strategy_kwargs,
+        test_loader: Optional[DataLoader[Any]] = None,
+        *strategy_args: Any,
+        **strategy_kwargs: Any,
     ) -> None:
         """
         Given the number of samples to annotate and a test loader this method will go through the entire
@@ -177,9 +180,7 @@ class Pipeline(ABC):
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
-            observations_for_labelling = self.active_learning_step(
-                num_annotate=num_annotate, *strategy_args, **strategy_kwargs
-            )
+            observations_for_labelling = self.active_learning_step(num_annotate, *strategy_args, **strategy_kwargs)
 
             # Record the current performance
             self.current_performance(
@@ -213,19 +214,16 @@ class Pipeline(ABC):
             logger.info("COLUMNS: {}".format(columns))
             logger.info("Full Missing")
         for k in keys:
-            row = [k]
+            row: List[Union[str, float]] = [k]
             logger.info(self.performances[k])
             for c in columns[1:]:
-                if isinstance(self.performances[k], list):
-                    row.append(self.performances[k][0][c])
-                else:
-                    row.append(self.performances[k][c])
+                row.append(self.performances[k][c])
             df.append(row)
 
         pd_df = pd.DataFrame(df, columns=columns)
         return pd_df
 
-    def log_labelled_by(self, indices: List[int], tag: Optional[str] = None):
+    def log_labelled_by(self, indices: List[int], tag: Optional[str] = None) -> None:
         """
         Update the dictionary that records what the observation
         was labelled by. Default behaviour is to map observation to
@@ -243,7 +241,7 @@ class Pipeline(ABC):
         return self.data_manager.u_indices
 
     @property
-    def u_loader(self) -> DataLoader:
+    def u_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_unlabelled_loader()
 
     @property
@@ -251,19 +249,19 @@ class Pipeline(ABC):
         return self.data_manager.l_indices
 
     @property
-    def l_loader(self) -> DataLoader:
+    def l_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_labelled_loader()
 
     @property
-    def train_loader(self) -> DataLoader:
+    def train_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_train_loader(full=True)
 
     @property
-    def valid_loader(self) -> DataLoader:
+    def valid_loader(self) -> Optional[DataLoader[Any]]:
         return self.data_manager.get_validation_loader()
 
     @property
-    def test_loader(self) -> DataLoader:
+    def test_loader(self) -> DataLoader[Any]:
         return self.data_manager.get_test_loader()
 
     @property

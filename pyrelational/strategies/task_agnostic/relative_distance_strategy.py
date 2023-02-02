@@ -13,7 +13,6 @@ class RelativeDistanceStrategy(Strategy):
     def __init__(self, metric: str = "euclidean"):
         """
         Initialize module.
-
         :param metric: name of distance metric to use.
         """
         super(RelativeDistanceStrategy, self).__init__()

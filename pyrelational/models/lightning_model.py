@@ -1,8 +1,8 @@
-from typing import Dict, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import pytorch_lightning as pl
 import torch
-from pytorch_lightning import LightningModule, Trainer
+from pytorch_lightning import Callback, LightningModule, Trainer
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
@@ -11,7 +11,7 @@ from .abstract_model_manager import ModelManager
 from .model_utils import _determine_device
 
 
-class LightningModel(ModelManager):
+class LightningModel(ModelManager[LightningModule, LightningModule]):
     r"""
     A wrapper for pytorch lightning modules that instantiates and uses a pytorch lightning trainer.
 
@@ -40,8 +40,8 @@ class LightningModel(ModelManager):
     def __init__(
         self,
         model_class: Type[LightningModule],
-        model_config: Union[Dict, str],
-        trainer_config: Union[Dict, str],
+        model_config: Union[Dict[str, Any], str],
+        trainer_config: Union[Dict[str, Any], str],
     ):
         super(LightningModel, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
@@ -54,7 +54,7 @@ class LightningModel(ModelManager):
         """
         config = self.trainer_config
         config = _check_pyl_trainer_config(config)
-        callbacks = []
+        callbacks: List[Callback] = []
         if config["use_early_stopping"]:
             callbacks.append(
                 EarlyStopping(
@@ -84,23 +84,24 @@ class LightningModel(ModelManager):
         )
         return trainer, checkpoint_callback
 
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         trainer, ckpt_callback = self.init_trainer()
 
-        model = self.init_model()
+        model = self._init_model()
         trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
         if valid_loader is not None and is_overridden("validation_step", model):
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
 
         self.current_model = model
 
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         if self.current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        return trainer.test(self.current_model, dataloaders=loader)[0]
+        ret: Dict[str, float] = trainer.test(self.current_model, dataloaders=loader)[0]
+        return ret
 
-    def __call__(self, loader: DataLoader) -> torch.Tensor:
+    def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
 
         :param loader: pytorch dataloader
@@ -120,7 +121,7 @@ class LightningModel(ModelManager):
         return predictions
 
 
-def _check_pyl_trainer_config(config: Dict) -> Dict:
+def _check_pyl_trainer_config(config: Dict[str, Any]) -> Dict[str, Any]:
     """
     Checks the trainer config for pytorch lightning and adds default values for missing required entries
     :param config: a dictionary with key:values required by the init_trainer function

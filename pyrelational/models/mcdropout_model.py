@@ -1,6 +1,6 @@
 import logging
 from abc import ABC
-from typing import Dict, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
 import torch
 from pytorch_lightning import LightningModule
@@ -14,7 +14,7 @@ from .model_utils import _determine_device
 logger = logging.getLogger()
 
 
-class MCDropoutManager(ModelManager, ABC):
+class MCDropoutManager(ModelManager[Module, Module], ABC):
     """
     Generic model wrapper for mcdropout uncertainty estimator
     """
@@ -22,8 +22,8 @@ class MCDropoutManager(ModelManager, ABC):
     def __init__(
         self,
         model_class: Type[Module],
-        model_config: Union[str, Dict],
-        trainer_config: Union[str, Dict],
+        model_config: Union[str, Dict[str, Any]],
+        trainer_config: Union[str, Dict[str, Any]],
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
@@ -33,7 +33,7 @@ class MCDropoutManager(ModelManager, ABC):
         self.n_estimators = n_estimators
         self.eval_dropout_prob = eval_dropout_prob
 
-    def __call__(self, loader: DataLoader) -> torch.Tensor:
+    def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
 
         :param loader: pytorch dataloader
@@ -54,8 +54,8 @@ class MCDropoutManager(ModelManager, ABC):
                     x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
-            predictions = torch.stack(predictions)
-        return predictions
+            ret = torch.stack(predictions)
+        return ret
 
 
 class LightningMCDropoutModel(MCDropoutManager, LightningModel):
@@ -92,8 +92,8 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
     def __init__(
         self,
         model_class: Type[LightningModule],
-        model_config: Union[Dict, str],
-        trainer_config: Union[Dict, str],
+        model_config: Union[Dict[str, Any], str],
+        trainer_config: Union[Dict[str, Any], str],
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
@@ -107,10 +107,10 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
 
 
 def _enable_only_dropout_layers(model: Module, p: Optional[float] = None) -> None:
-    def enable_dropout_on_module(m):
+    def enable_dropout_on_module(m: Module) -> None:
         if m.__class__.__name__.startswith("Dropout"):
             if isinstance(p, float) and (0 <= p <= 1):
-                m.p = p
+                m.p = p  # type: ignore[assignment]
             elif isinstance(p, float) and (p < 0 or p > 1):
                 logger.warning(f"Evaluation dropout probability should be a float between 0 and 1, got {p}")
             m.train()
@@ -118,10 +118,10 @@ def _enable_only_dropout_layers(model: Module, p: Optional[float] = None) -> Non
     model.apply(enable_dropout_on_module)
 
 
-def _check_mc_dropout_model(model_class: Type[Module], model_config: Dict) -> None:
+def _check_mc_dropout_model(model_class: Type[Module], model_config: Dict[str, Any]) -> None:
     model = model_class(**model_config)
 
-    def has_dropout_module(model):
+    def has_dropout_module(model: Module) -> List[bool]:
         is_dropout = []
         for m in model.children():
             if m.__class__.__name__.startswith("Dropout"):

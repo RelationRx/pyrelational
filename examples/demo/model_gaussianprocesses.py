@@ -82,13 +82,13 @@ class GPLightningModel(LightningModel):
     def __init__(self, model_class, model_config, trainer_config):
         super(GPLightningModel, self).__init__(model_class, model_config, trainer_config)
 
-    def init_model(self, train_loader):
+    def _init_model(self, train_loader):
         for train_x, train_y in train_loader:
             return self.model_class(train_x=train_x, train_y=train_y, **self.model_config)
 
     def train(self, train_loader, valid_loader):
         trainer, ckpt_callback = self.init_trainer()
-        model = self.init_model(train_loader)
+        model = self._init_model(train_loader)
         trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
         if valid_loader is not None:
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])

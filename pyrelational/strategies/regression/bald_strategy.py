@@ -1,7 +1,8 @@
-from typing import List
+from typing import Any, List
 
 import numpy as np
 import torch
+from torch import Tensor
 
 from pyrelational.data import DataManager
 from pyrelational.informativeness import regression_bald
@@ -15,9 +16,8 @@ class BALDStrategy(RegressionStrategy):
     """Implements BALD Strategy whereby unlabelled samples are queried based on mutual information score based on
     multiple estimator models."""
 
-    def __init__(self):
-        super(BALDStrategy, self).__init__()
-        self.scoring_fn = regression_bald
+    def scoring_function(self, predictions: Tensor) -> Tensor:
+        return regression_bald(predictions)
 
 
 class SoftBALDStrategy(BALDStrategy):
@@ -33,9 +33,10 @@ class SoftBALDStrategy(BALDStrategy):
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
-        scores = self.scoring_fn(x=output.squeeze(-1)) / self.T
+        scores = self.scoring_function(output.squeeze(-1)) / self.T
         scores = torch.softmax(scores, -1).numpy()
         num_annotate = min(num_annotate, len(data_manager.u_indices))
-        return np.random.choice(data_manager.u_indices, size=num_annotate, replace=False, p=scores).tolist()
+        ret: List[int] = np.random.choice(data_manager.u_indices, size=num_annotate, replace=False, p=scores).tolist()
+        return ret
