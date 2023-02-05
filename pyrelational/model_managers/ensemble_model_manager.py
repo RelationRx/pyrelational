@@ -9,7 +9,7 @@ from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
-from .lightning_model import LightningModel
+from .lightning_model_manager import LightningModelManager
 from .model_utils import _determine_device
 
 ModelType = TypeVar("ModelType", bound=Module)
@@ -54,7 +54,7 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         return ret
 
 
-class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], LightningModel):
+class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], LightningModelManager):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 

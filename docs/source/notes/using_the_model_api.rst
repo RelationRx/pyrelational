@@ -70,7 +70,7 @@ This can now be instantiated with any pytorch module, for instance
 Using pytorch lightning module
 ______________________________
 
-PyRelationAL implements default classes (see :py:meth:`pyrelational.model_managers.lightning_model.LightningModel`) relying on
+PyRelationAL implements default classes (see :py:meth:`pyrelational.model_managers.lightning_model.LightningModelManager`) relying on
 pytorch lightning as the Trainer class offload much of the training routine definition to pytorch lighntning.
 For example, users can create ensembles of pytorch lightning modules directly as
 

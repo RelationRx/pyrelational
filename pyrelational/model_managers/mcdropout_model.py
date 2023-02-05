@@ -8,7 +8,7 @@ from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
-from .lightning_model import LightningModel
+from .lightning_model_manager import LightningModelManager
 from .model_utils import _determine_device
 
 logger = logging.getLogger()
@@ -58,7 +58,7 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         return ret
 
 
-class LightningMCDropoutModel(MCDropoutManager, LightningModel):
+class LightningMCDropoutModel(MCDropoutManager, LightningModelManager):
     r"""
     Wrapper for MC Dropout estimator with pytorch lightning trainer
 

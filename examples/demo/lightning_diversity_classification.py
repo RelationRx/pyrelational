@@ -15,7 +15,7 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningModel
+from pyrelational.model_managers import LightningModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.task_agnostic.relative_distance_strategy import (
@@ -30,7 +30,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 # Instantiate model
-model = LightningModel(model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 4})
+model = LightningModelManager(model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 4})
 
 # data_manager and defining strategy
 data_manager = DataManager(

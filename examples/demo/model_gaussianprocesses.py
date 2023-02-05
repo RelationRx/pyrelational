@@ -17,7 +17,7 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningModel
+from pyrelational.model_managers import LightningModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import LeastConfidenceStrategy
@@ -77,8 +77,8 @@ class PyLWrapper(pl.LightningModule):
         return torch.optim.Adam(self.gpmodel.parameters(), lr=0.1)
 
 
-# Subclass LightningModel to handle GPytorch
-class GPLightningModel(LightningModel):
+# Subclass LightningModelManager to handle GPytorch
+class GPLightningModel(LightningModelManager):
     def __init__(self, model_class, model_config, trainer_config):
         super(GPLightningModel, self).__init__(model_class, model_config, trainer_config)
 

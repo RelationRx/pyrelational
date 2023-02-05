@@ -16,7 +16,7 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 # Active Learning package
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import relative_distance
-from pyrelational.model_managers import LightningModel, ModelManager
+from pyrelational.model_managers import LightningModelManager, ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.abstract_strategy import Strategy
@@ -30,7 +30,7 @@ test_indices = test_ds.indices
 
 
 # model
-class BadgeLightningModel(LightningModel):
+class BadgeLightningModel(LightningModelManager):
     """Model compatible with BADGE strategy"""
 
     def __init__(self, model_class, model_config, trainer_config):
