@@ -6,7 +6,7 @@ from unittest import TestCase
 import pytest
 from parameterized import parameterized_class
 
-from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
+from pyrelational.model_managers.mcdropout_model_manager import LightningMCDropoutModelManager
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies import Strategy
 from pyrelational.strategies.classification import (
@@ -58,10 +58,10 @@ class TestPipeline(TestCase):
     def setUp(self) -> None:
         """Set up attributes."""
         if self.run_type == "regression":
-            model = LightningMCDropoutModel(DiabetesRegressionModel, {"ensemble_size": 3}, {"epochs": 1})
+            model = LightningMCDropoutModelManager(DiabetesRegressionModel, {"ensemble_size": 3}, {"epochs": 1})
             self.datamanager = get_regression_dataset(hit_ratio_at=5)
         else:
-            model = LightningMCDropoutModel(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
+            model = LightningMCDropoutModelManager(BreastCancerClassifier, {"ensemble_size": 3}, {"epochs": 1})
             self.datamanager = get_classification_dataset(hit_ratio_at=5)
         strategy = self.strategy_class()
         self.pipeline = Pipeline(data_manager=self.datamanager, model=model, strategy=strategy)

@@ -17,10 +17,10 @@ Let's first look an an example wrapper for a simple pytorch Module
 
    import torch
    import torch.nn as nn
-   from pyrelational.model_managers.mcdropout_model import MCDropoutManager
+   from pyrelational.model_managers.mcdropout_model import MCDropoutModelManager
 
 
-   class TorchModuleWrapper(MCDropoutManager):
+   class TorchModuleWrapper(MCDropoutModelManager):
        def __init__(self,
            model_class,
            model_config,

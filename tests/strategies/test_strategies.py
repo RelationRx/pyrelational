@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from parameterized import parameterized_class
 
-from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
+from pyrelational.model_managers.mcdropout_model_manager import LightningMCDropoutModelManager
 from pyrelational.strategies import Strategy
 from tests.strategies.agnostic_strategy_test_cases import TASK_AGNOSTIC_TEST_CASES
 from tests.strategies.classification_strategy_test_cases import (
@@ -34,7 +34,7 @@ class TestStrategies(TestCase):
         else:
             model_class = BreastCancerClassifier
             self.datamanager = get_classification_dataset()
-        self.model = LightningMCDropoutModel(
+        self.model = LightningMCDropoutModelManager(
             model_class,
             {"ensemble_size": 3},
             {"epochs": 5, "gpus": 0},

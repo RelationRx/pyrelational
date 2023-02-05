@@ -140,8 +140,8 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
 
 .. code-block:: python
 
-    from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
-    model = LightningMCDropoutModel(
+    from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModelManager
+    model = LightningMCDropoutModelManager(
                 DigitClassifier,
                 {"dropout_rate":0.3},
                 {"epochs": 4},
@@ -150,7 +150,7 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
             )
 
     from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
-    model = LightningMCDropoutModel(
+    model = LightningMCDropoutModelManager(
                 DigitClassifier,
                 {"dropout_rate":0.3},
                 {"epochs": 4},

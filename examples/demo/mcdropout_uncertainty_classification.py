@@ -18,7 +18,7 @@ from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningMCDropoutModel
+from pyrelational.model_managers import LightningMCDropoutModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -32,7 +32,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 # model
-model = LightningMCDropoutModel(
+model = LightningMCDropoutModelManager(
     model_class=MnistClassification, model_config={"dropout": 0.2}, trainer_config={"epochs": 4}
 )
 

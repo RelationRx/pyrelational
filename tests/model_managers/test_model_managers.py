@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 
 from pyrelational.model_managers import (
     LightningEnsembleModelManager,
-    LightningMCDropoutModel,
+    LightningMCDropoutModelManager,
     LightningModelManager,
 )
 from tests.test_utils import DiabetesDataset, DiabetesRegressionModel
