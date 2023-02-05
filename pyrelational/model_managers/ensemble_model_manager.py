@@ -15,7 +15,7 @@ from .model_utils import _determine_device
 ModelType = TypeVar("ModelType", bound=Module)
 
 
-class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
+class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
@@ -27,7 +27,7 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
         trainer_config: Union[str, Dict[str, Any]],
         n_estimators: int = 10,
     ):
-        super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
+        super(EnsembleModelManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
@@ -54,7 +54,7 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
         return ret
 
 
-class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
+class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], LightningModel):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 
@@ -73,7 +73,7 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         # need to define other train/test steps and optimizers methods required
         # by pytorch-lightning to run this example
 
-        wrapper = LightningEnsembleModel(
+        wrapper = LightningEnsembleModelManager(
                      PyLModel,
                      model_config={"in_dim":10, "out_dim":1},
                      trainer_config={"epochs":100},
@@ -91,7 +91,7 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         trainer_config: Union[Dict[str, Any], str],
         n_estimators: int = 10,
     ):
-        super(LightningEnsembleModel, self).__init__(
+        super(LightningEnsembleModelManager, self).__init__(
             model_class, model_config, trainer_config, n_estimators=n_estimators
         )
 

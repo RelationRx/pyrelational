@@ -149,7 +149,7 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
                 eval_dropout_prob=0.5,
             )
 
-    from pyrelational.model_managers.ensemble_model import LightningEnsembleModel
+    from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
     model = LightningMCDropoutModel(
                 DigitClassifier,
                 {"dropout_rate":0.3},

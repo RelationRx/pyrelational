@@ -80,7 +80,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
     from pytorch_lightning import LightningModule
-    from pyrelational.model_managers.ensemble_model import LightningEnsembleModel
+    from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
 
     # step 1: define the LightningModule with necessary methods
     class DigitClassifier(LightningModule):
@@ -132,8 +132,8 @@ For example, users can create ensembles of pytorch lightning modules directly as
             optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
             return optimizer
 
-    # step 2: wrap the model in a LightningEnsembleModel
-    wrapper = LightningEnsembleModel(
+    # step 2: wrap the model in a LightningEnsembleModelManager
+    wrapper = LightningEnsembleModelManager(
                   DigitClassifier,
                   {"dropout_rate":0.1, "lr":3e-4},
                   {"epochs":1,"gpus":1},

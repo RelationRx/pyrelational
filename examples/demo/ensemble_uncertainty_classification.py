@@ -16,7 +16,7 @@ from examples.utils.ml_models import MnistClassification
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningEnsembleModel
+from pyrelational.model_managers import LightningEnsembleModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -31,7 +31,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 # model
-model = LightningEnsembleModel(
+model = LightningEnsembleModelManager(
     model_class=MnistClassification, model_config={}, trainer_config={"epochs": 5}, n_estimators=5
 )
 
