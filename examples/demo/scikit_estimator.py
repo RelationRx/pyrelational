@@ -18,7 +18,7 @@ from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy

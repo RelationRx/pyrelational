@@ -16,7 +16,7 @@ from examples.utils.ml_models import MnistClassification
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.models import LightningEnsembleModel
+from pyrelational.model_managers import LightningEnsembleModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy

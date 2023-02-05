@@ -18,7 +18,7 @@ from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.models import LightningMCDropoutModel
+from pyrelational.model_managers import LightningMCDropoutModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
