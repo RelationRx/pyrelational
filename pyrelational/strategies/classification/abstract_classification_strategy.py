@@ -6,7 +6,7 @@ from torch import Tensor
 
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import softmax
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 

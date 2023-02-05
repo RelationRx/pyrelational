@@ -6,7 +6,7 @@ from unittest import TestCase
 import pytest
 from parameterized import parameterized_class
 
-from pyrelational.models.mcdropout_model import LightningMCDropoutModel
+from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies import Strategy
 from pyrelational.strategies.classification import (
