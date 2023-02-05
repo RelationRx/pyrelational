@@ -4,6 +4,7 @@
 import os
 import urllib.request
 from os import path
+from typing import Any, Dict, Generator, Sequence, Tuple
 
 import numpy as np
 import pyreadr
@@ -11,14 +12,15 @@ import scipy.io
 import torch
 import torch.distributions as distributions
 from sklearn.datasets import load_breast_cancer, load_digits
-from sklearn.model_selection import KFold, StratifiedKFold
-from torch.utils.data import Dataset
+from sklearn.model_selection import StratifiedKFold
+from torch import Tensor
+from torch.utils.data import ConcatDataset, Dataset
 from torchvision import datasets, transforms
 
 from .uci_datasets import UCIDatasets
 
 
-class SynthClass1(Dataset):
+class SynthClass1(Dataset[Tuple[Tensor, Tensor]]):
     """
     Synth1 dataset as described in Yang and Loog
 
@@ -34,7 +36,7 @@ class SynthClass1(Dataset):
     :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits=5, size=500, random_seed=1234):
+    def __init__(self, n_splits: int = 5, size: int = 500, random_seed: int = 1234):
         super(SynthClass1, self).__init__()
         self.n_splits = n_splits
         pos_distribution = distributions.MultivariateNormal(torch.FloatTensor([3, 3]), torch.eye(2))
@@ -54,14 +56,14 @@ class SynthClass1(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.x.shape[0]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class SynthClass2(Dataset):
+class SynthClass2(Dataset[Tuple[Tensor, Tensor]]):
     """
     Synth2 dataset as described in Yang and Loog
 
@@ -76,7 +78,7 @@ class SynthClass2(Dataset):
     :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits=5, size=500, random_seed=1234):
+    def __init__(self, n_splits: int = 5, size: int = 500, random_seed: int = 1234):
         super(SynthClass2, self).__init__()
         self.n_splits = n_splits
 
@@ -115,19 +117,20 @@ class SynthClass2(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def _split(self, iterable, n):
+    @staticmethod
+    def _split(iterable: Sequence[Any], n: int) -> Generator[Sequence[Any], None, None]:
         # split the iterable into n approximately same size parts
         k, m = divmod(len(iterable), n)
         return (iterable[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.x.shape[0]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class SynthClass3(Dataset):
+class SynthClass3(Dataset[Tuple[Tensor, Tensor]]):
     """SynthClass3 dataset as described in Yang and Loog
 
     :param n_splits: an int describing the number of class stratified
@@ -137,7 +140,7 @@ class SynthClass3(Dataset):
     :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits=5, size=500, random_seed=1234):
+    def __init__(self, n_splits: int = 5, size: int = 500, random_seed: int = 1234):
         super(SynthClass3, self).__init__()
         self.size = size
         self.random_seed = random_seed
@@ -168,26 +171,27 @@ class SynthClass3(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def _split(self, iterable, n):
+    @staticmethod
+    def _split(iterable: Sequence[Any], n: int) -> Generator[Sequence[Any], None, None]:
         # split the iterable into n approximately same size parts
         k, m = divmod(len(iterable), n)
         return (iterable[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.x.shape[0]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class BreastCancerDataset(Dataset):
+class BreastCancerDataset(Dataset[Tuple[Tensor, Tensor]]):
     """UCI ML Breast Cancer Wisconsin (Diagnostic) dataset
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
+    def __init__(self, n_splits: int = 5):
         super(BreastCancerDataset, self).__init__()
         sk_x, sk_y = load_breast_cancer(return_X_y=True)
         self.x = torch.FloatTensor(sk_x)
@@ -197,14 +201,14 @@ class BreastCancerDataset(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.x.shape[0]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class DigitDataset(Dataset):
+class DigitDataset(Dataset[Tuple[Tensor, Tensor]]):
     """UCI ML hand-written digits datasets
 
     From C. Kaynak (1995) Methods of Combining Multiple Classifiers and
@@ -216,7 +220,7 @@ class DigitDataset(Dataset):
             splits to compute
     """
 
-    def __init__(self, n_splits=5):
+    def __init__(self, n_splits: int = 5):
         super(DigitDataset, self).__init__()
         sk_x, sk_y = load_digits(return_X_y=True)
         self.x = torch.FloatTensor(sk_x)  # data
@@ -226,14 +230,14 @@ class DigitDataset(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.x.shape[0]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class FashionMNIST(Dataset):
+class FashionMNIST(Dataset[Tuple[Tensor, Tensor]]):
     """Fashion MNIST Dataset
 
     From Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning
@@ -243,11 +247,11 @@ class FashionMNIST(Dataset):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(FashionMNIST, self).__init__()
         train_dataset = datasets.FashionMNIST(root=data_dir, train=True, download=True, transform=transforms.ToTensor())
         test_dataset = datasets.FashionMNIST(root=data_dir, train=False, download=True, transform=transforms.ToTensor())
-        dataset = torch.utils.data.ConcatDataset([train_dataset, test_dataset])
+        dataset: ConcatDataset[Tuple[Tensor, Tensor]] = ConcatDataset([train_dataset, test_dataset])
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
         self.y = torch.stack([torch.tensor(dataset[i][1]) for i in range(len(dataset))])
 
@@ -255,14 +259,15 @@ class FashionMNIST(Dataset):
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class UCIClassification(Dataset):
+class UCIClassification(Dataset[Tuple[Tensor, Tensor]]):
     """UCI classification abstract class
 
     :param name: string denotation for dataset to download
@@ -271,7 +276,7 @@ class UCIClassification(Dataset):
             splits to compute
     """
 
-    def __init__(self, name, data_dir="/tmp/", n_splits=5):
+    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIClassification, self).__init__()
         dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits)
         torch_dataset = dataset.get_simple_dataset()
@@ -284,14 +289,15 @@ class UCIClassification(Dataset):
         self.x = torch_dataset[:][0]
         self.y = torch_dataset[:][1].squeeze()
 
-    def __len__(self):
-        return self.len_dataset
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-def remap_to_int(torch_class_array):
+def remap_to_int(torch_class_array: Tensor) -> Tensor:
     """Remaps the values in the torch_class_array to integers from 0
     to n for n unique values in the torch_class_array
 
@@ -299,7 +305,7 @@ def remap_to_int(torch_class_array):
         mapped to contiguous ints
     """
     remapped_array = []
-    tca2idx = {}
+    tca2idx: Dict[int, int] = {}
     mapping_value = 0
     for val in torch_class_array:
         val = int(val)
@@ -309,7 +315,7 @@ def remap_to_int(torch_class_array):
             tca2idx[val] = mapping_value
             mapping_value += 1
             remapped_array.append(tca2idx[val])
-    return torch.Tensor(remapped_array)
+    return torch.tensor(remapped_array)
 
 
 class UCIGlass(UCIClassification):
@@ -319,7 +325,7 @@ class UCIGlass(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIGlass, self).__init__(name="glass", data_dir=data_dir, n_splits=n_splits)
         self.y -= 1  # for 0 - k-1 class relabelling
         self.y = remap_to_int(self.y).long()  # UCIGlass has mislabelling
@@ -332,7 +338,7 @@ class UCIParkinsons(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIParkinsons, self).__init__(name="parkinsons", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -343,12 +349,12 @@ class UCISeeds(UCIClassification):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCISeeds, self).__init__(name="seeds", data_dir=data_dir, n_splits=n_splits)
         self.y -= 1  # for 0 - k-1 class relabeling
 
 
-class StriatumDataset(Dataset):
+class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
     """Striatum dataset as used in Konyushkova et al. 2017
 
     From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
@@ -359,7 +365,7 @@ class StriatumDataset(Dataset):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(StriatumDataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -374,7 +380,7 @@ class StriatumDataset(Dataset):
 
         self._load_dataset()
 
-    def _download_dataset(self, url):
+    def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
             os.mkdir(self.data_dir)
 
@@ -382,7 +388,7 @@ class StriatumDataset(Dataset):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self):
+    def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -397,27 +403,28 @@ class StriatumDataset(Dataset):
         train_label = scipy.io.loadmat(self.data_dir + "striatum_train_labels_mini.mat")["labels"]
         test_label = scipy.io.loadmat(self.data_dir + "striatum_test_labels_mini.mat")["labels"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
         self.y = remap_to_int(self.y).long()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class GaussianCloudsDataset(Dataset):
+class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
     """GaussianClouds from Konyushkova et al. 2017 basically a imbalanced
     binary classification task created from multivariate gaussian blobs
 
@@ -429,12 +436,12 @@ class GaussianCloudsDataset(Dataset):
             splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         self.data_dir = data_dir
         self.n_splits = n_splits
         self._load_dataset()
 
-    def _load_dataset(self, size=1000, n_dim=2, random_balance=False, n_splits=10):
+    def _load_dataset(self, size: int = 1000, n_dim: int = 2, random_balance: bool = False, n_splits: int = 10) -> None:
         if random_balance:
             # proportion of class 1 to vary from 10% to 90%
             cl1_prop = np.random.rand()
@@ -472,26 +479,27 @@ class GaussianCloudsDataset(Dataset):
         test_data = np.concatenate((testX1, testX2), axis=0)
         test_labels = np.concatenate((testY1, testY2))
 
-        self.x = np.vstack([train_data, test_data])
-        self.y = np.vstack([train_labels, test_labels]).squeeze()
+        x = np.vstack([train_data, test_data])
+        y = np.vstack([train_labels, test_labels]).squeeze()
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class Checkerboard2x2Dataset(Dataset):
+class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
     """Checkerboard2x2 dataset from Konyushkova et al. 2017
 
     From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
@@ -503,7 +511,7 @@ class Checkerboard2x2Dataset(Dataset):
 
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(Checkerboard2x2Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -513,7 +521,7 @@ class Checkerboard2x2Dataset(Dataset):
 
         self._load_dataset()
 
-    def _download_dataset(self, url):
+    def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
             os.mkdir(self.data_dir)
 
@@ -521,7 +529,7 @@ class Checkerboard2x2Dataset(Dataset):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self):
+    def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -535,26 +543,27 @@ class Checkerboard2x2Dataset(Dataset):
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class Checkerboard4x4Dataset(Dataset):
+class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
     """Checkerboard 4x4 dataset from Konyushkova et al. 2017
 
     From Ksenia Konyushkova, Raphael Sznitman, Pascal Fua 'Learning Active
@@ -566,7 +575,7 @@ class Checkerboard4x4Dataset(Dataset):
 
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(Checkerboard4x4Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -576,7 +585,7 @@ class Checkerboard4x4Dataset(Dataset):
 
         self._load_dataset()
 
-    def _download_dataset(self, url):
+    def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
             os.mkdir(self.data_dir)
 
@@ -584,7 +593,7 @@ class Checkerboard4x4Dataset(Dataset):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self):
+    def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -598,26 +607,27 @@ class Checkerboard4x4Dataset(Dataset):
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]
 
-        self.x = np.vstack([train_feat, test_feat])
-        self.y = np.vstack([train_label, test_label])
+        x = np.vstack([train_feat, test_feat])
+        y = np.vstack([train_label, test_label])
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
-        self.in_dim = self.x.shape[1]
+        self.in_dim = x.shape[1]
         self.out_dim = 1
-        self.data_splits = skf.split(self.x, self.y)
+        self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class CreditCardDataset(Dataset):
+class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
     """Credit card fraud dataset, highly unbalanced and challenging.
 
     From Andrea Dal Pozzolo, Olivier Caelen, Reid A. Johnson, and Gianluca Bontempi.
@@ -633,7 +643,7 @@ class CreditCardDataset(Dataset):
 
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(CreditCardDataset, self).__init__()
         self.raw_url = "http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata"
         self.data_dir = data_dir
@@ -641,7 +651,7 @@ class CreditCardDataset(Dataset):
 
         self._load_dataset()
 
-    def _load_dataset(self):
+    def _load_dataset(self) -> None:
         if not path.exists(self.data_dir):
             os.mkdir(self.data_dir)
 
@@ -660,8 +670,6 @@ class CreditCardDataset(Dataset):
         x = data[xcols].to_numpy()
         y = data[ycol].to_numpy()
         _, y = np.unique(y, return_inverse=True)  # map string classes to ints
-        self.x = x
-        self.y = y
 
         skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
         self.in_dim = len(xcols)
@@ -669,11 +677,12 @@ class CreditCardDataset(Dataset):
         self.data_splits = skf.split(x, y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-        self.x = torch.from_numpy(self.x).float()
-        self.y = torch.from_numpy(self.y).long().squeeze()
+        self.x = torch.from_numpy(x).float()
+        self.y = torch.from_numpy(y).long().squeeze()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]

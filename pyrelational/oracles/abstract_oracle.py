@@ -13,7 +13,7 @@ class Oracle(ABC):
     that can interact with a pyrelational pipeline
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Oracle, self).__init__()
 
     @staticmethod
@@ -75,3 +75,7 @@ class Oracle(ABC):
             target_val = self.query_target_value(data_manager=data_manager, idx=idx)
             self.update_target_value(data_manager=data_manager, idx=idx, value=target_val)
         self.update_annotations(data_manager=data_manager, indices=indices)
+
+    def __str__(self) -> str:
+        """Return class name."""
+        return self.__class__.__name__

@@ -1,7 +1,7 @@
-**For the title of this PR:** please follow the grammatical rules of a usual publication title, without capitalisation (except for the first letter). 
+**For the title of this PR:** please follow the grammatical rules of a usual publication title, without capitalisation (except for the first letter).
 
-The title should NOT CONTAIN CODE: no dots, no parentheses, no backticks, no brackets, etc. It needs to be distinctive (not detailed) and succinct (not lengthy). 
-Details of this PR will go in the description. **For the description of this PR:** please replace every line in curly brackets ( { like this } ) with an appropriate description following the guidance. 
+The title should NOT CONTAIN CODE: no dots, no parentheses, no backticks, no brackets, etc. It needs to be distinctive (not detailed) and succinct (not lengthy).
+Details of this PR will go in the description. **For the description of this PR:** please replace every line in curly brackets ( { like this } ) with an appropriate description following the guidance.
 
 Finally, **please remove this paragraph**.
 
@@ -15,8 +15,8 @@ Finally, **please remove this paragraph**.
 ## What are the changes implemented in this PR?
 
 { Please explain what you implemented, why your changes are the best way to achieve the goal(s) above. Please describe every method, class and package, by explaining:
-  - its responsibility, 
-  - how it's expected to behave, and 
-  - how it relates to the adjacent methods/classes/packages it interacts with. 
+  - its responsibility,
+  - how it's expected to behave, and
+  - how it relates to the adjacent methods/classes/packages it interacts with.
 
 This would allow the reviewer to understand your intentions in the code much better. If you're adding new classes, make sure these explanations are also included in the class header comments. Last but not least, please reference the GitHub issues to be automatically closed, such like 'closes #number'. }

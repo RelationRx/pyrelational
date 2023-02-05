@@ -31,7 +31,7 @@ Let's first look an an example model manager for a simple pytorch Module
            super(Wrapper, self).__init__(model_class,model_config,trainer_config,n_estimators,eval_dropout_prob)
 
        def train(self, train_loader, val_loader=None):
-           model = self.init_model()
+           model = self._init_model()
            criterion = nn.MSELoss()
            optimizer = torch.optim.Adam(model.parameters(), lr=self.trainer_config["lr"])
            for _ in range(self.trainer_config["epochs"]):
@@ -79,7 +79,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     import torch.nn as nn
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
-    from pytorch_lightning.core.lightning import LightningModule
+    from pytorch_lightning import LightningModule
     from pyrelational.models.ensemble_model import LightningEnsembleModel
 
     # step 1: define the LightningModule with necessary methods

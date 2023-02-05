@@ -25,7 +25,6 @@ class TestStrategies(TestCase):
     task_type: str
     strategy_class: Type[Strategy]
     strategy_kwargs: Dict[str, Any]
-    step_kwargs: Dict[str, Any]
 
     def setUp(self) -> None:
         """Define model and datamanager."""
@@ -44,9 +43,7 @@ class TestStrategies(TestCase):
 
     def test_active_learning_step(self) -> None:
         """Test active learning step return the required number of sample indices."""
-        out = self.strategy.active_learning_step(
-            num_annotate=5, model=self.model, data_manager=self.datamanager, **self.step_kwargs
-        )
+        out = self.strategy.active_learning_step(num_annotate=5, model=self.model, data_manager=self.datamanager)
         self.assertEqual(len(out), 5)
 
     def test_str_print(self) -> None:

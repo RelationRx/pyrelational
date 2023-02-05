@@ -24,7 +24,7 @@ class MixedStrategy(Strategy):
     def active_learning_step(self, num_annotate):
         self.model.train(self.l_loader, self.valid_loader)
         output = self.model(self.u_loader)
-        scores = regression_least_confidence(x=output)
+        scores = regression_least_confidence(x=output.squeeze(-1))
         ixs = torch.argsort(scores, descending=True).tolist()
         ixs = [self.u_indices[i] for i in ixs[: 10 * num_annotate]]
         subquery = torch.stack(self.data_manager.get_sample_feature_vectors(ixs))

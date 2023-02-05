@@ -51,7 +51,7 @@ class TestMCDropoutModel(TestCase):
             n_estimators=3,
         )
         self.assertEqual(model.__class__.__name__, "LightningMCDropoutModel")
-        self.assertEqual(model.init_model().__class__.__name__, "BreastCancerClassifier")
+        self.assertEqual(model._init_model().__class__.__name__, "BreastCancerClassifier")
 
     def test_mc_dropout_estimator(self) -> None:
         """Check model prediction shape."""

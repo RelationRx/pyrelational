@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 import torch
 
@@ -16,7 +16,7 @@ class UpperConfidenceBoundStrategy(Strategy):
         super(UpperConfidenceBoundStrategy, self).__init__()
         self.kappa = kappa
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         """
         Call function which identifies samples which need to be labelled
 
@@ -31,6 +31,6 @@ class UpperConfidenceBoundStrategy(Strategy):
         :return: list of indices to annotate
         """
         output = self.train_and_infer(data_manager=data_manager, model=model)
-        uncertainty = regression_upper_confidence_bound(x=output, kappa=self.kappa)
+        uncertainty = regression_upper_confidence_bound(x=output.squeeze(-1), kappa=self.kappa)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]

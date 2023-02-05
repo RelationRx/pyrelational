@@ -1,16 +1,18 @@
 """Regression datasets that can be used for benchmarking AL strategies
 """
+from typing import Tuple
 
 import numpy as np
 import torch
 from sklearn.datasets import load_diabetes, make_regression
 from sklearn.model_selection import KFold
+from torch import Tensor
 from torch.utils.data import Dataset
 
 from .uci_datasets import UCIDatasets
 
 
-class SynthReg1(Dataset):
+class SynthReg1(Dataset[Tuple[Tensor, Tensor]]):
     """Synthetic dataset for active learning on a regression based task
 
     Simple 1 dof regression problem that can be placed into two types
@@ -23,7 +25,7 @@ class SynthReg1(Dataset):
     :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits=5, size=1000, random_seed=1234):
+    def __init__(self, n_splits: int = 5, size: int = 1000, random_seed: int = 1234):
         super(SynthReg1, self).__init__()
         self.size = size
         self.random_seed = random_seed
@@ -38,14 +40,15 @@ class SynthReg1(Dataset):
         self.data_splits = kf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class SynthReg2(Dataset):
+class SynthReg2(Dataset[Tuple[Tensor, Tensor]]):
     """Synthetic dataset for active learning on a regression based task
 
     A more challenging dataset than SynthReg1 wherein we see a periodic
@@ -58,7 +61,7 @@ class SynthReg2(Dataset):
     :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits=5, size=1000, random_seed=1234):
+    def __init__(self, n_splits: int = 5, size: int = 1000, random_seed: int = 1234):
         super(SynthReg2, self).__init__()
         self.size = size
         self.random_seed = random_seed
@@ -81,14 +84,15 @@ class SynthReg2(Dataset):
         self.data_splits = kf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class DiabetesDataset(Dataset):
+class DiabetesDataset(Dataset[Tuple[Tensor, Tensor]]):
     """A small regression dataset for examples
 
     From Bradley Efron, Trevor Hastie, Iain Johnstone and
@@ -99,7 +103,7 @@ class DiabetesDataset(Dataset):
         splits to compute
     """
 
-    def __init__(self, n_splits=5):
+    def __init__(self, n_splits: int = 5):
         # Load the diabetes dataset
         diabetes_X, diabetes_y = load_diabetes(return_X_y=True)
         self.x = torch.FloatTensor(diabetes_X)
@@ -109,21 +113,22 @@ class DiabetesDataset(Dataset):
         self.data_splits = kf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
-class UCIRegression(Dataset):
+class UCIRegression(Dataset[Tuple[Tensor, Tensor]]):
     """UCI regression dataset base class
 
     :param n_splits: an int describing the number of class stratified
         splits to compute
     """
 
-    def __init__(self, name, data_dir="/tmp/", n_splits=5):
+    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIRegression, self).__init__()
         dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits)
         self.data_dir = dataset.data_dir
@@ -135,10 +140,11 @@ class UCIRegression(Dataset):
         self.x = dataset[:][0]
         self.y = dataset[:][1].squeeze()
 
-    def __len__(self):
-        return self.x.shape[0]
+    def __len__(self) -> int:
+        ret: int = self.x.shape[0]
+        return ret
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor]:
         return self.x[idx], self.y[idx]
 
 
@@ -149,7 +155,7 @@ class UCIConcrete(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIConcrete, self).__init__(name="concrete", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -160,7 +166,7 @@ class UCIEnergy(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIEnergy, self).__init__(name="energy", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -171,7 +177,7 @@ class UCIPower(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIPower, self).__init__(name="power", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -182,7 +188,7 @@ class UCIWine(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIWine, self).__init__(name="wine", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -193,7 +199,7 @@ class UCIYacht(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIYacht, self).__init__(name="yacht", data_dir=data_dir, n_splits=n_splits)
 
 
@@ -204,5 +210,5 @@ class UCIAirfoil(UCIRegression):
         splits to compute
     """
 
-    def __init__(self, data_dir="/tmp/", n_splits=5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
         super(UCIAirfoil, self).__init__(name="airfoil", data_dir=data_dir, n_splits=n_splits)

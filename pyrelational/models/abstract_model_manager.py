@@ -1,21 +1,23 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Type, Union
+from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 from torch.utils.data import DataLoader
 
+ModelType = TypeVar("ModelType")
+E = TypeVar("E")
 
-class ModelManager(ABC):
+
+class ModelManager(ABC, Generic[ModelType, E]):
     """
     Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
     It handles model instantiation at each iteration, training, testing, and queries.
     """
-
     def __init__(
         self,
-        model_class: Type[Any],
-        model_config: Union[str, Dict],
-        trainer_config: Union[str, Dict],
+        model_class: Type[ModelType],
+        model_config: Union[str, Dict[str, Any]],
+        trainer_config: Union[str, Dict[str, Any]],
     ):
         """
         :param model_class: a model constructor (e.g. torch.nn.Linear)
@@ -28,50 +30,40 @@ class ModelManager(ABC):
 
         self.model_class = model_class
         self.model_config = json.load(open(model_config, "r")) if isinstance(model_config, str) else model_config
-        self.current_model = None
+        self.current_model: Optional[E] = None
         self.trainer_config = (
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
 
-    def init_trainer(self, trainer_config: Dict) -> Any:
+    def _init_model(self) -> ModelType:
         """
-        Initialise trainer which trains model.
-
-        :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
-        :return: trainer module/function
-        """
-        pass
-
-    def init_model(self) -> Any:
-        """
-        Initialise an instance of the user defined model.
+        Initialise model instance(s).
 
         :return: an instance of self.model_class based on self.model_config
         """
         return self.model_class(**self.model_config)
 
     @abstractmethod
-    def train(self, train_loader: DataLoader, valid_loader: DataLoader = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         """
-        Train model.
+        Run train routine.
 
         :param train_loader: pytorch dataloader for training set
         :param valid_loader: pytorch dataloader for validation set
-        :return: none
         """
         pass
 
     @abstractmethod
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         """
-        Test model.
+        Run test routine.
 
         :param loader: pytorch dataloader for test set
         :return: performance metrics
         """
         pass
 
-    def __call__(self, loader: DataLoader) -> Any:
+    def __call__(self, loader: DataLoader[Any]) -> Any:
         """
         Call method to output model predictions
 

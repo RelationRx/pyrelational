@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.model_selection import KFold, StratifiedKFold
+from torch.utils.data import TensorDataset
 
 
 class UCIDatasets:
@@ -29,7 +30,7 @@ class UCIDatasets:
         "airfoil": "https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat",
     }
 
-    def __init__(self, name, data_dir="/tmp/", n_splits=10):
+    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 10) -> None:
         self.data_dir = data_dir
         self.name = name
         self.n_splits = n_splits
@@ -42,7 +43,7 @@ class UCIDatasets:
 
         self._load_dataset()
 
-    def _load_dataset(self):
+    def _load_dataset(self) -> None:
         if self.name not in self.datasets:
             raise Exception("Not part of datasets supported in PyRelationAL at the moment")
         if not path.exists(self.data_dir):
@@ -54,7 +55,6 @@ class UCIDatasets:
         file_name = url.split("/")[-1]
         if not path.exists(self.data_dir + "UCI/" + file_name):
             urllib.request.urlretrieve(self.datasets[self.name], self.data_dir + "UCI/" + file_name)
-        data = None
 
         if self.name == "housing":
             data = pd.read_csv(self.data_dir + "UCI/housing.data", header=0, delimiter=r"\s+").values
@@ -93,8 +93,7 @@ class UCIDatasets:
             data = pd.read_csv(self.data_dir + "UCI/parkinsons.data", header=0, delimiter=",", index_col=0)
             # we need to get the "status" column as the target
             columns = list(data.columns)
-            columns = set(columns) - {"status"}
-            reordered_columns = list(columns)
+            reordered_columns = list(set(columns) - {"status"})
             reordered_columns.extend(["status"])
             data = data[reordered_columns]
             data = data.values
@@ -103,6 +102,11 @@ class UCIDatasets:
         elif self.name == "seeds":
             data = pd.read_csv(self.data_dir + "UCI/seeds_dataset.txt", delimiter=r"\s+", engine="python").values
             self.data = data[np.random.permutation(np.arange(len(data)))]
+
+        else:
+            raise NameError(
+                f"{self.name} does not correspond to a supported dataset. It should be one of {self.datasets.keys()}"
+            )
 
         self.in_dim = data.shape[1] - 1
         self.out_dim = 1
@@ -117,10 +121,11 @@ class UCIDatasets:
             self.data_splits = kf.split(data)
             self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def get_split(self, split=-1, train=True):
+    def get_split(self, split: int = -1, train: bool = True) -> TensorDataset:
         if split == -1:
             split = 0
-        if 0 <= split and split < self.n_splits:
+
+        if 0 <= split < self.n_splits:
             train_index, test_index = self.data_splits[split]
             x_train, y_train = self.data[train_index, : self.in_dim], self.data[train_index, self.in_dim :]
             x_test, y_test = self.data[test_index, : self.in_dim], self.data[test_index, self.in_dim :]
@@ -133,19 +138,21 @@ class UCIDatasets:
             if train:
                 inps = torch.from_numpy(x_train).float()
                 tgts = torch.from_numpy(y_train).float()
-                train_data = torch.utils.data.TensorDataset(inps, tgts)
+                train_data = TensorDataset(inps, tgts)
                 return train_data
             else:
                 inps = torch.from_numpy(x_test).float()
                 tgts = torch.from_numpy(y_test).float()
-                test_data = torch.utils.data.TensorDataset(inps, tgts)
+                test_data = TensorDataset(inps, tgts)
                 return test_data
+        else:
+            raise ValueError(f"split index specified is out of bounds. Max is {self.n_splits-1}")
 
-    def get_full_split(self, split=-1):
+    def get_full_split(self, split: int = -1) -> TensorDataset:
         """Returns a single dataset with the test observations stacked on the train observations"""
         if split == -1:
             split = 0
-        if 0 <= split and split < self.n_splits:
+        if 0 <= split < self.n_splits:
             train_index, test_index = self.data_splits[split]
             x_train, y_train = self.data[train_index, : self.in_dim], self.data[train_index, self.in_dim :]
             x_test, y_test = self.data[test_index, : self.in_dim], self.data[test_index, self.in_dim :]
@@ -177,10 +184,12 @@ class UCIDatasets:
             inps = torch.cat([inps, inps_test])
             tgts = torch.cat([tgts, tgts_test])
 
-            dataset = torch.utils.data.TensorDataset(inps, tgts)
+            dataset = TensorDataset(inps, tgts)
             return dataset
+        else:
+            raise ValueError(f"split index specified is out of bounds. Max is {self.n_splits-1}")
 
-    def get_simple_dataset(self):
+    def get_simple_dataset(self) -> TensorDataset:
         """Simply return the dataset so that we can apply the splits on top after"""
         x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
 
@@ -191,5 +200,5 @@ class UCIDatasets:
             inps = torch.from_numpy(x).float()
             tgts = torch.from_numpy(y).float()
 
-        dataset = torch.utils.data.TensorDataset(inps, tgts)
+        dataset = TensorDataset(inps, tgts)
         return dataset

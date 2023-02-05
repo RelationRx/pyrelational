@@ -1,27 +1,30 @@
 from abc import ABC
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 import numpy as np
 import torch
 from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.model_helpers import is_overridden
+from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
 from .lightning_model import LightningModel
 from .model_utils import _determine_device
 
+ModelType = TypeVar("ModelType", bound=Module)
 
-class EnsembleManager(ModelManager, ABC):
+
+class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
 
     def __init__(
         self,
-        model_class: Type[Any],
-        model_config: Union[str, Dict],
-        trainer_config: Union[str, Dict],
+        model_class: Type[ModelType],
+        model_config: Union[str, Dict[str, Any]],
+        trainer_config: Union[str, Dict[str, Any]],
         n_estimators: int = 10,
     ):
         """
@@ -36,15 +39,7 @@ class EnsembleManager(ModelManager, ABC):
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
-    def init_model(self) -> List[Any]:
-        """
-        Initialise ensemble, ie a list of model instances
-
-        :return: list of models of length n_estimators
-        """
-        return [self.model_class(**self.model_config) for _ in range(self.n_estimators)]
-
-    def __call__(self, loader: DataLoader) -> torch.Tensor:
+    def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
         Call method to output model predictions for each model in the ensemble
 
@@ -64,11 +59,11 @@ class EnsembleManager(ModelManager, ABC):
                     x = x.to(self.device)
                     model_prediction.append(model(x).detach().cpu())
                 predictions.append(torch.cat(model_prediction, 0))
-            predictions = torch.stack(predictions)
-        return predictions
+            ret = torch.stack(predictions)
+        return ret
 
 
-class LightningEnsembleModel(EnsembleManager, LightningModel):
+class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 
@@ -101,8 +96,8 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
     def __init__(
         self,
         model_class: Type[LightningModule],
-        model_config: Union[Dict, str],
-        trainer_config: Union[Dict, str],
+        model_config: Union[Dict[str, Any], str],
+        trainer_config: Union[Dict[str, Any], str],
         n_estimators: int = 10,
     ):
         """
@@ -116,20 +111,23 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
             model_class, model_config, trainer_config, n_estimators=n_estimators
         )
 
-    def train(self, train_loader: DataLoader, valid_loader: Optional[DataLoader] = None) -> None:
+    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
         """
-        Train all models in ensemble
+        Train each model in ensemble.
+
+        :param train_loader: pytorch data loader containing train data
+        :param valid_loader: pytorch data loader containing validation data
         """
-        models = self.init_model()
         self.current_model = []
-        for model in models:
+        for _ in range(self.n_estimators):
+            model = self._init_model()
             trainer, ckpt_callback = self.init_trainer()
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
             if valid_loader is not None and is_overridden("validation_step", model):
                 model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
             self.current_model.append(model.cpu())
 
-    def test(self, loader: DataLoader) -> Dict:
+    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         """
         Test ensemble model. The mean performance across all the models in the ensemble is reported
         for each metric
@@ -143,7 +141,7 @@ class LightningEnsembleModel(EnsembleManager, LightningModel):
         trainer, _ = self.init_trainer()
         output = [trainer.test(model, dataloaders=loader)[0] for model in self.current_model]
         # return average score across ensemble
-        performances = {}
+        performances: Dict[str, float] = {}
         for k in output[0].keys():
-            performances[k] = np.mean([o[k] for o in output])
+            performances[k] = np.mean([o[k] for o in output]).item()
         return performances

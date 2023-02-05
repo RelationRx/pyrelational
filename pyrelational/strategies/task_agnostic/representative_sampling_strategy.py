@@ -1,6 +1,6 @@
 """Representative sampling based active learning strategy
 """
-from typing import Any, List, Optional, Union
+from typing import Any, List, Union
 
 import numpy as np
 import torch
@@ -26,7 +26,7 @@ class RepresentativeSamplingStrategy(Strategy):
     def __call__(
         self,
         data_manager: DataManager,
-        num_annotate: Optional[int] = None,
+        num_annotate: int,
     ) -> List[int]:
         """
         Call function which identifies samples which need to be labelled
@@ -45,10 +45,5 @@ class RepresentativeSamplingStrategy(Strategy):
             num_annotate=num_annotate,
             clustering_method=self.clustering_method,
             **self.clustering_kwargs,
-        )
-        representative_samples = np.random.choice(  # in case there are more that num_annotates samples
-            representative_samples,
-            size=(min(num_annotate, len(representative_samples)),),
-            replace=False,
         )
         return [data_manager.u_indices[i] for i in representative_samples]

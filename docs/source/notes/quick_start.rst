@@ -81,7 +81,7 @@ in the previous section.
     import torch.nn as nn
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
-    from pytorch_lightning.core.lightning import LightningModule
+    from pytorch_lightning import LightningModule
 
 
     class DigitClassifier(LightningModule):
