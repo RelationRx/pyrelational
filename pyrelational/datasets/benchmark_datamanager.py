@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from torch.utils.data import Dataset
 
-from pyrelational.data.data_manager import DataManager
+from pyrelational.data_managers.data_manager import DataManager
 
 
 def pick_one_sample_per_class(dataset: Dataset[Any], train_indices: List[int]) -> List[int]:

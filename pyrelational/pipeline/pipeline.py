@@ -12,7 +12,7 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from pyrelational.data.data_manager import DataManager
+from pyrelational.data_managers.data_manager import DataManager
 from pyrelational.models.abstract_model_manager import ModelManager
 from pyrelational.oracles.abstract_oracle import Oracle
 from pyrelational.oracles.benchmark_oracle import BenchmarkOracle

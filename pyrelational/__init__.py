@@ -1,4 +1,4 @@
-import pyrelational.data
+import pyrelational.data_managers
 import pyrelational.informativeness
 import pyrelational.models
 import pyrelational.pipeline

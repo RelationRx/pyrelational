@@ -33,7 +33,7 @@ pip install pyrelational
 
 ```python
 # Active Learning package
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.models import ModelManager
 from pyrelational.strategies.classification import LeastConfidenceStrategy
 from pyrelational.oracles import BenchmarkOracle
@@ -67,7 +67,7 @@ print(pipeline)
 
 The `PyRelationAL` package decomposes the active learning workflow into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
 
-The **DataManager** (`pyrelational.data.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
+The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 
 The **ModelManager** (`pyrelational.models.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and primarily handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It enables the use of ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`) with PyRelationAL workflows.
 

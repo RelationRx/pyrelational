@@ -17,7 +17,7 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.models import LightningMCDropoutModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline

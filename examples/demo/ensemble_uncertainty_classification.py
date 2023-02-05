@@ -15,7 +15,7 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification
 
 # Active Learning package
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.models import LightningEnsembleModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline

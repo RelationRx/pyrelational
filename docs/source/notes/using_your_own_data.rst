@@ -3,7 +3,7 @@
 Using your own datasets with PyRelationAL
 =========================================
 
-The :py:class:`pyrelational.data.data_manager.DataManager` module enables users to integrate any pytorch Dataset
+The :py:class:`pyrelational.data_managers.data_manager.DataManager` module enables users to integrate any pytorch Dataset
 into PyRelationAL easily. The module expects the full dataset, i.e. the union of labelled, unlabelled,
 validation (optional), and test sets. The indices of each sets should be provided to the class constructor that
 then proceeds to construct the subset Datasets object under the hood. Throughout the experiment, the data manager will
@@ -13,7 +13,7 @@ keep track of indices and handle updates to the labelled/unlabelled pools of sam
 
    import torch
    from torchvision import datasets, transforms
-   from pyrelational.data.data_manager import DataManager
+   from pyrelational.data_managers.data_manager import DataManager
 
     mnist_dataset = datasets.MNIST(
         "mnist_data",

@@ -9,7 +9,7 @@ to illustrate how to instantiate and combine a data manager, a model, and an acq
 Data Manager
 ------------
 
-The data manager (:py:class:`pyrelational.data.data_manager.DataManager`) wraps around a PyTorch
+The data manager (:py:class:`pyrelational.data_managers.data_manager.DataManager`) wraps around a PyTorch
 Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 In this example, we consider the `digit dataset <https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html>`_
 from scikit-learn. We first create a pytorch dataset for it
@@ -42,7 +42,7 @@ at each iteration by the active learning strategy.
 
 .. code-block:: python
 
-    from pyrelational.data.data_manager import DataManager
+    from pyrelational.data_managers.data_manager import DataManager
 
     def get_digit_data_manager():
         ds = DigitDataset()
@@ -190,7 +190,7 @@ We can now compare the performances of different strategies on our digit classif
 
 .. code-block:: python
 
-    from pyrelational.data.data_manager import DataManager
+    from pyrelational.data_managers.data_manager import DataManager
     from pyrelational.strategies.classification import (
         LeastConfidenceStrategy,
         MarginalConfidenceStrategy,

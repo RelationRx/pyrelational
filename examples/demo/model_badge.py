@@ -14,7 +14,7 @@ from examples.utils.datasets import BreastCancerDataset  # noqa: E402
 from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.models import LightningModel, ModelManager
 from pyrelational.oracles import BenchmarkOracle

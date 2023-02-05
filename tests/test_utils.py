@@ -9,7 +9,7 @@ from sklearn.datasets import load_breast_cancer, load_diabetes
 from torch import Tensor
 from torch.utils.data import Dataset
 
-from pyrelational.data.data_manager import DataManager
+from pyrelational.data_managers.data_manager import DataManager
 
 
 def get_regression_dataset(

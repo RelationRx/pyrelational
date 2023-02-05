@@ -10,7 +10,7 @@ import logging
 from abc import ABC
 from typing import Any, Callable, Dict, List
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.models import ModelManager
 
 logger = logging.getLogger()

@@ -16,7 +16,7 @@ import torch
 from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.models import LightningModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
