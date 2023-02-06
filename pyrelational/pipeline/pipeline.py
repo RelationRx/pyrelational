@@ -24,10 +24,11 @@ logger = logging.getLogger()
 class Pipeline(ABC):
     """
     The pipeline facilitates the communication between
-    - DataManager
-    - ModelManager,
-    - Strategy,
-    - Oracle (Optional)
+
+        - DataManager
+        - ModelManager,
+        - Strategy,
+        - Oracle (Optional)
 
     To enact a generic active learning cycle.
     """
@@ -44,13 +45,13 @@ class Pipeline(ABC):
             which keeps track of what has been labelled and creates data loaders for
             active learning
         :param model: A pyrelational model manager
-                which wraps a user defined ML model to handle instantiation, training, testing,
-                as well as uncertainty quantification
+            which wraps a user defined ML model to handle instantiation, training, testing,
+            as well as uncertainty quantification
         :param strategy: A pyrelational active learning strategy
-                implements the informativeness measure and the selection algorithm being used
+            implements the informativeness measure and the selection algorithm being used
         :param oracle: An oracle instance
-                interfaces with various concrete oracle to obtain labels for observations
-                suggested by the strategy
+            interfaces with various concrete oracle to obtain labels for observations
+            suggested by the strategy
         """
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
@@ -67,7 +68,8 @@ class Pipeline(ABC):
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
     def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
-        """Returns the performance of the full labelled dataset against the
+        """
+        Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
         "horizontal" line in area under learning curve plots for active learning
@@ -76,9 +78,9 @@ class Pipeline(ABC):
         situation, hence not part of __init__
 
         :param test_loader: Pytorch Data Loader with
-                test data compatible with model, optional as often the test loader can be
-                generated from data_manager but is here for case when it hasn't been defined
-                or there is a new test set.
+            test data compatible with model, optional as often the test loader can be
+            generated from data_manager but is here for case when it hasn't been defined
+            or there is a new test set.
 
         :return: dictionary containing metric results on test set
         """
@@ -100,9 +102,9 @@ class Pipeline(ABC):
         Compute performance of model.
 
         :param test_loader: Pytorch Data Loader with
-                test data compatible with model, optional as often the test loader can be
-                generated from data_manager but is here for case when it hasn't been defined
-                or there is a new test set.
+            test data compatible with model, optional as often the test loader can be
+            generated from data_manager but is here for case when it hasn't been defined
+            or there is a new test set.
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
         """
@@ -116,7 +118,8 @@ class Pipeline(ABC):
         return None
 
     def compute_hit_ratio(self, result: Dict[str, float], query: Optional[List[int]] = None) -> Dict[str, float]:
-        """Utility function for computing the hit ratio as used within the current performance
+        """
+        Utility function for computing the hit ratio as used within the current performance
         and theoretical performance methods.
 
         :param result: Dict or Dict-like of metrics
@@ -150,7 +153,6 @@ class Pipeline(ABC):
         Updates labels based on indices selected for labelling
 
         :param indices: List of indices selected for labelling
-        Default behaviour is to map to iteration at which it was labelled
         """
         self.oracle.update_dataset(data_manager=self.data_manager, indices=indices)
 
@@ -245,38 +247,47 @@ class Pipeline(ABC):
 
     @property
     def u_indices(self) -> List[int]:
+        """Indices of unlabelled samples."""
         return self.data_manager.u_indices
 
     @property
     def u_loader(self) -> DataLoader[Any]:
+        """Dataloader containing unlabelled data."""
         return self.data_manager.get_unlabelled_loader()
 
     @property
     def l_indices(self) -> List[int]:
+        """Indices of labelled samples."""
         return self.data_manager.l_indices
 
     @property
     def l_loader(self) -> DataLoader[Any]:
+        """Dataloader containing labelled data."""
         return self.data_manager.get_labelled_loader()
 
     @property
     def train_loader(self) -> DataLoader[Any]:
+        """Dataloader containing train data."""
         return self.data_manager.get_train_loader(full=True)
 
     @property
     def valid_loader(self) -> Optional[DataLoader[Any]]:
+        """Dataloader containing validation data."""
         return self.data_manager.get_validation_loader()
 
     @property
     def test_loader(self) -> DataLoader[Any]:
+        """Dataloader containing test data."""
         return self.data_manager.get_test_loader()
 
     @property
     def percentage_labelled(self) -> float:
+        """Percentage of total available dataset labelled."""
         return self.data_manager.percentage_labelled()
 
     @property
     def dataset_size(self) -> int:
+        """Number of total data points."""
         return len(self.data_manager)
 
     def __repr__(self) -> str:

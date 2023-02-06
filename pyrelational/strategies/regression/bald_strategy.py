@@ -29,6 +29,10 @@ class SoftBALDStrategy(BALDStrategy):
         self,
         temperature: float = 0.5,
     ):
+        """
+        :param temperature: parameter greater than 0 to divide scores before applying softmax.
+            A lower temperature parameter will give a peakier distribution of probabilities
+        """
         super(SoftBALDStrategy, self).__init__()
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)

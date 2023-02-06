@@ -13,6 +13,9 @@ class UpperConfidenceBoundStrategy(Strategy):
     UCB scorer"""
 
     def __init__(self, kappa: float = 1.0):
+        """
+        :param kappa: trade-off parameter between exploitation and exploration
+        """
         super(UpperConfidenceBoundStrategy, self).__init__()
         self.kappa = kappa
 

@@ -19,6 +19,11 @@ class RepresentativeSamplingStrategy(Strategy):
         clustering_method: Union[str, ClusterMixin] = "KMeans",
         **clustering_kwargs: Any,
     ):
+        """
+        :param clustering_method: name, or instantiated class, of the clustering method to use
+        :param clustering_kwargs: arguments to be passed to instantiate clustering class if a string is passed to
+            clustering_method
+        """
         super(RepresentativeSamplingStrategy, self).__init__()
         self.clustering_method = clustering_method
         self.clustering_kwargs = clustering_kwargs
@@ -38,7 +43,6 @@ class RepresentativeSamplingStrategy(Strategy):
 
         :return: list of indices to annotate
         """
-
         unlabelled_features = torch.stack(data_manager.get_sample_feature_vectors(data_manager.u_indices))
         representative_samples = representative_sampling(
             unlabelled_features,
