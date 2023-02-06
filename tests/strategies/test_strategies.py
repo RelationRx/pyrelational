@@ -36,7 +36,7 @@ class TestStrategies(TestCase):
         else:
             model_class = BreastCancerClassifier
             self.datamanager = get_classification_dataset()
-        self.model = LightningMCDropoutModelManager(
+        self.model_manager = LightningMCDropoutModelManager(
             model_class,
             {"ensemble_size": 3},
             {"epochs": 5, "gpus": 0},
@@ -45,7 +45,9 @@ class TestStrategies(TestCase):
 
     def test_active_learning_step(self) -> None:
         """Test active learning step return the required number of sample indices."""
-        out = self.strategy.active_learning_step(num_annotate=5, model=self.model, data_manager=self.datamanager)
+        out = self.strategy.active_learning_step(
+            num_annotate=5, model_manager=self.model_manager, data_manager=self.datamanager
+        )
         self.assertEqual(len(out), 5)
 
     def test_str_print(self) -> None:

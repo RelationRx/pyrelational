@@ -16,8 +16,10 @@ class UpperConfidenceBoundStrategy(Strategy):
         super(UpperConfidenceBoundStrategy, self).__init__()
         self.kappa = kappa
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
-        output = self.train_and_infer(data_manager=data_manager, model=model)
+    def __call__(
+        self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
+    ) -> List[int]:
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         uncertainty = regression_upper_confidence_bound(x=output.squeeze(-1), kappa=self.kappa)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]

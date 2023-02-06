@@ -33,8 +33,10 @@ class SoftBALDStrategy(BALDStrategy):
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
-        output = self.train_and_infer(data_manager=data_manager, model=model)
+    def __call__(
+        self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
+    ) -> List[int]:
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         scores = self.scoring_function(output.squeeze(-1)) / self.T
         scores = torch.softmax(scores, -1).numpy()
         num_annotate = min(num_annotate, len(data_manager.u_indices))
