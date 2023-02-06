@@ -20,6 +20,6 @@ class UpperConfidenceBoundStrategy(Strategy):
         self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
     ) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
-        uncertainty = regression_upper_confidence_bound(x=output.squeeze(-1), kappa=self.kappa)
+        uncertainty = regression_upper_confidence_bound(x=output, kappa=self.kappa).squeeze(-1)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
