@@ -13,6 +13,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
     Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
     It handles model instantiation at each iteration, training, testing, and queries.
     """
+
     def __init__(
         self,
         model_class: Type[ModelType],

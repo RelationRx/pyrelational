@@ -30,7 +30,7 @@ class ClassificationStrategy(Strategy, ABC):
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         """
-        Call function which identifies samples which need to be labelled based on 
+        Call function which identifies samples which need to be labelled based on
             user defined scoring function.
 
         :param num_annotate: number of samples to annotate
