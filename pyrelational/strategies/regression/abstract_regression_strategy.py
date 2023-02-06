@@ -15,7 +15,6 @@ class RegressionStrategy(Strategy, ABC):
 
     def __init__(self) -> None:
         super(RegressionStrategy, self).__init__()
-        self.scoring_fn = NotImplementedError
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
