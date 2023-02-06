@@ -15,7 +15,6 @@ class RegressionStrategy(Strategy, ABC):
 
     def __init__(self) -> None:
         super(RegressionStrategy, self).__init__()
-        self.scoring_fn = NotImplementedError
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         """
@@ -33,7 +32,7 @@ class RegressionStrategy(Strategy, ABC):
         :return: list of indices to annotate
         """
         output = self.train_and_infer(data_manager=data_manager, model=model)
-        scores = self.scoring_function(output.squeeze(-1))
+        scores = self.scoring_function(output).squeeze(-1)
         ixs = torch.argsort(scores, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
 
