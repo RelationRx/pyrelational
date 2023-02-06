@@ -6,7 +6,7 @@ from torch import Tensor
 
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import regression_bald
-from pyrelational.model_managers import ModelManager
+from pyrelational.models import ModelManager
 from pyrelational.strategies.regression.abstract_regression_strategy import (
     RegressionStrategy,
 )

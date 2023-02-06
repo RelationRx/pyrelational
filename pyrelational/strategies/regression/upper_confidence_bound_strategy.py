@@ -4,7 +4,7 @@ import torch
 
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import regression_upper_confidence_bound
-from pyrelational.model_managers import ModelManager
+from pyrelational.models import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 

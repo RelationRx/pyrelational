@@ -3,7 +3,7 @@ from unittest import TestCase
 import pytest
 import torch
 
-from pyrelational.model_managers.mcdropout_model import (
+from pyrelational.models.mcdropout_model import (
     LightningMCDropoutModel,
     _check_mc_dropout_model,
     _enable_only_dropout_layers,

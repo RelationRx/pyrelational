@@ -3,7 +3,7 @@ from unittest import TestCase
 import pytest
 import torch
 
-from pyrelational.model_managers.ensemble_model import LightningEnsembleModel
+from pyrelational.models.ensemble_model import LightningEnsembleModel
 from tests.test_utils import BreastCancerClassifier, get_classification_dataset
 
 

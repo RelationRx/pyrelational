@@ -11,7 +11,7 @@ from abc import ABC
 from typing import Any, Callable, Dict, List
 
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import ModelManager
+from pyrelational.models import ModelManager
 
 logger = logging.getLogger()
 

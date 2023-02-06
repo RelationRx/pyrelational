@@ -17,7 +17,7 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningModel
+from pyrelational.models import LightningModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import LeastConfidenceStrategy

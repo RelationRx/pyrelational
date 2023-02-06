@@ -4,7 +4,7 @@ from unittest import TestCase
 import torch
 from torch.utils.data import DataLoader
 
-from pyrelational.model_managers import (
+from pyrelational.models import (
     LightningEnsembleModel,
     LightningMCDropoutModel,
     LightningModel,

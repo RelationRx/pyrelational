@@ -3,7 +3,7 @@
 Defining learning models compatible with PyRelationAL
 =====================================================
 
-To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.model_managers`)
+To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.models`)
 that defines required methods for instantiation, training, and testing.
 
 
@@ -17,7 +17,7 @@ Let's first look an an example wrapper for a simple pytorch Module
 
    import torch
    import torch.nn as nn
-   from pyrelational.model_managers.mcdropout_model import MCDropoutManager
+   from pyrelational.models.mcdropout_model import MCDropoutManager
 
 
    class TorchModuleWrapper(MCDropoutManager):
@@ -70,7 +70,7 @@ This can now be instantiated with any pytorch module, for instance
 Using pytorch lightning module
 ______________________________
 
-PyRelationAL implements default classes (see :py:meth:`pyrelational.model_managers.lightning_model.LightningModel`) relying on
+PyRelationAL implements default classes (see :py:meth:`pyrelational.models.lightning_model.LightningModel`) relying on
 pytorch lightning as the Trainer class offload much of the training routine definition to pytorch lighntning.
 For example, users can create ensembles of pytorch lightning modules directly as
 
@@ -80,7 +80,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
     from pytorch_lightning import LightningModule
-    from pyrelational.model_managers.ensemble_model import LightningEnsembleModel
+    from pyrelational.models.ensemble_model import LightningEnsembleModel
 
     # step 1: define the LightningModule with necessary methods
     class DigitClassifier(LightningModule):

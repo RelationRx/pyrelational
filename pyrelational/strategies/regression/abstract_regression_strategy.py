@@ -5,7 +5,7 @@ import torch
 from torch import Tensor
 
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import ModelManager
+from pyrelational.models import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 

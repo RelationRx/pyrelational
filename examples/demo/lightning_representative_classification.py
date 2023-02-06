@@ -15,7 +15,7 @@ from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.model_managers import LightningModel
+from pyrelational.models import LightningModel
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.task_agnostic.representative_sampling_strategy import (

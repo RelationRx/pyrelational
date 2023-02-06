@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from parameterized import parameterized_class
 
-from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
+from pyrelational.models.mcdropout_model import LightningMCDropoutModel
 from pyrelational.strategies import Strategy
 from tests.strategies.agnostic_strategy_test_cases import TASK_AGNOSTIC_TEST_CASES
 from tests.strategies.classification_strategy_test_cases import (

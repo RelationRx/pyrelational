@@ -135,12 +135,12 @@ in the previous section.
 
 Once defined, the lightning model can then be wrapped into a **PyRelationAL** model to interact with the active learning strategies.
 Note that at the moment, **PyRelationAL** defines MCDropout and Ensemble wrapper to approximate Bayesian uncertainty of arbitrary models.
-You can find the existing models and templates in :mod:`pyrelational.model_managers.abstract_model_manager`. The code snippet below
+You can find the existing models and templates in :mod:`pyrelational.models.generic_model`. The code snippet below
 demonstrate how to simply integrate the model above with either mc-dropout or ensembling **PyRelationAL** models.
 
 .. code-block:: python
 
-    from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModel
+    from pyrelational.models.mcdropout_model import LightningMCDropoutModel
     model = LightningMCDropoutModel(
                 DigitClassifier,
                 {"dropout_rate":0.3},
@@ -149,7 +149,7 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
                 eval_dropout_prob=0.5,
             )
 
-    from pyrelational.model_managers.ensemble_model import LightningEnsembleModel
+    from pyrelational.models.ensemble_model import LightningEnsembleModel
     model = LightningMCDropoutModel(
                 DigitClassifier,
                 {"dropout_rate":0.3},
