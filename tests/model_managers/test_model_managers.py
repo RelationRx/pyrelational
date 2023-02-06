@@ -31,7 +31,9 @@ class TestModelManager(TestCase):
 
     def test_early_stopping_in_trainer_callbacks(self) -> None:
         """Check that EarlyStopping is one of the callbacks in a pyrelational LightningModelManager."""
-        model = LightningModelManager(DiabetesRegressionModel, {}, {"epochs": 3, "use_early_stopping": True, "patience": 10})
+        model = LightningModelManager(
+            DiabetesRegressionModel, {}, {"epochs": 3, "use_early_stopping": True, "patience": 10}
+        )
         trainer, _ = model.init_trainer()
         self.assertTrue(any(["EarlyStopping" in str(cb) for cb in trainer.callbacks]))
 

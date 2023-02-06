@@ -3,7 +3,9 @@ from unittest import TestCase
 import pytest
 import torch
 
-from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
+from pyrelational.model_managers.ensemble_model_manager import (
+    LightningEnsembleModelManager,
+)
 from tests.test_utils import BreastCancerClassifier, get_classification_dataset
 
 
@@ -13,7 +15,9 @@ class TestEnsembleEstimator(TestCase):
     def setUp(self) -> None:
         """Set up shared attributes"""
         self.num_estimators = 4
-        self.model = LightningEnsembleModelManager(BreastCancerClassifier, {}, {"epochs": 1}, n_estimators=self.num_estimators)
+        self.model = LightningEnsembleModelManager(
+            BreastCancerClassifier, {}, {"epochs": 1}, n_estimators=self.num_estimators
+        )
         self.dataset = get_classification_dataset()
         self.train_loader = self.dataset.get_train_loader()
         self.val_loader = self.dataset.get_validation_loader()
