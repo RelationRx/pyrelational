@@ -163,13 +163,13 @@ def _check_regression_informativeness_input(
         raise ValueError("Not all of x, mean, and std can be None.")
 
     if isinstance(x, Tensor):
-        assert x.ndim == 2, "x input should be a 2D tensor"
+        assert 2 <= x.ndim <= 3, "x input should be a 2D or 3D tensor"
 
     if isinstance(mean, Tensor):
-        assert mean.ndim == 1, "mean input should be a 1D tensor"
+        assert 1 <= mean.ndim <= 2, "mean input should be a 1D or 2D tensor"
 
     if isinstance(std, Tensor):
-        assert std.ndim == 1, "std input should be a 1D tensor"
+        assert 1 <= std.ndim <= 2, "std input should be a 1D or 2D tensor"
 
 
 def _compute_mean(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Tensor:
