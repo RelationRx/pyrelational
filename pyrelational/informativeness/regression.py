@@ -23,10 +23,10 @@ def regression_greedy_score(
     Implements greedy scoring that returns mean score for each sample across repeats.
     Either x or mean should be provided as input.
 
-    :param x: 2D pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
-    :param mean: 1D pytorch tensor corresponding to the mean of a model's predictions for each sample
+    :param x:  pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
+    :param mean:  pytorch tensor corresponding to the mean of a model's predictions for each sample
     :param axis: index of the axis along which the repeats are
-    :return: 1D pytorch tensor of scores
+    :return:  pytorch tensor of scores
     """
     _check_regression_informativeness_input(x, mean=mean)
     if mean is None:
@@ -44,10 +44,10 @@ def regression_least_confidence(
     Implements least confidence scoring of based on input x returns std score for each sample across repeats.
     Either x or std should be provided as input.
 
-    :param x: 2D pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
-    :param std: 1D pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
+    :param x:  pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
+    :param std:  pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
     :param axis: index of the axis along which the repeats are
-    :return: 1D pytorch tensor of scores
+    :return:  pytorch tensor of scores
     """
     _check_regression_informativeness_input(x, std=std)
     if std is None:
@@ -70,13 +70,13 @@ def regression_expected_improvement(
     Either x or mean and std should be provided as input.
 
 
-    :param x: 2D pytorch tensor or pytorch Distribution
-    :param mean: 1D pytorch tensor corresponding to a model's mean predictions for each sample
-    :param std: 1D pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
+    :param x:  pytorch tensor or pytorch Distribution
+    :param mean:  pytorch tensor corresponding to a model's mean predictions for each sample
+    :param std:  pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
     :param max_label: max label in the labelled dataset
     :param axis: index of the axis along which the repeats are
-    :param xi: 2D pytorch tensor or pytorch Distribution
-    :return: 1D pytorch tensor of scores
+    :param xi:  pytorch tensor or pytorch Distribution
+    :return:  pytorch tensor of scores
     """
     _check_regression_informativeness_input(x, mean, std)
     if isinstance(x, Tensor):
@@ -101,12 +101,12 @@ def regression_upper_confidence_bound(
     Implements Upper Confidence Bound (UCB) scoring (`reference <https://doi.org/10.1023/A:1013689704352>`__)
     Either x or mean and std should be provided as input.
 
-    :param x: 2D pytorch tensor or pytorch Distribution
-    :param mean: 1D pytorch tensor corresponding to a model's mean predictions for each sample
-    :param std: 1D pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
+    :param x:  pytorch tensor or pytorch Distribution
+    :param mean:  pytorch tensor corresponding to a model's mean predictions for each sample
+    :param std:  pytorch tensor corresponding to the standard deviation of a model's predictions for each sample
     :param kappa: trade-off parameter between exploitation and exploration
     :param axis: index of the axis along which the repeats are
-    :return: 1D pytorch tensor of scores
+    :return:  pytorch tensor of scores
     """
     _check_regression_informativeness_input(x, mean, std)
     if mean is None:
@@ -122,14 +122,14 @@ def regression_thompson_sampling(x: Tensor, axis: int = 0) -> Tensor:
     """
     Implements thompson sampling scoring (`reference <https://doi.org/10.1561/2200000070>`__).
 
-    :param x: 2D pytorch tensor
+    :param x:  pytorch tensor
     :param axis: index of the axis along which the repeats are
-    :return: 1D pytorch tensor of scores
+    :return:  pytorch tensor of scores
     """
     assert isinstance(x, Tensor), f"x input should be a torch Tensor, got {type(x)} instead."
-    other_axis = (axis - 1) % 2
-    idx = torch.randint(high=x.size(axis), size=(x.size(other_axis), 1))
-    return x.gather(axis, idx).flatten()
+    size = tuple(x.size(i) for i in range(x.ndim) if i != axis) + (1,)
+    idx = torch.randint(high=x.size(axis), size=size)
+    return x.gather(axis, idx).squeeze(-1)
 
 
 def regression_bald(x: Tensor, axis: int = 0) -> Tensor:
@@ -137,9 +137,9 @@ def regression_bald(x: Tensor, axis: int = 0) -> Tensor:
     Implementation of Bayesian Active Learning by Disagreement (BALD) for regression task
     (`reference <https://arxiv.org/pdf/1112.5745.pdf>`__)
 
-    :param x: 2D pytorch Tensor
+    :param x:  pytorch Tensor
     :param axis: index of the axis along which the repeats are
-    :return: 1D pytorch tensor of scores
+    :return:  pytorch tensor of scores
     """
     assert isinstance(x, Tensor), f"x input should be a torch Tensor, got {type(x)} instead."
     x_mean = x.mean(axis, keepdim=True)
