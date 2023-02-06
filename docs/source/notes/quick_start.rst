@@ -141,7 +141,7 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
 .. code-block:: python
 
     from pyrelational.model_managers.mcdropout_model import LightningMCDropoutModelManager
-    model = LightningMCDropoutModelManager(
+    model_manager = LightningMCDropoutModelManager(
                 DigitClassifier,
                 {"dropout_rate":0.3},
                 {"epochs": 4},
@@ -150,7 +150,7 @@ demonstrate how to simply integrate the model above with either mc-dropout or en
             )
 
     from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
-    model = LightningMCDropoutModelManager(
+    model_manager = LightningEnsembleModelManager(
                 DigitClassifier,
                 {"dropout_rate":0.3},
                 {"epochs": 4},
@@ -174,7 +174,7 @@ a few lines of code
     from pyrelational.strategies.classification import (
         LeastConfidenceStrategy,
     )
-    strategy = LeastConfidenceStrategy(data_manager=dm, model=model)
+    strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=250)
     performance_history = strategy.performance_history()
@@ -203,28 +203,28 @@ We can now compare the performances of different strategies on our digit classif
 
     # Least confidence strategy
     dm = get_digit_data_manager()
-    strategy = LeastConfidenceStrategy(data_manager=dm, model=model)
+    strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['LeastConfidence'] = strategy.performance_history()
 
     # Maginal confidence
     dm = get_digit_data_manager()
-    strategy = MarginalConfidenceStrategy(data_manager=dm, model=model)
+    strategy = MarginalConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['MarginalConfidence'] = strategy.performance_history()
 
     # Ratio confidence
     dm = get_digit_data_manager()
-    strategy = RatioConfidenceStrategy(data_manager=dm, model=model)
+    strategy = RatioConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['RatioConfidence'] = strategy.performance_history()
 
     # Entropy classification
     dm = get_digit_data_manager()
-    strategy = EntropyClassificationStrategy(data_manager=dm, model=model)
+    strategy = EntropyClassificationStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['EntropyClassification'] = strategy.performance_history()
@@ -232,7 +232,7 @@ We can now compare the performances of different strategies on our digit classif
 
     # Random classification
     dm = get_digit_data_manager()
-    strategy = RandomAcquisitionStrategy(data_manager=dm, model=model)
+    strategy = RandomAcquisitionStrategy(data_manager=dm, model_manager=model_manager)
     strategy.theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['RandomAcquistion'] = strategy.performance_history()

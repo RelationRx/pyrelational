@@ -29,7 +29,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 
-# model
+# model_manager
 class BadgeLightningModel(LightningModelManager):
     """Model compatible with BADGE strategy"""
 
@@ -70,7 +70,9 @@ class BadgeLightningModel(LightningModelManager):
         return torch.cat(gradients, 0)
 
 
-model = BadgeLightningModel(model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 5})
+model_manager = BadgeLightningModel(
+    model_class=BreastCancerClassification, model_config={}, trainer_config={"epochs": 5}
+)
 
 # data_manager and defining strategy
 data_manager = DataManager(
@@ -88,7 +90,7 @@ class BadgeStrategy(Strategy):
     def __init__(self):
         super(BadgeStrategy, self).__init__()
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager) -> List[int]:
+    def __call__(self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager) -> List[int]:
         """
         :param num_annotate: Number of samples to label
         :return: indices of samples to label
@@ -96,9 +98,9 @@ class BadgeStrategy(Strategy):
         l_loader = data_manager.get_labelled_loader()
         u_loader = data_manager.get_unlabelled_loader()
         valid_loader = data_manager.get_validation_loader()
-        model.train(l_loader, valid_loader)
-        u_grads = model.get_gradients(u_loader)
-        l_grads = model.get_gradients(l_loader)
+        model_manager.train(l_loader, valid_loader)
+        u_grads = model_manager.get_gradients(u_loader)
+        l_grads = model_manager.get_gradients(l_loader)
         scores = relative_distance(u_grads, l_grads)
         ixs = torch.argsort(scores, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
@@ -107,7 +109,7 @@ class BadgeStrategy(Strategy):
 # Set the instantiated custom model and strategy into the Pipeline object
 strategy = BadgeStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)

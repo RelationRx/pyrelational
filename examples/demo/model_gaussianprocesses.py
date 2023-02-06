@@ -101,7 +101,7 @@ class GPLightningModel(LightningModelManager):
                 return self.current_model(x)
 
 
-model = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})
+model_manager = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})
 
 # data_manager and defining strategy
 data_manager = DataManager(
@@ -116,7 +116,7 @@ data_manager = DataManager(
 # Set up strategy and rest of the pipeline
 strategy = LeastConfidenceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)

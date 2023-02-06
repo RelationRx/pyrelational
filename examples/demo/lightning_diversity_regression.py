@@ -29,8 +29,8 @@ train_indices = train_ds.indices
 val_indices = val_ds.indices
 test_indices = test_ds.indices
 
-# model
-model = LightningModelManager(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 4})
+# model_manager
+model_manager = LightningModelManager(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 4})
 
 # data_manager and defining strategy
 data_manager = DataManager(
@@ -44,7 +44,7 @@ data_manager = DataManager(
 # Setup pipeline
 strategy = RelativeDistanceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 
 # Remove lightning prints

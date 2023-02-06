@@ -32,7 +32,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 # model
-model = LightningMCDropoutModelManager(
+model_manager = LightningMCDropoutModelManager(
     model_class=MnistClassification, model_config={"dropout": 0.2}, trainer_config={"epochs": 4}
 )
 
@@ -47,7 +47,7 @@ data_manager = DataManager(
 
 strategy = LeastConfidenceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)

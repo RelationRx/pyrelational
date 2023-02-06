@@ -30,8 +30,8 @@ train_indices = train_ds.indices
 val_indices = val_ds.indices
 test_indices = test_ds.indices
 
-# model
-model = LightningEnsembleModelManager(
+# model manager
+model_manager = LightningEnsembleModelManager(
     model_class=MnistClassification, model_config={}, trainer_config={"epochs": 5}, n_estimators=5
 )
 
@@ -47,7 +47,7 @@ data_manager = DataManager(
 # Set up active learning pipeline
 strategy = LeastConfidenceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
