@@ -18,6 +18,6 @@ class ExpectedImprovementStrategy(Strategy):
     def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
         output = self.train_and_infer(data_manager=data_manager, model=model)
         max_label = torch.max(data_manager.get_sample_labels(data_manager.l_indices))
-        uncertainty = regression_expected_improvement(x=output.squeeze(-1), max_label=max_label)
+        uncertainty = regression_expected_improvement(x=output, max_label=max_label).squeeze(-1)
         ixs = torch.argsort(uncertainty, descending=True).tolist()
         return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
