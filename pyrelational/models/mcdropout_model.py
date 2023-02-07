@@ -1,6 +1,6 @@
 import logging
 from abc import ABC
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union, cast
 
 import torch
 from pytorch_lightning import LightningModule
@@ -39,10 +39,10 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         :param loader: pytorch dataloader
         :return: model predictions
         """
-        if self.current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
-        model = self.current_model
+        model = cast(Module, self._current_model)
         model = model.to(self.device)
         model.eval()
 

@@ -44,7 +44,7 @@ class BadgeLightningModel(LightningModel):
         :param loader: dataloader
         :return: tensor of gradients for each sample
         """
-        if self.current_model is None:
+        if not self.is_trained():
             raise ValueError(
                 """
                     Trying to query gradients of an untrained model,
@@ -52,7 +52,7 @@ class BadgeLightningModel(LightningModel):
                 """
             )
 
-        model = self.current_model
+        model = self._current_model
         model.eval()
         gradients = []
         for x, _ in loader:

@@ -41,17 +41,17 @@ Let's first look an an example wrapper for a simple pytorch Module
                    loss = criterion(out, y)
                    loss.backward()
                    optimizer.step()
-           self.current_model = model # store current model
+           self._current_model = model # store current model
 
        def test(self, loader):
-           if self.current_model is None:
+           if not self.is_trained():
                raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
            criterion = nn.MSELoss()
-           self.current_model.eval()
+           self._current_model.eval()
            with torch.no_grad():
                tst_loss, cnt = 0, 0
                for x, y in loader:
-                   loss = criterion(self.current_model(x), y)
+                   loss = criterion(self._current_model(x), y)
                    cnt += x.size(0)
                    tst_loss += loss.item()
            return {"test_loss": tst_loss/cnt}
