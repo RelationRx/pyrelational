@@ -14,13 +14,13 @@ from torch import Tensor
 from torch.distributions import Distribution
 
 
-def regression_greedy_score(
+def regression_mean_prediction(
     x: Optional[Union[Tensor, Distribution]] = None,
     mean: Optional[Tensor] = None,
     axis: int = 0,
 ) -> Tensor:
     """
-    Implements greedy scoring that returns mean score for each sample across repeats.
+    Returns mean score for each sample across repeats.
     Either x or mean should be provided as input.
 
     :param x:  pytorch tensor of repeat by scores (or scores by repeat) or pytorch Distribution
