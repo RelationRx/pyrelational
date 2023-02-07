@@ -92,13 +92,13 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         if valid_loader is not None and is_overridden("validation_step", model):
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
 
-        self.current_model = model
+        self._current_model = model
 
     def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        ret: Dict[str, float] = trainer.test(self.current_model, dataloaders=loader)[0]
+        ret: Dict[str, float] = trainer.test(self._current_model, dataloaders=loader)[0]
         return ret
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
@@ -107,9 +107,9 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         :param loader: pytorch dataloader
         :return: model predictions
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-        model = self.current_model.to(self.device)
+        model = self._current_model.to(self.device)
         model.eval()
 
         with torch.no_grad():

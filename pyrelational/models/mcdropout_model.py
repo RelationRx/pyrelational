@@ -39,10 +39,10 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         :param loader: pytorch dataloader
         :return: model predictions
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
-        model = self.current_model
+        model = self._current_model
         model = model.to(self.device)
         model.eval()
 
