@@ -69,7 +69,7 @@ class TestInformativenessScorer(TestCase):
 
     @parameterized.expand(
         [
-            ("regression_greedy_score",),
+            ("regression_mean_prediction",),
             ("regression_thompson_sampling",),
             ("regression_least_confidence",),
             ("regression_bald",),
@@ -106,7 +106,7 @@ class TestInformativenessScorer(TestCase):
 
     @parameterized.expand(
         [
-            ("regression_greedy_score",),
+            ("regression_mean_prediction",),
             ("regression_least_confidence",),
         ]
     )
@@ -132,7 +132,7 @@ class TestInformativenessScorer(TestCase):
     def test_regression_greedy_with_mean_std_input(self) -> None:
         """Check output dimension of informativeness measures supporting mean/std input."""
         mean = torch.randn(10)
-        o = runc.regression_greedy_score(mean=mean)
+        o = runc.regression_mean_prediction(mean=mean)
         self.assertEqual(o.numel(), mean.size(0))
         torch.testing.assert_close(mean, o)
 
