@@ -25,7 +25,7 @@ class TestEnsembleEstimator(TestCase):
     def test_instantiation(self) -> None:
         """Check attributes at instantiation."""
         self.assertEqual(self.model.__class__.__name__, "LightningEnsembleModelManager")
-        self.assertIsNone(self.model.current_model)
+        self.assertIsNone(self.model._current_model)
         self.assertIsInstance(self.model.trainer_config, dict)
         self.assertIsInstance(self.model.model_config, dict)
 
@@ -40,7 +40,7 @@ class TestEnsembleEstimator(TestCase):
     def test_prediction(self) -> None:
         """Check dimension match with number of estimators or dataset size."""
         self.model.train(self.train_loader)
-        self.assertEqual(len(self.model.current_model), self.num_estimators)
+        self.assertEqual(len(self.model._current_model), self.num_estimators)
 
         prediction = self.model(self.val_loader)
         self.assertEqual(prediction.size(0), self.num_estimators)
