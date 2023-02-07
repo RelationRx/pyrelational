@@ -9,13 +9,13 @@ from torch.nn import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
-from .lightning_model import LightningModel
+from .lightning_model_manager import LightningModelManager
 from .model_utils import _determine_device
 
 ModelType = TypeVar("ModelType", bound=Module)
 
 
-class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
+class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[ModelType]], ABC):
     """
     Generic wrapper for ensemble uncertainty estimator
     """
@@ -35,7 +35,7 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
         :param trainer_config: a dictionary containing the config required to instantiate the trainer module/function
         :param n_estimators: number of models in ensemble
         """
-        super(EnsembleManager, self).__init__(model_class, model_config, trainer_config)
+        super(EnsembleModelManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
 
@@ -46,12 +46,12 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
         :param loader: pytorch dataloader
         :return: model predictions of shape (n_estimators, number of samples in loader, 1)
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
 
         with torch.no_grad():
             predictions = []
-            for model in self.current_model:
+            for model in self._current_model:
                 model = model.to(self.device)
                 model.eval()
                 model_prediction = []
@@ -63,7 +63,7 @@ class EnsembleManager(Generic[ModelType], ModelManager[ModelType, List[ModelType
         return ret
 
 
-class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
+class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], LightningModelManager):
     r"""
     Wrapper for ensemble estimator with pytorch lightning trainer
 
@@ -82,7 +82,7 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         # need to define other train/test steps and optimizers methods required
         # by pytorch-lightning to run this example
 
-        wrapper = LightningEnsembleModel(
+        wrapper = LightningEnsembleModelManager(
                      PyLModel,
                      model_config={"in_dim":10, "out_dim":1},
                      trainer_config={"epochs":100},
@@ -107,7 +107,7 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
         :param n_estimators: number of models in ensemble
         """
-        super(LightningEnsembleModel, self).__init__(
+        super(LightningEnsembleModelManager, self).__init__(
             model_class, model_config, trainer_config, n_estimators=n_estimators
         )
 
@@ -118,14 +118,14 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
         :param train_loader: pytorch data loader containing train data
         :param valid_loader: pytorch data loader containing validation data
         """
-        self.current_model = []
+        self._current_model = []
         for _ in range(self.n_estimators):
             model = self._init_model()
             trainer, ckpt_callback = self.init_trainer()
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
             if valid_loader is not None and is_overridden("validation_step", model):
                 model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
-            self.current_model.append(model.cpu())
+            self._current_model.append(model.cpu())
 
     def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
         """
@@ -136,10 +136,10 @@ class LightningEnsembleModel(EnsembleManager[LightningModule], LightningModel):
 
         :return: average performance for each metric (defined in the model_class)
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        output = [trainer.test(model, dataloaders=loader)[0] for model in self.current_model]
+        output = [trainer.test(model, dataloaders=loader)[0] for model in self._current_model]
         # return average score across ensemble
         performances: Dict[str, float] = {}
         for k in output[0].keys():

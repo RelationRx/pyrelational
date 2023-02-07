@@ -1,10 +1,10 @@
-pyrelational.models
+pyrelational.model_managers
 ===================
 
 Abstract Model Manager
 -----------------------------------------
 
-.. automodule:: pyrelational.models.abstract_model_manager
+.. automodule:: pyrelational.model_managers.abstract_model_manager
    :members:
    :undoc-members:
    :special-members: __call__
@@ -13,7 +13,7 @@ Abstract Model Manager
 Pytorch Lightning Model
 -------------------------------------------
 
-.. automodule:: pyrelational.models.lightning_model
+.. automodule:: pyrelational.model_managers.lightning_model_manager
    :members:
    :undoc-members:
    :special-members: __call__
@@ -22,7 +22,7 @@ Pytorch Lightning Model
 Ensemble Models
 ------------------------------------------
 
-.. automodule:: pyrelational.models.ensemble_model
+.. automodule:: pyrelational.model_managers.ensemble_model_manager
    :members:
    :undoc-members:
    :special-members: __call__
@@ -31,7 +31,7 @@ Ensemble Models
 MCDropout Models
 -------------------------------------------
 
-.. automodule:: pyrelational.models.mcdropout_model
+.. automodule:: pyrelational.model_managers.mcdropout_model_manager
    :members:
    :undoc-members:
    :special-members: __call__

@@ -4,7 +4,7 @@ This file contains the implementation of an abstract oracle interface for PyRela
 from abc import ABC, abstractmethod
 from typing import Any, List
 
-from pyrelational.data.data_manager import DataManager
+from pyrelational.data_managers.data_manager import DataManager
 
 
 class Oracle(ABC):

@@ -31,7 +31,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
 
         self.model_class = model_class
         self.model_config = json.load(open(model_config, "r")) if isinstance(model_config, str) else model_config
-        self.current_model: Optional[E] = None
+        self._current_model: Optional[E] = None
         self.trainer_config = (
             json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
         )
@@ -43,6 +43,14 @@ class ModelManager(ABC, Generic[ModelType, E]):
         :return: an instance of self.model_class based on self.model_config
         """
         return self.model_class(**self.model_config)
+
+    def reset(self) -> None:
+        """Reset stored _current_model."""
+        self._current_model = None
+
+    def is_trained(self) -> bool:
+        """Check if model was trained."""
+        return self._current_model is not None
 
     @abstractmethod
     def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:

@@ -4,9 +4,9 @@ from typing import Any, List
 import torch
 from torch import Tensor
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import softmax
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
@@ -28,7 +28,9 @@ class ClassificationStrategy(Strategy, ABC):
         :return: scores for each sample
         """
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
+    def __call__(
+        self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
+    ) -> List[int]:
         """
         Call function which identifies samples which need to be labelled based on
             user defined scoring function.
@@ -37,13 +39,13 @@ class ClassificationStrategy(Strategy, ABC):
         :param data_manager: A pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
-        :param model: A pyrelational model manager
+        :param model_manager: A pyrelational model manager
             which wraps a user defined ML model to handle instantiation, training, testing,
             as well as uncertainty quantification
 
         :return: list of indices to annotate
         """
-        output = self.train_and_infer(data_manager=data_manager, model=model).mean(0)
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager).mean(0)
         if not torch.allclose(output.sum(1), torch.tensor(1.0)):
             output = softmax(output)
         uncertainty = self.scoring_function(softmax(output))

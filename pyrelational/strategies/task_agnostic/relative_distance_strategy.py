@@ -2,7 +2,7 @@ from typing import List
 
 import torch
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import relative_distance
 from pyrelational.strategies.abstract_strategy import Strategy
 

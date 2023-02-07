@@ -8,13 +8,13 @@ from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
-from .lightning_model import LightningModel
+from .lightning_model_manager import LightningModelManager
 from .model_utils import _determine_device
 
 logger = logging.getLogger()
 
 
-class MCDropoutManager(ModelManager[Module, Module], ABC):
+class MCDropoutModelManager(ModelManager[Module, Module], ABC):
     """
     Generic model wrapper for mcdropout uncertainty estimator
     """
@@ -36,7 +36,7 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         :param n_estimators: number of times to sample a prediction for each input
         :param eval_dropout_prob: dropout parameter used when accessing model predictions
         """
-        super(MCDropoutManager, self).__init__(model_class, model_config, trainer_config)
+        super(MCDropoutModelManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
@@ -49,10 +49,10 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         :param loader: pytorch dataloader
         :return: model predictions of shape (n_estimators, number of samples in loader, 1)
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
-        model = self.current_model
+        model = self._current_model
         model = model.to(self.device)
         model.eval()
 
@@ -68,7 +68,7 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         return ret
 
 
-class LightningMCDropoutModel(MCDropoutManager, LightningModel):
+class LightningMCDropoutModelManager(MCDropoutModelManager, LightningModelManager):
     r"""
     Wrapper for MC Dropout estimator with pytorch lightning trainer
 
@@ -86,7 +86,7 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
            # need to define other train/test steps and optimizers methods required
            # by pytorch-lightning to run this example
 
-        wrapper = LightningMCDropoutModel(
+        wrapper = LightningMCDropoutModelManager(
                         PyLModel,
                         model_config={"in_dim":10, "out_dim":1},
                         trainer_config={"epochs":100},
@@ -115,7 +115,7 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
         :param n_estimators: number of times to sample a prediction for each input
         :param eval_dropout_prob: dropout parameter used when accessing model predictions
         """
-        super(LightningMCDropoutModel, self).__init__(
+        super(LightningMCDropoutModelManager, self).__init__(
             model_class,
             model_config,
             trainer_config,

@@ -17,8 +17,8 @@ from torchvision import datasets, transforms
 from examples.utils.ml_models import MnistClassification  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
-from pyrelational.models import LightningMCDropoutModel
+from pyrelational.data_managers import DataManager
+from pyrelational.model_managers import LightningMCDropoutModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -32,7 +32,7 @@ val_indices = val_ds.indices
 test_indices = test_ds.indices
 
 # model
-model = LightningMCDropoutModel(
+model_manager = LightningMCDropoutModelManager(
     model_class=MnistClassification, model_config={"dropout": 0.2}, trainer_config={"epochs": 4}
 )
 
@@ -47,7 +47,7 @@ data_manager = DataManager(
 
 strategy = LeastConfidenceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)

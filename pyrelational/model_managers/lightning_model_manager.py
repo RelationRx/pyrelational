@@ -11,7 +11,7 @@ from .abstract_model_manager import ModelManager
 from .model_utils import _determine_device
 
 
-class LightningModel(ModelManager[LightningModule, LightningModule]):
+class LightningModelManager(ModelManager[LightningModule, LightningModule]):
     r"""
     A wrapper for pytorch lightning modules that instantiates and uses a pytorch lightning trainer.
 
@@ -29,7 +29,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
            # need to define other train/test steps and optimizers methods required
            # by pytorch-lightning to run this example
 
-        wrapper = LightningModel(
+        wrapper = LightningModelManager(
                         PyLModel,
                         model_config={"in_dim":10, "out_dim":1},
                         trainer_config={"epochs":100},
@@ -49,7 +49,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
                 (e.g. see above example)
         :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
         """
-        super(LightningModel, self).__init__(model_class, model_config, trainer_config)
+        super(LightningModelManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
@@ -98,13 +98,13 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         if valid_loader is not None and is_overridden("validation_step", model):
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
 
-        self.current_model = model
+        self._current_model = model
 
     def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        ret: Dict[str, float] = trainer.test(self.current_model, dataloaders=loader)[0]
+        ret: Dict[str, float] = trainer.test(self._current_model, dataloaders=loader)[0]
         return ret
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
@@ -114,9 +114,9 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         :param loader: pytorch dataloader
         :return: model predictions of shape (number of samples in loader,1)
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-        model = self.current_model.to(self.device)
+        model = self._current_model.to(self.device)
         model.eval()
 
         with torch.no_grad():

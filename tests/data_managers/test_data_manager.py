@@ -6,7 +6,7 @@ import pytest
 import torch
 from parameterized import parameterized
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from tests.test_utils import (
     DiabetesDataset,
     get_classification_dataset,

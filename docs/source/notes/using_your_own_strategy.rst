@@ -58,7 +58,7 @@ random from the remaining queryable set.
 
     import torch
     import numpy as np
-    from pyrelational.informativeness import regression_greedy_score
+    from pyrelational.informativeness import regression_mean_prediction
     from pyrelational.strategies.generic_al_strategy import Strategy
 
 
@@ -75,7 +75,7 @@ random from the remaining queryable set.
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
             self.model.train(self.l_loader, self.valid_loader)
             output = self.model(self.u_loader)
-            scores = regression_greedy_score(x=output)
+            scores = regression_mean_prediction(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             greedy_annotate = int((1-eps)*num_annotate)
             ixs = [self.u_indices[i] for i in ixs[: greedy_annotate]]

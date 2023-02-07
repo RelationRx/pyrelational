@@ -15,10 +15,10 @@ from torch.utils.data import Dataset
 
 # Data and data manager
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -60,21 +60,21 @@ class SKRFC(ModelManager):
         train_x, train_y = next(iter(train_loader))
         estimator = self._init_model()
         estimator.fit(train_x, train_y, **trainer_config)
-        self.current_model = estimator
+        self._current_model = estimator
 
     def test(self, loader):
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
-        y_hat = self.current_model.predict(X)
+        y_hat = self._current_model.predict(X)
         acc = accuracy_score(y_hat, y)
         return {"test_acc": acc}
 
     def __call__(self, loader):
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, _ = next(iter(loader))
-        model = self.current_model
+        model = self._current_model
         class_probabilities = model.predict_proba(X)
         return torch.FloatTensor(class_probabilities).unsqueeze(0)  # unsqueeze due to batch expectation
 
@@ -82,7 +82,7 @@ class SKRFC(ModelManager):
 data_manager = get_breastcancer_data_manager()
 model_config = {"n_estimators": 10, "bootstrap": False}
 trainer_config = {}
-model = SKRFC(RandomForestClassifier, model_config, trainer_config)
+model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
 
 # Instantiate an active learning strategy
 al_strategy = LeastConfidenceStrategy()
@@ -90,9 +90,9 @@ al_strategy = LeastConfidenceStrategy()
 # Instantiate an oracle
 oracle = BenchmarkOracle()
 
-# Given that we have a data manager, a model, and an active learning strategy
+# Given that we have a data manager, a model_manager, and an active learning strategy
 # we may create an active learning pipeline
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
 pipeline.theoretical_performance()
