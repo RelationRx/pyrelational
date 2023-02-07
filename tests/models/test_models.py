@@ -25,7 +25,7 @@ class TestModelManager(TestCase):
         train_loader, valid_loader, test_loader = get_loaders()
         model = LightningModel(DiabetesRegressionModel, {}, {"epochs": 3})
         model.train(train_loader, valid_loader)
-        self.assertIsNotNone(model.current_model)
+        self.assertIsNotNone(model._current_model)
         self.assertIsInstance(model.test(test_loader), dict)
         self.assertEqual(model(test_loader).size(0), len(test_loader.dataset))
 
