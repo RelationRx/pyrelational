@@ -8,13 +8,13 @@ from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
-from .lightning_model import LightningModel
+from .lightning_model_manager import LightningModelManager
 from .model_utils import _determine_device
 
 logger = logging.getLogger()
 
 
-class MCDropoutManager(ModelManager[Module, Module], ABC):
+class MCDropoutModelManager(ModelManager[Module, Module], ABC):
     """
     Generic model wrapper for mcdropout uncertainty estimator
     """
@@ -27,7 +27,7 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
-        super(MCDropoutManager, self).__init__(model_class, model_config, trainer_config)
+        super(MCDropoutModelManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
         self.n_estimators = n_estimators
@@ -58,7 +58,7 @@ class MCDropoutManager(ModelManager[Module, Module], ABC):
         return ret
 
 
-class LightningMCDropoutModel(MCDropoutManager, LightningModel):
+class LightningMCDropoutModelManager(MCDropoutModelManager, LightningModelManager):
     r"""
     Wrapper for MC Dropout estimator with pytorch lightning trainer
 
@@ -76,7 +76,7 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
            # need to define other train/test steps and optimizers methods required
            # by pytorch-lightning to run this example
 
-        wrapper = LightningMCDropoutModel(
+        wrapper = LightningMCDropoutModelManager(
                         PyLModel,
                         model_config={"in_dim":10, "out_dim":1},
                         trainer_config={"epochs":100},
@@ -97,7 +97,7 @@ class LightningMCDropoutModel(MCDropoutManager, LightningModel):
         n_estimators: int = 10,
         eval_dropout_prob: float = 0.2,
     ):
-        super(LightningMCDropoutModel, self).__init__(
+        super(LightningMCDropoutModelManager, self).__init__(
             model_class,
             model_config,
             trainer_config,

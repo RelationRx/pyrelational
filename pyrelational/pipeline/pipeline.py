@@ -12,8 +12,8 @@ import pandas as pd
 from tabulate import tabulate
 from torch.utils.data import DataLoader
 
-from pyrelational.data.data_manager import DataManager
-from pyrelational.models.abstract_model_manager import ModelManager
+from pyrelational.data_managers.data_manager import DataManager
+from pyrelational.model_managers.abstract_model_manager import ModelManager
 from pyrelational.oracles.abstract_oracle import Oracle
 from pyrelational.oracles.benchmark_oracle import BenchmarkOracle
 from pyrelational.strategies.abstract_strategy import Strategy
@@ -25,7 +25,7 @@ class Pipeline(ABC):
     """
     The pipeline facilitates the communication between
     - DataManager
-    - Model,
+    - ModelManager,
     - ALStrategy,
     - Oracle (Optional)
 
@@ -34,9 +34,8 @@ class Pipeline(ABC):
     :param data_manager: a pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
-    :param model: A pyrelational model
-            which serves as the machine learning model for the data in the
-            data manager
+    :param model_manager: A pyrelational model manager which handles the instantiation, training, testing of
+            a machine learning model for the data in the data manager
     :param strategy: A pyrelational active learning strategy
             implements the informativeness measure and the selection algorithm being used
     :param oracle: An oracle instance
@@ -47,13 +46,13 @@ class Pipeline(ABC):
     def __init__(
         self,
         data_manager: DataManager,
-        model: ModelManager[Any, Any],
+        model_manager: ModelManager[Any, Any],
         strategy: Strategy,
         oracle: Optional[Oracle] = None,
     ):
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
-        self.model = model
+        self.model_manager = model_manager
         self.strategy = strategy
         self.oracle: Oracle = BenchmarkOracle() if oracle is None else oracle
 
@@ -81,15 +80,15 @@ class Pipeline(ABC):
 
         :return: performances
         """
-        self.model.train(self.train_loader, self.valid_loader)
+        self.model_manager.train(self.train_loader, self.valid_loader)
 
         # use test loader in data_manager if there is one
-        result = self.model.test(self.test_loader if test_loader is None else test_loader)
+        result = self.model_manager.test(self.test_loader if test_loader is None else test_loader)
         result = self.compute_hit_ratio(result)
         self.performances["full"] = result
 
         # make sure that theoretical best model is not stored
-        self.model.reset()
+        self.model_manager.reset()
         return self.performances["full"]
 
     def current_performance(
@@ -105,11 +104,11 @@ class Pipeline(ABC):
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
         """
-        if not self.model.is_trained():  # no AL steps taken so far
-            self.model.train(self.l_loader, self.valid_loader)
+        if not self.model_manager.is_trained():  # no AL steps taken so far
+            self.model_manager.train(self.l_loader, self.valid_loader)
 
         # use test loader in data_manager if there is one
-        result = self.model.test(self.test_loader if test_loader is None else test_loader)
+        result = self.model_manager.test(self.test_loader if test_loader is None else test_loader)
         result = self.compute_hit_ratio(result, query)
         self.performances[self.iteration] = result
         return None
@@ -194,7 +193,7 @@ class Pipeline(ABC):
                 break
 
         # Final update the model and check final test performance
-        self.model.train(self.l_loader, self.valid_loader)
+        self.model_manager.train(self.l_loader, self.valid_loader)
         self.current_performance(test_loader=test_loader)
 
     def performance_history(self) -> pd.DataFrame:
@@ -278,7 +277,7 @@ class Pipeline(ABC):
     def __str__(self) -> str:
         """Pretty prints contents inside ActiveLearningManager based on available attributes"""
         str_dm = str(self.data_manager)
-        str_model = str(self.model)
+        str_model = str(self.model_manager)
         str_dataset_size = str(self.dataset_size)
         str_percentage_labelled = "%.3f" % self.percentage_labelled
 

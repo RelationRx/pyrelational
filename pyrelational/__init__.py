@@ -1,6 +1,6 @@
-import pyrelational.data
+import pyrelational.data_managers
 import pyrelational.informativeness
-import pyrelational.models
+import pyrelational.model_managers
 import pyrelational.pipeline
 import pyrelational.strategies
 from pyrelational.version import __version__

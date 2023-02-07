@@ -3,8 +3,8 @@ from unittest import TestCase
 import pytest
 import torch
 
-from pyrelational.models.mcdropout_model import (
-    LightningMCDropoutModel,
+from pyrelational.model_managers.mcdropout_model_manager import (
+    LightningMCDropoutModelManager,
     _check_mc_dropout_model,
     _enable_only_dropout_layers,
 )
@@ -43,14 +43,14 @@ class TestMCDropoutModel(TestCase):
 
     def test_model_names(self) -> None:
         """Check model manager class name and model class name."""
-        model = LightningMCDropoutModel(
+        model = LightningMCDropoutModelManager(
             BreastCancerClassifier,
             {"dropout_rate": 0.5},
             {"epochs": 1},
             eval_dropout_prob=0.2,
             n_estimators=3,
         )
-        self.assertEqual(model.__class__.__name__, "LightningMCDropoutModel")
+        self.assertEqual(model.__class__.__name__, "LightningMCDropoutModelManager")
         self.assertEqual(model._init_model().__class__.__name__, "BreastCancerClassifier")
 
     def test_mc_dropout_estimator(self) -> None:
@@ -58,7 +58,7 @@ class TestMCDropoutModel(TestCase):
         dataset = get_classification_dataset()
         train_loader = dataset.get_train_loader()
         val_loader = dataset.get_validation_loader()
-        model = LightningMCDropoutModel(
+        model = LightningMCDropoutModelManager(
             BreastCancerClassifier,
             {"dropout_rate": 0.5},
             {"epochs": 1},

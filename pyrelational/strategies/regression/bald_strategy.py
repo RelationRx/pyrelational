@@ -4,9 +4,9 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import regression_bald
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.strategies.regression.abstract_regression_strategy import (
     RegressionStrategy,
 )
@@ -33,8 +33,10 @@ class SoftBALDStrategy(BALDStrategy):
         assert temperature > 0, "temperature parameter should be greater than 0"
         self.T = torch.tensor(temperature)
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
-        output = self.train_and_infer(data_manager=data_manager, model=model)
+    def __call__(
+        self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
+    ) -> List[int]:
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         scores = self.scoring_function(output).squeeze(-1)
         scores = torch.softmax(scores / self.T, -1).numpy()
         num_annotate = min(num_annotate, len(data_manager.u_indices))

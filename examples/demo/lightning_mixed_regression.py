@@ -18,15 +18,11 @@ class MixedStrategy(Strategy):
     the list is then reduced based on representative_sampling.
     """
 
-    def __init(self, datamanager, model):
-        super(MixedStrategy, self).__init__(datamanager, model)
-
-    def active_learning_step(self, num_annotate):
-        self.model.train(self.l_loader, self.valid_loader)
-        output = self.model(self.u_loader)
+    def __call__(self, num_annotate, data_manager, model_manager):
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         scores = regression_least_confidence(x=output.squeeze(-1))
         ixs = torch.argsort(scores, descending=True).tolist()
-        ixs = [self.u_indices[i] for i in ixs[: 10 * num_annotate]]
-        subquery = torch.stack(self.data_manager.get_sample_feature_vectors(ixs))
+        ixs = [data_manager.u_indices[i] for i in ixs[: 10 * num_annotate]]
+        subquery = torch.stack(data_manager.get_sample_feature_vectors(ixs))
         new_ixs = representative_sampling(subquery)
         return [ixs[i] for i in new_ixs]

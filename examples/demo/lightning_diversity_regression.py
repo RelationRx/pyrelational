@@ -14,8 +14,8 @@ from examples.utils.datasets import DiabetesDataset  # noqa: E402
 from examples.utils.ml_models import DiabetesRegression  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
-from pyrelational.models import LightningModel
+from pyrelational.data_managers import DataManager
+from pyrelational.model_managers import LightningModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.task_agnostic.relative_distance_strategy import (
@@ -29,8 +29,8 @@ train_indices = train_ds.indices
 val_indices = val_ds.indices
 test_indices = test_ds.indices
 
-# model
-model = LightningModel(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 4})
+# model_manager
+model_manager = LightningModelManager(model_class=DiabetesRegression, model_config={}, trainer_config={"epochs": 4})
 
 # data_manager and defining strategy
 data_manager = DataManager(
@@ -44,7 +44,7 @@ data_manager = DataManager(
 # Setup pipeline
 strategy = RelativeDistanceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 
 # Remove lightning prints

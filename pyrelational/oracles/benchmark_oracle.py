@@ -1,6 +1,6 @@
 from typing import Any
 
-from pyrelational.data.data_manager import DataManager
+from pyrelational.data_managers.data_manager import DataManager
 
 from .abstract_oracle import Oracle
 

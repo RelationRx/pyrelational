@@ -3,7 +3,7 @@
 Defining learning models compatible with PyRelationAL
 =====================================================
 
-To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.models`)
+To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL module (:mod:`pyrelational.model_managers`)
 that defines required methods for instantiation, training, and testing.
 
 
@@ -17,10 +17,10 @@ Let's first look an an example wrapper for a simple pytorch Module
 
    import torch
    import torch.nn as nn
-   from pyrelational.models.mcdropout_model import MCDropoutManager
+   from pyrelational.model_managers.mcdropout_model import MCDropoutModelManager
 
 
-   class TorchModuleWrapper(MCDropoutManager):
+   class TorchModuleWrapper(MCDropoutModelManager):
        def __init__(self,
            model_class,
            model_config,
@@ -70,7 +70,7 @@ This can now be instantiated with any pytorch module, for instance
 Using pytorch lightning module
 ______________________________
 
-PyRelationAL implements default classes (see :py:meth:`pyrelational.models.lightning_model.LightningModel`) relying on
+PyRelationAL implements default classes (see :py:meth:`pyrelational.model_managers.lightning_model.LightningModelManager`) relying on
 pytorch lightning as the Trainer class offload much of the training routine definition to pytorch lighntning.
 For example, users can create ensembles of pytorch lightning modules directly as
 
@@ -80,7 +80,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     import torch.nn.functional as F
     from sklearn.metrics import accuracy_score
     from pytorch_lightning import LightningModule
-    from pyrelational.models.ensemble_model import LightningEnsembleModel
+    from pyrelational.model_managers.ensemble_model_manager import LightningEnsembleModelManager
 
     # step 1: define the LightningModule with necessary methods
     class DigitClassifier(LightningModule):
@@ -132,8 +132,8 @@ For example, users can create ensembles of pytorch lightning modules directly as
             optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
             return optimizer
 
-    # step 2: wrap the model in a LightningEnsembleModel
-    wrapper = LightningEnsembleModel(
+    # step 2: wrap the model in a LightningEnsembleModelManager
+    wrapper = LightningEnsembleModelManager(
                   DigitClassifier,
                   {"dropout_rate":0.1, "lr":3e-4},
                   {"epochs":1,"gpus":1},
