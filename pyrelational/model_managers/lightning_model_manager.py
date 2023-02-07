@@ -11,7 +11,7 @@ from .abstract_model_manager import ModelManager
 from .model_utils import _determine_device
 
 
-class LightningModel(ModelManager[LightningModule, LightningModule]):
+class LightningModelManager(ModelManager[LightningModule, LightningModule]):
     r"""
     A wrapper for pytorch lightning modules that instantiates and uses a pytorch lightning trainer.
 
@@ -29,7 +29,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
            # need to define other train/test steps and optimizers methods required
            # by pytorch-lightning to run this example
 
-        wrapper = LightningModel(
+        wrapper = LightningModelManager(
                         PyLModel,
                         model_config={"in_dim":10, "out_dim":1},
                         trainer_config={"epochs":100},
@@ -43,7 +43,7 @@ class LightningModel(ModelManager[LightningModule, LightningModule]):
         model_config: Union[Dict[str, Any], str],
         trainer_config: Union[Dict[str, Any], str],
     ):
-        super(LightningModel, self).__init__(model_class, model_config, trainer_config)
+        super(LightningModelManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:

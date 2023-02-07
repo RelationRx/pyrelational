@@ -16,8 +16,8 @@ import torch
 from examples.utils.datasets import DiabetesDataset  # noqa: E402
 
 # Active Learning package
-from pyrelational.data import DataManager
-from pyrelational.models import LightningModel
+from pyrelational.data_managers import DataManager
+from pyrelational.model_managers import LightningModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import LeastConfidenceStrategy
@@ -77,8 +77,8 @@ class PyLWrapper(pl.LightningModule):
         return torch.optim.Adam(self.gpmodel.parameters(), lr=0.1)
 
 
-# Subclass LightningModel to handle GPytorch
-class GPLightningModel(LightningModel):
+# Subclass LightningModelManager to handle GPytorch
+class GPLightningModel(LightningModelManager):
     def __init__(self, model_class, model_config, trainer_config):
         super(GPLightningModel, self).__init__(model_class, model_config, trainer_config)
 
@@ -101,7 +101,7 @@ class GPLightningModel(LightningModel):
                 return self._current_model(x)
 
 
-model = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})
+model_manager = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})
 
 # data_manager and defining strategy
 data_manager = DataManager(
@@ -116,7 +116,7 @@ data_manager = DataManager(
 # Set up strategy and rest of the pipeline
 strategy = LeastConfidenceStrategy()
 oracle = BenchmarkOracle()
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
 # Remove lightning prints
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)

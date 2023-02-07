@@ -2,9 +2,9 @@ from typing import Any, List
 
 import torch
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import regression_expected_improvement
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
@@ -15,8 +15,10 @@ class ExpectedImprovementStrategy(Strategy):
     def __init__(self) -> None:
         super(ExpectedImprovementStrategy, self).__init__()
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model: ModelManager[Any, Any]) -> List[int]:
-        output = self.train_and_infer(data_manager=data_manager, model=model)
+    def __call__(
+        self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
+    ) -> List[int]:
+        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         max_label = torch.max(data_manager.get_sample_labels(data_manager.l_indices))
         uncertainty = regression_expected_improvement(x=output, max_label=max_label).squeeze(-1)
         ixs = torch.argsort(uncertainty, descending=True).tolist()

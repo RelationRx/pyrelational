@@ -4,7 +4,7 @@ from typing import List
 
 import numpy as np
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 

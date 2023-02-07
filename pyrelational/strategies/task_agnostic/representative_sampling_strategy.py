@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from sklearn.base import ClusterMixin
 
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import representative_sampling
 from pyrelational.strategies.abstract_strategy import Strategy
 

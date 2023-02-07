@@ -15,10 +15,10 @@ from torch.utils.data import Dataset
 
 # Data and data manager
 from examples.utils.datasets import BreastCancerDataset  # noqa: E402
-from pyrelational.data import DataManager
+from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
-from pyrelational.models import ModelManager
+from pyrelational.model_managers import ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.classification import LeastConfidenceStrategy
@@ -82,7 +82,7 @@ class SKRFC(ModelManager):
 data_manager = get_breastcancer_data_manager()
 model_config = {"n_estimators": 10, "bootstrap": False}
 trainer_config = {}
-model = SKRFC(RandomForestClassifier, model_config, trainer_config)
+model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
 
 # Instantiate an active learning strategy
 al_strategy = LeastConfidenceStrategy()
@@ -90,9 +90,9 @@ al_strategy = LeastConfidenceStrategy()
 # Instantiate an oracle
 oracle = BenchmarkOracle()
 
-# Given that we have a data manager, a model, and an active learning strategy
+# Given that we have a data manager, a model_manager, and an active learning strategy
 # we may create an active learning pipeline
-pipeline = Pipeline(data_manager=data_manager, model=model, strategy=al_strategy, oracle=oracle)
+pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
 pipeline.theoretical_performance()

@@ -10,8 +10,8 @@ import logging
 from abc import ABC
 from typing import Any, Callable, Dict, List
 
-from pyrelational.data import DataManager
-from pyrelational.models import ModelManager
+from pyrelational.data_managers import DataManager
+from pyrelational.model_managers import ModelManager
 
 logger = logging.getLogger()
 
@@ -60,19 +60,19 @@ class Strategy(ABC):
         return self(num_annotate=num_annotate, *args, **filtered_kwargs)
 
     @staticmethod
-    def train_and_infer(data_manager: DataManager, model: ModelManager[Any, Any]) -> Any:
+    def train_and_infer(data_manager: DataManager, model_manager: ModelManager[Any, Any]) -> Any:
         """
         Train the model on the currently labelled subset of the data and produces an output that can be used in
         model uncertainty based strategies.
 
         :param data_manager: reference to data_manager which will supply data to train model
             and the unlabelled observations
-        :param model: Model with generic model interface that will be trained and used to produce
+        :param model_manager: Model with generic model interface that will be trained and used to produce
             output of this method
         :return: output of the model
         """
-        model.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-        output = model(data_manager.get_unlabelled_loader())
+        model_manager.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
+        output = model_manager(data_manager.get_unlabelled_loader())
         return output
 
     def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
