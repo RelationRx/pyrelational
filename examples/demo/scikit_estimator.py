@@ -60,21 +60,21 @@ class SKRFC(ModelManager):
         train_x, train_y = next(iter(train_loader))
         estimator = self._init_model()
         estimator.fit(train_x, train_y, **trainer_config)
-        self.current_model = estimator
+        self._current_model = estimator
 
     def test(self, loader):
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
-        y_hat = self.current_model.predict(X)
+        y_hat = self._current_model.predict(X)
         acc = accuracy_score(y_hat, y)
         return {"test_acc": acc}
 
     def __call__(self, loader):
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, _ = next(iter(loader))
-        model = self.current_model
+        model = self._current_model
         class_probabilities = model.predict_proba(X)
         return torch.FloatTensor(class_probabilities).unsqueeze(0)  # unsqueeze due to batch expectation
 

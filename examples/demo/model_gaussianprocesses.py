@@ -92,13 +92,13 @@ class GPLightningModel(LightningModelManager):
         trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
         if valid_loader is not None:
             model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
-        self.current_model = model
+        self._current_model = model
 
     def __call__(self, loader):
         with torch.no_grad():
-            self.current_model.gpmodel.eval()
+            self._current_model.gpmodel.eval()
             for x, _ in loader:
-                return self.current_model(x)
+                return self._current_model(x)
 
 
 model_manager = GPLightningModel(model_class=PyLWrapper, model_config={}, trainer_config={"epochs": 1})

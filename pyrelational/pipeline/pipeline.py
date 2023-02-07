@@ -88,7 +88,7 @@ class Pipeline(ABC):
         self.performances["full"] = result
 
         # make sure that theoretical best model is not stored
-        self.model_manager.current_model = None
+        self.model_manager.reset()
         return self.performances["full"]
 
     def current_performance(
@@ -104,7 +104,7 @@ class Pipeline(ABC):
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
         """
-        if self.model_manager.current_model is None:  # no AL steps taken so far
+        if not self.model_manager.is_trained():  # no AL steps taken so far
             self.model_manager.train(self.l_loader, self.valid_loader)
 
         # use test loader in data_manager if there is one

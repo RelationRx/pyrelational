@@ -37,12 +37,12 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         :param loader: pytorch dataloader
         :return: model predictions
         """
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
 
         with torch.no_grad():
             predictions = []
-            for model in self.current_model:
+            for model in self._current_model:
                 model = model.to(self.device)
                 model.eval()
                 model_prediction = []
@@ -96,20 +96,20 @@ class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], Light
         )
 
     def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
-        self.current_model = []
+        self._current_model = []
         for _ in range(self.n_estimators):
             model = self._init_model()
             trainer, ckpt_callback = self.init_trainer()
             trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader)
             if valid_loader is not None and is_overridden("validation_step", model):
                 model.load_state_dict(torch.load(ckpt_callback.best_model_path)["state_dict"])
-            self.current_model.append(model.cpu())
+            self._current_model.append(model.cpu())
 
     def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
-        if self.current_model is None:
+        if self._current_model is None:
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        output = [trainer.test(model, dataloaders=loader)[0] for model in self.current_model]
+        output = [trainer.test(model, dataloaders=loader)[0] for model in self._current_model]
         # return average score across ensemble
         performances: Dict[str, float] = {}
         for k in output[0].keys():
