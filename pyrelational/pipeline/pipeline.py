@@ -137,7 +137,7 @@ class Pipeline(ABC):
         observations_for_labelling = self.strategy.step(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
-    def active_learning_update(self, indices: List[int]) -> None:
+    def query(self, indices: List[int]) -> None:
         """
         Updates labels based on indices selected for labelling
 
@@ -186,7 +186,7 @@ class Pipeline(ABC):
                 test_loader=test_loader,
                 query=observations_for_labelling,
             )
-            self.active_learning_update(
+            self.query(
                 observations_for_labelling,
             )
             if (num_iterations is not None) and iter_count == num_iterations:
