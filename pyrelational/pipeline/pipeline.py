@@ -91,7 +91,7 @@ class Pipeline(ABC):
         self.model_manager.reset()
         return self.performances["full"]
 
-    def current_performance(
+    def compute_current_performance(
         self, test_loader: Optional[DataLoader[Any]] = None, query: Optional[List[int]] = None
     ) -> None:
         """
@@ -182,7 +182,7 @@ class Pipeline(ABC):
             observations_for_labelling = self.active_learning_step(num_annotate, *strategy_args, **strategy_kwargs)
 
             # Record the current performance
-            self.current_performance(
+            self.compute_current_performance(
                 test_loader=test_loader,
                 query=observations_for_labelling,
             )
@@ -194,7 +194,7 @@ class Pipeline(ABC):
 
         # Final update the model and check final test performance
         self.model_manager.train(self.l_loader, self.valid_loader)
-        self.current_performance(test_loader=test_loader)
+        self.compute_current_performance(test_loader=test_loader)
 
     def performance_history(self) -> pd.DataFrame:
         """Construct a pandas table of performances of the model over the active learning iterations."""
