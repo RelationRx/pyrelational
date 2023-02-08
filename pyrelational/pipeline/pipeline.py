@@ -134,7 +134,7 @@ class Pipeline(ABC):
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.step(num_annotate, *args, **kwargs)
+        observations_for_labelling = self.strategy.suggest(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
     def query(self, indices: List[int]) -> None:

@@ -7,7 +7,7 @@ While PyRelationAL already implements multiple standard active learning strategi
 However, users can easily define their own strategies by subclassing
 :py:class:`pyrelational.strategies.generic_al_strategy.Strategy`
 and overriding the methods necessary to compute the new strategy.
-Typically only the :py:meth:`pyrelational.strategies.generic_al_strategy.Strategy.step`
+Typically only the :py:meth:`pyrelational.strategies.generic_al_strategy.strategy.suggest`
 need to be overriden.
 
 Let's look at some examples.
@@ -40,7 +40,7 @@ subset based on euclidean distance between input features.
         def __init(self, datamanager, model):
             super(MixedStrategy, self).__init__(datamanager, model)
 
-        def step(self, num_annotate):
+        def suggest(self, num_annotate):
             self.model.train(self.l_loader, self.valid_loader)
             output = self.model(self.u_loader)
             scores = regression_least_confidence(x=output)
@@ -74,7 +74,7 @@ random from the remaining queryable set.
         def __init(self, datamanager, model):
             super(EpsilonGreedyStrategy, self).__init__(datamanager, model)
 
-        def step(self, num_annotate, eps=0.05):
+        def suggest(self, num_annotate, eps=0.05):
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
             self.model.train(self.l_loader, self.valid_loader)
             output = self.model(self.u_loader)
