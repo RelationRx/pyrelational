@@ -58,7 +58,7 @@ oracle = BenchmarkOracle()
 pipeline = Pipeline(data_manager, model, strategy, oracle)
 
 # Use the pipeline to run active learning cycles and log performance data
-to_annotate = pipeline.active_learning_step(num_annotate=5)
+to_annotate = pipeline.step(num_annotate=5)
 pipeline.full_active_learning_run(num_annotate=10)
 print(pipeline)
 ```

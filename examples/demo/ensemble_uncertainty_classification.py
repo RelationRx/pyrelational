@@ -56,7 +56,7 @@ logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 pipeline.compute_theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = pipeline.active_learning_step(num_annotate=1000)
+to_annotate = pipeline.step(num_annotate=1000)
 pipeline.active_learning_update(indices=to_annotate)
 
 # Annotating data step by step until the trainset is fully annotated

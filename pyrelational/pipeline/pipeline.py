@@ -128,13 +128,13 @@ class Pipeline(ABC):
             )
         return result
 
-    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
+    def step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.active_learning_step(num_annotate, *args, **kwargs)
+        observations_for_labelling = self.strategy.step(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
     def active_learning_update(self, indices: List[int]) -> None:
@@ -179,7 +179,7 @@ class Pipeline(ABC):
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
-            observations_for_labelling = self.active_learning_step(num_annotate, *strategy_args, **strategy_kwargs)
+            observations_for_labelling = self.step(num_annotate, *strategy_args, **strategy_kwargs)
 
             # Record the current performance
             self.compute_current_performance(

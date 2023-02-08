@@ -45,9 +45,7 @@ class TestStrategies(TestCase):
 
     def test_active_learning_step(self) -> None:
         """Test active learning step return the required number of sample indices."""
-        out = self.strategy.active_learning_step(
-            num_annotate=5, model_manager=self.model_manager, data_manager=self.datamanager
-        )
+        out = self.strategy.step(num_annotate=5, model_manager=self.model_manager, data_manager=self.datamanager)
         self.assertEqual(len(out), 5)
 
     def test_str_print(self) -> None:

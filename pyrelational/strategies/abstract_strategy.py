@@ -1,6 +1,6 @@
 """This module defines the interface for a generic active learning strategy
-which is composed of defining an `active_learning_step` function which
-suggests observations to be labeled. In the default case the `active_learning_step`
+which is composed of defining an `step` function which
+suggests observations to be labeled. In the default case the `step`
 is the composition of a informativeness function which assigns a measure of
 informativenes to unlabelled observations and a selection algorithm which chooses
 what observations to present to the oracle
@@ -46,7 +46,7 @@ class Strategy(ABC):
 
     __call__: Callable[..., List[int]] = _call_unimplemented
 
-    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
+    def step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
         as a list of dataset indices.
@@ -77,7 +77,7 @@ class Strategy(ABC):
 
     def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
         """
-        Filter kwargs such that they match the active_learning_step signature of the concrete strategy.
+        Filter kwargs such that they match the step signature of the concrete strategy.
 
         :param kwargs: keyword arguments to filter
         :return: filtered keyword arguments
