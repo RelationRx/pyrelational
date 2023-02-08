@@ -63,7 +63,7 @@ class SKRFC(ModelManager):
         self._current_model = estimator
 
     def test(self, loader):
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
         y_hat = self._current_model.predict(X)
@@ -71,7 +71,7 @@ class SKRFC(ModelManager):
         return {"test_acc": acc}
 
     def __call__(self, loader):
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, _ = next(iter(loader))
         model = self._current_model

@@ -44,7 +44,7 @@ Let's first look an an example wrapper for a simple pytorch Module
            self._current_model = model # store current model
 
        def test(self, loader):
-           if self._current_model is None:
+           if not self.is_trained():
                raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
            criterion = nn.MSELoss()
            self._current_model.eval()
