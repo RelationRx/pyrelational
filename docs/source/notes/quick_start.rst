@@ -175,7 +175,7 @@ a few lines of code
         LeastConfidenceStrategy,
     )
     strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=250)
     performance_history = strategy.performance_history()
 
@@ -204,28 +204,28 @@ We can now compare the performances of different strategies on our digit classif
     # Least confidence strategy
     dm = get_digit_data_manager()
     strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['LeastConfidence'] = strategy.performance_history()
 
     # Maginal confidence
     dm = get_digit_data_manager()
     strategy = MarginalConfidenceStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['MarginalConfidence'] = strategy.performance_history()
 
     # Ratio confidence
     dm = get_digit_data_manager()
     strategy = RatioConfidenceStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['RatioConfidence'] = strategy.performance_history()
 
     # Entropy classification
     dm = get_digit_data_manager()
     strategy = EntropyClassificationStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['EntropyClassification'] = strategy.performance_history()
 
@@ -233,7 +233,7 @@ We can now compare the performances of different strategies on our digit classif
     # Random classification
     dm = get_digit_data_manager()
     strategy = RandomAcquisitionStrategy(data_manager=dm, model_manager=model_manager)
-    strategy.theoretical_performance()
+    strategy.compute_theoretical_performance()
     strategy.full_active_learning_run(num_annotate=num_annotate)
     query['RandomAcquistion'] = strategy.performance_history()
 

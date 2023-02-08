@@ -95,7 +95,7 @@ oracle = BenchmarkOracle()
 pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
-pipeline.theoretical_performance()
+pipeline.compute_theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
 to_annotate = pipeline.active_learning_step(num_annotate=100)
