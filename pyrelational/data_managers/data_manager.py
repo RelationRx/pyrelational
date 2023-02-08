@@ -37,6 +37,8 @@ class DataManager:
         :width: 50%
     |
     :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+    :param label_attr: string indicating name of attribute in the dataset class that correspond to the tensor
+        containing the labels/values to be predicted; by default, pyrelational assumes it correspond to dataset.y
     :param train_indices: An iterable of indices mapping to training sample indices in the dataset
     :param labelled_indices: An iterable of indices  mapping to labelled training samples
     :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
@@ -46,7 +48,7 @@ class DataManager:
     :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
         labelled set (should either be the number of samples or ratio w.r.t. train set)
     :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
-    :param random_seed: random seed
+    :param random_seed: random
     :param loader_batch_size: batch size for dataloader
     :param loader_shuffle: shuffle flag for labelled dataloader
     :param loader_sampler: a sampler for the dataloaders
@@ -61,6 +63,7 @@ class DataManager:
     def __init__(
         self,
         dataset: Dataset[Tuple[Tensor, ...]],
+        label_attr: str = "y",
         train_indices: Optional[List[int]] = None,
         labelled_indices: Optional[List[int]] = None,
         unlabelled_indices: Optional[List[int]] = None,
@@ -83,6 +86,7 @@ class DataManager:
         dataset = self._check_is_sized(dataset)
 
         self.dataset = dataset
+        self.label_attr = label_attr
 
         # Loader specific arguments
         self.loader_batch_size = loader_batch_size
@@ -229,10 +233,7 @@ class DataManager:
         :param idx: index value to the observation
         :param value: new value for the observation
         """
-        if hasattr(self.dataset, "y"):
-            self.dataset.y[idx] = value
-        if hasattr(self.dataset, "targets"):
-            self.dataset.targets[idx] = value
+        getattr(self.dataset, self.label_attr)[idx] = value
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
         """
@@ -341,12 +342,9 @@ class DataManager:
         num_labelled = len(self.l_indices)
         return (num_labelled / float(total_len)) * 100
 
-    def get_sample(self, ds_index: int) -> Any:
-        return self[ds_index]
-
     def get_sample_feature_vector(self, ds_index: int) -> Any:
         """To be reviewed for deprecation (for datasets without tensors)"""
-        sample = self.get_sample(ds_index)
+        sample = self[ds_index]
         ret = sample[0].flatten()
         return ret
 

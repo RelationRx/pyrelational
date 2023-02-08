@@ -23,5 +23,5 @@ class BenchmarkOracle(Oracle):
 
         :return: the output of the oracle (the target value already in the dataset)
         """
-        target_value = data_manager.get_sample(idx)[-1]
+        target_value = data_manager[idx][-1]
         return target_value
