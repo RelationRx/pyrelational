@@ -77,7 +77,7 @@ class TestPipeline(TestCase):
     def test_full_active_learning_run(self) -> None:
         """Test that full run completes and attributes have the expected shapes."""
         self.pipeline.compute_theoretical_performance()
-        self.pipeline.full_active_learning_run(num_annotate=200)
+        self.pipeline.run(num_annotate=200)
         # Test performance history data frame
         df = self.pipeline.performance_history()
         self.assertEqual(df.shape, (3, 3))

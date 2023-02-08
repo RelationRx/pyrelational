@@ -153,7 +153,7 @@ class Pipeline(ABC):
         logger.info("Percentage labelled %s" % self.get_percentage_labelled)
         self.log_labelled_by(indices)
 
-    def full_active_learning_run(
+    def run(
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
