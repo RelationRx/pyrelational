@@ -177,7 +177,7 @@ a few lines of code
     strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=250)
-    performance_history = strategy.performance_history()
+    summary = strategy.summary()
 
 
 See :ref:`using own strategy` for more examples.
@@ -206,28 +206,28 @@ We can now compare the performances of different strategies on our digit classif
     strategy = LeastConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=num_annotate)
-    query['LeastConfidence'] = strategy.performance_history()
+    query['LeastConfidence'] = strategy.summary()
 
     # Maginal confidence
     dm = get_digit_data_manager()
     strategy = MarginalConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=num_annotate)
-    query['MarginalConfidence'] = strategy.performance_history()
+    query['MarginalConfidence'] = strategy.summary()
 
     # Ratio confidence
     dm = get_digit_data_manager()
     strategy = RatioConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=num_annotate)
-    query['RatioConfidence'] = strategy.performance_history()
+    query['RatioConfidence'] = strategy.summary()
 
     # Entropy classification
     dm = get_digit_data_manager()
     strategy = EntropyClassificationStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=num_annotate)
-    query['EntropyClassification'] = strategy.performance_history()
+    query['EntropyClassification'] = strategy.summary()
 
 
     # Random classification
@@ -235,7 +235,7 @@ We can now compare the performances of different strategies on our digit classif
     strategy = RandomAcquisitionStrategy(data_manager=dm, model_manager=model_manager)
     strategy.compute_theoretical_performance()
     strategy.run(num_annotate=num_annotate)
-    query['RandomAcquistion'] = strategy.performance_history()
+    query['RandomAcquistion'] = strategy.summary()
 
 Which give the results in the plot below, where we observe some improvement over a random strategy.
 

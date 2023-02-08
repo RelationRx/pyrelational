@@ -196,7 +196,7 @@ class Pipeline(ABC):
         self.model_manager.train(self.l_loader, self.valid_loader)
         self.compute_current_performance(test_loader=test_loader)
 
-    def performance_history(self) -> pd.DataFrame:
+    def summary(self) -> pd.DataFrame:
         """Construct a pandas table of performances of the model over the active learning iterations."""
         keys = sorted(set(self.performances.keys()) - {"full"})
         logger.info("KEYS: {}".format(keys))
@@ -289,5 +289,5 @@ class Pipeline(ABC):
         if "full" in self.performances:
             str_out += "Theoretical performance: %s \n" % str(self.performances["full"])
         str_out += "Performance history \n"
-        str_out += tabulate(self.performance_history(), tablefmt="pipe", headers="keys")
+        str_out += tabulate(self.summary(), tablefmt="pipe", headers="keys")
         return str_out

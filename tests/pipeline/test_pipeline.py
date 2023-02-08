@@ -79,7 +79,7 @@ class TestPipeline(TestCase):
         self.pipeline.compute_theoretical_performance()
         self.pipeline.run(num_annotate=200)
         # Test performance history data frame
-        df = self.pipeline.performance_history()
+        df = self.pipeline.summary()
         self.assertEqual(df.shape, (3, 3))
         self.assertEqual(len(self.pipeline.data_manager.l_indices), len(self.datamanager.train_indices))
         self.assertEqual(len(self.pipeline.data_manager.u_indices), 0)
