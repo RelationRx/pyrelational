@@ -150,7 +150,7 @@ class Pipeline(ABC):
         self.iteration += 1
         logger.info("Length of labelled %s" % (len(self.l_indices)))
         logger.info("Length of unlabelled %s" % (len(self.u_indices)))
-        logger.info("Percentage labelled %s" % self.percentage_labelled)
+        logger.info("Percentage labelled %s" % self.get_percentage_labelled)
         self.log_labelled_by(indices)
 
     def full_active_learning_run(
@@ -264,8 +264,8 @@ class Pipeline(ABC):
         return self.data_manager.get_test_loader()
 
     @property
-    def percentage_labelled(self) -> float:
-        return self.data_manager.percentage_labelled()
+    def get_percentage_labelled(self) -> float:
+        return self.data_manager.get_percentage_labelled()
 
     @property
     def dataset_size(self) -> int:
@@ -279,7 +279,7 @@ class Pipeline(ABC):
         str_dm = str(self.data_manager)
         str_model = str(self.model_manager)
         str_dataset_size = str(self.dataset_size)
-        str_percentage_labelled = "%.3f" % self.percentage_labelled
+        str_percentage_labelled = "%.3f" % self.get_percentage_labelled
 
         str_out = self.__repr__()
         str_out += "DataManager: %s \n" % str_dm

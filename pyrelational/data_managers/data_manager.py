@@ -335,7 +335,7 @@ class DataManager:
         self.l_indices = list(set(self.l_indices + indices))
         self.u_indices = list(set(self.u_indices) - set(indices))
 
-    def percentage_labelled(self) -> float:
+    def get_percentage_labelled(self) -> float:
         """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
@@ -393,7 +393,7 @@ class DataManager:
 
     def __str__(self) -> str:
         """Pretty print a summary of the data_manager contents"""
-        str_percentage_labelled = "%.3f" % (self.percentage_labelled())
+        str_percentage_labelled = "%.3f" % (self.get_percentage_labelled())
         str_out = self.__repr__()
         if self.train_indices is not None:
             str_out += "\nTraining set size: {}\n".format(len(self.train_indices))
