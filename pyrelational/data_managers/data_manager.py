@@ -85,6 +85,13 @@ class DataManager:
         super(DataManager, self).__init__()
         dataset = self._check_is_sized(dataset)
 
+        if not hasattr(dataset, label_attr):
+            raise AttributeError(
+                f"""
+                Dataset {dataset.__class__.__name__} does not have an attribute named {label_attr}.
+                This implies that the data manager would not be able to update the labels as the oracle provide them.
+                """
+            )
         self.dataset = dataset
         self.label_attr = label_attr
 
