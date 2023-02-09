@@ -282,7 +282,7 @@ class DataManager:
         """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
-            train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
+            train_loader = self._create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
             return train_loader
         else:
             return self.get_labelled_loader()
@@ -292,19 +292,19 @@ class DataManager:
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
-        return self.create_loader(validation_set)
+        return self._create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader[Any]:
         """Get test dataloader"""
-        return self.create_loader(self.get_test_set())
+        return self._create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader[Any]:
         """Get unlabelled dataloader"""
-        return self.create_loader(Subset(self.dataset, self.u_indices))
+        return self._create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader[Any]:
         """Get labelled dataloader"""
-        return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
+        return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def process_random(self, seed: int = 0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
@@ -336,7 +336,7 @@ class DataManager:
         self.l_indices = list(set(self.l_indices + indices))
         self.u_indices = list(set(self.u_indices) - set(indices))
 
-    def percentage_labelled(self) -> float:
+    def get_percentage_labelled(self) -> float:
         """Percentage of total available dataset labelled."""
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
@@ -361,7 +361,7 @@ class DataManager:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return torch.stack(res)
 
-    def create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
+    def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
         """
         Utility to help create dataloader with specifications set at initialisation.
 
@@ -391,7 +391,7 @@ class DataManager:
 
     def __str__(self) -> str:
         """Pretty print a summary of the data_manager contents"""
-        str_percentage_labelled = "%.3f" % (self.percentage_labelled())
+        str_percentage_labelled = "%.3f" % (self.get_percentage_labelled())
         str_out = self.__repr__()
         if self.train_indices is not None:
             str_out += "\nTraining set size: {}\n".format(len(self.train_indices))

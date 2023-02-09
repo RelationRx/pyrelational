@@ -115,12 +115,12 @@ pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, stra
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 # performance with the full trainset labelled
-pipeline.theoretical_performance()
+pipeline.compute_theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = pipeline.active_learning_step(num_annotate=100)
-pipeline.active_learning_update(indices=to_annotate)
+to_annotate = pipeline.step(num_annotate=100)
+pipeline.query(indices=to_annotate)
 
 # Annotating data step by step until the trainset is fully annotated
-pipeline.full_active_learning_run(num_annotate=100)
+pipeline.run(num_annotate=100)
 print(pipeline)
