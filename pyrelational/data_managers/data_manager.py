@@ -281,7 +281,7 @@ class DataManager:
         """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
-            train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
+            train_loader = self._create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
             return train_loader
         else:
             return self.get_labelled_loader()
@@ -291,19 +291,19 @@ class DataManager:
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
-        return self.create_loader(validation_set)
+        return self._create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader[Any]:
         """Get test dataloader"""
-        return self.create_loader(self.get_test_set())
+        return self._create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader[Any]:
         """Get unlabelled dataloader"""
-        return self.create_loader(Subset(self.dataset, self.u_indices))
+        return self._create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader[Any]:
         """Get labelled dataloader"""
-        return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
+        return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def process_random(self, seed: int = 0) -> None:
         """Processes the dataset to produce a random subsets of labelled and unlabelled
@@ -363,7 +363,7 @@ class DataManager:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return torch.stack(res)
 
-    def create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
+    def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
         """
         Utility to help create dataloader with specifications set at initialisation.
 
