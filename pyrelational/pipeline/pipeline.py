@@ -64,7 +64,7 @@ class Pipeline(ABC):
         self.labelled_by: Dict[int, Dict[str, Union[str, int]]] = defaultdict(dict)
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
-    def theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
+    def compute_theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
         """Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
@@ -91,7 +91,7 @@ class Pipeline(ABC):
         self.model_manager.reset()
         return self.performances["full"]
 
-    def current_performance(
+    def compute_current_performance(
         self, test_loader: Optional[DataLoader[Any]] = None, query: Optional[List[int]] = None
     ) -> None:
         """
@@ -128,16 +128,16 @@ class Pipeline(ABC):
             )
         return result
 
-    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
+    def step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
-        observations_for_labelling = self.strategy.active_learning_step(num_annotate, *args, **kwargs)
+        observations_for_labelling = self.strategy.suggest(num_annotate, *args, **kwargs)
         return observations_for_labelling
 
-    def active_learning_update(self, indices: List[int]) -> None:
+    def query(self, indices: List[int]) -> None:
         """
         Updates labels based on indices selected for labelling
 
@@ -150,10 +150,10 @@ class Pipeline(ABC):
         self.iteration += 1
         logger.info("Length of labelled %s" % (len(self.l_indices)))
         logger.info("Length of unlabelled %s" % (len(self.u_indices)))
-        logger.info("Percentage labelled %s" % self.percentage_labelled)
+        logger.info("Percentage labelled %s" % self.get_percentage_labelled)
         self.log_labelled_by(indices)
 
-    def full_active_learning_run(
+    def run(
         self,
         num_annotate: int,
         num_iterations: Optional[int] = None,
@@ -179,14 +179,14 @@ class Pipeline(ABC):
             iter_count += 1
 
             # Obtain samples for labelling and pass to the oracle interface if supplied
-            observations_for_labelling = self.active_learning_step(num_annotate, *strategy_args, **strategy_kwargs)
+            observations_for_labelling = self.step(num_annotate, *strategy_args, **strategy_kwargs)
 
             # Record the current performance
-            self.current_performance(
+            self.compute_current_performance(
                 test_loader=test_loader,
                 query=observations_for_labelling,
             )
-            self.active_learning_update(
+            self.query(
                 observations_for_labelling,
             )
             if (num_iterations is not None) and iter_count == num_iterations:
@@ -194,9 +194,9 @@ class Pipeline(ABC):
 
         # Final update the model and check final test performance
         self.model_manager.train(self.l_loader, self.valid_loader)
-        self.current_performance(test_loader=test_loader)
+        self.compute_current_performance(test_loader=test_loader)
 
-    def performance_history(self) -> pd.DataFrame:
+    def summary(self) -> pd.DataFrame:
         """Construct a pandas table of performances of the model over the active learning iterations."""
         keys = sorted(set(self.performances.keys()) - {"full"})
         logger.info("KEYS: {}".format(keys))
@@ -264,8 +264,8 @@ class Pipeline(ABC):
         return self.data_manager.get_test_loader()
 
     @property
-    def percentage_labelled(self) -> float:
-        return self.data_manager.percentage_labelled()
+    def get_percentage_labelled(self) -> float:
+        return self.data_manager.get_percentage_labelled()
 
     @property
     def dataset_size(self) -> int:
@@ -279,7 +279,7 @@ class Pipeline(ABC):
         str_dm = str(self.data_manager)
         str_model = str(self.model_manager)
         str_dataset_size = str(self.dataset_size)
-        str_percentage_labelled = "%.3f" % self.percentage_labelled
+        str_percentage_labelled = "%.3f" % self.get_percentage_labelled
 
         str_out = self.__repr__()
         str_out += "DataManager: %s \n" % str_dm
@@ -289,5 +289,5 @@ class Pipeline(ABC):
         if "full" in self.performances:
             str_out += "Theoretical performance: %s \n" % str(self.performances["full"])
         str_out += "Performance history \n"
-        str_out += tabulate(self.performance_history(), tablefmt="pipe", headers="keys")
+        str_out += tabulate(self.summary(), tablefmt="pipe", headers="keys")
         return str_out

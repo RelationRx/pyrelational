@@ -58,7 +58,7 @@ class TestDataManager(TestCase):
     def test_percentage_labelled(self) -> None:
         """Check default labelled percentage."""
         gdm = get_classification_dataset()
-        percentage = gdm.percentage_labelled()
+        percentage = gdm.get_percentage_labelled()
         self.assertEqual(percentage, pytest.approx(10, 5))
 
     def test_get_dataset_size(self) -> None:
