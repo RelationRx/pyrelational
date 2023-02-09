@@ -1,5 +1,6 @@
 """Unit tests for data manager
 """
+import copy
 from unittest import TestCase
 
 import pytest
@@ -54,6 +55,14 @@ class TestDataManager(TestCase):
         self.assertNotIn(random_u_sindex, gdm.u_indices)
         self.assertEqual(len(gdm.l_indices), len_gdm_l + 1)
         self.assertEqual(len(gdm.u_indices), len_gdm_u - 1)
+
+    def test_update_labels(self) -> None:
+        """Check that dataset object is properly updated by set_target_value method."""
+        gdm = get_regression_dataset()
+        before = copy.deepcopy(gdm[0][-1])
+        gdm.set_target_value(0, -32)
+        self.assertNotEqual(before, gdm[0][-1])
+        self.assertEqual(-32, gdm[0][-1])
 
     def test_percentage_labelled(self) -> None:
         """Check default labelled percentage."""

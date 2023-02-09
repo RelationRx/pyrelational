@@ -18,7 +18,7 @@ from typing import (
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import DataLoader, Dataset, Sampler, Subset
+from torch.utils.data import DataLoader, Dataset, Sampler, Subset, TensorDataset
 
 from pyrelational.types import SizedDataset
 
@@ -48,7 +48,7 @@ class DataManager:
     :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
         labelled set (should either be the number of samples or ratio w.r.t. train set)
     :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
-    :param random_seed: random
+    :param random_seed: random seed used to generate labelled/unlabelled splits when none are provided.
     :param loader_batch_size: batch size for dataloader
     :param loader_shuffle: shuffle flag for labelled dataloader
     :param loader_sampler: a sampler for the dataloaders

@@ -1,8 +1,6 @@
 """
 Class to help download and do the initial processing of dataset on the UCI database
 """
-
-import logging
 import os
 import urllib.request
 import zipfile
@@ -12,7 +10,8 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.model_selection import KFold, StratifiedKFold
-from torch.utils.data import TensorDataset
+
+from pyrelational.datasets._dataset_utils import SimpleDataset
 
 
 class UCIDatasets:
@@ -121,7 +120,7 @@ class UCIDatasets:
             self.data_splits = kf.split(data)
             self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
-    def get_split(self, split: int = -1, train: bool = True) -> TensorDataset:
+    def get_split(self, split: int = -1, train: bool = True) -> SimpleDataset:
         if split == -1:
             split = 0
 
@@ -138,17 +137,17 @@ class UCIDatasets:
             if train:
                 inps = torch.from_numpy(x_train).float()
                 tgts = torch.from_numpy(y_train).float()
-                train_data = TensorDataset(inps, tgts)
+                train_data = SimpleDataset(inps, tgts)
                 return train_data
             else:
                 inps = torch.from_numpy(x_test).float()
                 tgts = torch.from_numpy(y_test).float()
-                test_data = TensorDataset(inps, tgts)
+                test_data = SimpleDataset(inps, tgts)
                 return test_data
         else:
             raise ValueError(f"split index specified is out of bounds. Max is {self.n_splits-1}")
 
-    def get_full_split(self, split: int = -1) -> TensorDataset:
+    def get_full_split(self, split: int = -1) -> SimpleDataset:
         """Returns a single dataset with the test observations stacked on the train observations"""
         if split == -1:
             split = 0
@@ -184,12 +183,12 @@ class UCIDatasets:
             inps = torch.cat([inps, inps_test])
             tgts = torch.cat([tgts, tgts_test])
 
-            dataset = TensorDataset(inps, tgts)
+            dataset = SimpleDataset(inps, tgts)
             return dataset
         else:
             raise ValueError(f"split index specified is out of bounds. Max is {self.n_splits-1}")
 
-    def get_simple_dataset(self) -> TensorDataset:
+    def get_simple_dataset(self) -> SimpleDataset:
         """Simply return the dataset so that we can apply the splits on top after"""
         x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
 
@@ -200,5 +199,5 @@ class UCIDatasets:
             inps = torch.from_numpy(x).float()
             tgts = torch.from_numpy(y).float()
 
-        dataset = TensorDataset(inps, tgts)
+        dataset = SimpleDataset(inps, tgts)
         return dataset
