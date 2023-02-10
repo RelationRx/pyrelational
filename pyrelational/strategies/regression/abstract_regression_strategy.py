@@ -21,7 +21,7 @@ class RegressionStrategy(Strategy, ABC):
     ) -> List[int]:
         """
         Call function which identifies samples which need to be labelled based on
-            user defined scoring function.
+        user defined scoring function.
 
         :param num_annotate: number of samples to annotate
         :param data_manager: A pyrelational data manager
