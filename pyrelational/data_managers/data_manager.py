@@ -123,7 +123,7 @@ class DataManager:
         else:
             logger.info("## Labelled and/or unlabelled mask unspecified")
             self.random_label_size = random_label_size
-            self.process_random(random_seed)
+            self._generate_random_initial_state(random_seed)
         self._ensure_no_l_or_u_leaks()
         self._top_unlabelled_set(hit_ratio_at)
 
@@ -313,8 +313,9 @@ class DataManager:
         """Get labelled dataloader"""
         return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
-    def process_random(self, seed: int = 0) -> None:
-        """Processes the dataset to produce a random subsets of labelled and unlabelled
+    def _generate_random_initial_state(self, seed: int = 0) -> None:
+        """
+        Process the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
         """
@@ -365,7 +366,8 @@ class DataManager:
     def get_sample_labels(self, ds_indices: List[int]) -> Tensor:
         res = []
         for ds_index in ds_indices:
-            res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
+            label = getattr(self.dataset, self.label_attr)[ds_index]
+            res.append(label)
         return torch.stack(res)
 
     def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
