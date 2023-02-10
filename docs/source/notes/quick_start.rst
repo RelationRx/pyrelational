@@ -15,11 +15,11 @@ from scikit-learn.
 
 We first create a pytorch dataset for it. In order to use this dataset within the DataManager, we need to be aware of a few points:
 
-* The dataset must contain an attribute which stores the labels. The name of the this attribute can then be passed to the `label_attr` input of the DataManager.
+* The dataset must contain an attribute which stores the labels. The name of this attribute can then be passed to the `label_attr` input of the DataManager.
   By default this is specified as "y". Some datasets, such as :py:class:`torch.utils.data.TensorDataset` from pytorch, do not have this property and so these are
   not currently supported.
 * The dataset :py:meth:`__getitem__` method must return a tuple of tensors. Most strategies and model managers within the package also assume that the features are contained within a single tensor,
-  which is the first item that is returned in the tuple
+  which is the first item that is returned in the tuple.
 
 
 .. code-block:: python
