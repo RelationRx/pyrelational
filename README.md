@@ -65,6 +65,8 @@ print(pipeline)
 
 ## Overview
 
+![Overview](docs/images/pyrelational_overview.png "Overview")
+
 The `PyRelationAL` package decomposes the active learning workflow into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
 
 The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools. The Dataset must have
