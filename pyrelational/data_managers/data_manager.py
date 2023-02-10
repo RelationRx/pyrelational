@@ -366,7 +366,8 @@ class DataManager:
     def get_sample_labels(self, ds_indices: List[int]) -> Tensor:
         res = []
         for ds_index in ds_indices:
-            res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
+            label = getattr(self.dataset, self.label_attr)[ds_index]
+            res.append(label)
         return torch.stack(res)
 
     def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
