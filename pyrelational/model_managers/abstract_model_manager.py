@@ -10,7 +10,7 @@ E = TypeVar("E")
 
 class ModelManager(ABC, Generic[ModelType, E]):
     """
-    Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
+    Abstract class used to wrap models to interact with the Strategy.
     It handles model instantiation at each iteration, training, testing, and queries.
     """
 
