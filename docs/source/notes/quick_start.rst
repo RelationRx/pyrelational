@@ -1,17 +1,26 @@
 Quickstart and introduction by example
-======================================
+=======================================
 
 As discussed in the :ref:`whatisal` section, the **PyRelationAL** package decomposes the active learning workflow into five
 main components: 1) a data manager, 2) a model manager, 3) an acquisition strategy built around an informativeness measure, 4) an oracle and 5) a pipeline.
 In this section, we work through an example to illustrate how to instantiate and combine a data manager, a model manager, an acquisition strategy and an oracle.
 
 Data Manager
-------------
+-------------
 
 The data manager (:py:class:`pyrelational.data_managers.data_manager.DataManager`) wraps around a PyTorch
 Dataset and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
 In this example, we consider the `digit dataset <https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html>`_
-from scikit-learn. We first create a pytorch dataset for it
+from scikit-learn.
+
+We first create a pytorch dataset for it. In order to use this dataset within the DataManager, we need to be aware of a few points:
+
+* The dataset must contain an attribute which stores the labels. The name of the this attribute can then be passed to the `label_attr` input of the DataManager.
+  By default this is specified as "y". Some datasets, such as :py:class:`torch.utils.data.TensorDataset` from pytorch, do not have this property and so these are
+  not currently supported.
+* The dataset :py:meth:`__getitem__` method must return a tuple of tensors. Most strategies and model managers within the package also assume that the features are contained within a single tensor,
+  which is the first item that is returned in the tuple
+
 
 .. code-block:: python
 
@@ -65,7 +74,7 @@ at each iteration by the active learning strategy.
 See :ref:`using own data` for more details on how to interface datasets with **PyRelationAL** data manager.
 
 Model Manager
--------------
+--------------
 
 Now that our data manager is ready, we demonstrate how to define a machine learning model to interact with it.
 A **PyRelationAL** model manager wraps a user defined ML model (e.g. PyTorch Module, Pytorch Lightning Module, or scikit-learn estimator) and
@@ -159,7 +168,7 @@ demonstrates how to simply integrate the model above with either mc-dropout or e
 See :ref:`build your own model` for more examples on how to create custom models.
 
 Strategy
---------
+---------
 
 We now need to choose an informativeness measure to define our strategy. The informativeness measure serves as the basis for the selection of the query sent to the
 oracle for labelling. We define various strategies in :mod:`pyrelational.strategies` for classification, regression, and task-agnostic scenarios based on
@@ -176,7 +185,7 @@ For instance, here we choose to use a least confidence strategy for our digit cl
 See :ref:`using own strategy` for more examples.
 
 Oracle
-------
+-------
 The oracle (extending `pyrelational.oracles.abstract_oracle.Oracle`) provides annotations given input observations from the dataset.
 Users may create custom oracles to utilize bespoke/external labelling tools. We provide a BenchmarkOracle (pyrelational.oracles.benchmark_oracle.BenchmarkOracle) for evaluating strategies in R&D settings,
 which assumes that all the data points in the dataset have been annotated prior to the AL workflow.
@@ -189,7 +198,7 @@ which assumes that all the data points in the dataset have been annotated prior 
     oracle = BenchmarkOracle()
 
 Pipeline
---------
+---------
 
 After setting up the various components required (strategy, data manager, model manager, oracle), we now only need to instantiate
 a pipeline (`pyrelational.pipeline.pipeline.Pipeline`) to facilitate communication between the components, and run the active learning workflow.
@@ -208,7 +217,7 @@ We obtain metrics for the performance of the method, eg performance of the model
     performance_history = pipeline.summary()
 
 Comparing performances of different strategies
-----------------------------------------------
+-----------------------------------------------
 
 We can now compare the performances of different strategies on our digit classification problem
 

@@ -18,7 +18,7 @@ from typing import (
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import DataLoader, Dataset, Sampler, Subset, TensorDataset
+from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
 from pyrelational.types import SizedDataset
 
@@ -61,7 +61,9 @@ class DataManager:
         loader_timeout: float = 0,
     ):
         """
-        :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+        :param dataset: A PyTorch dataset whose indices refer to individual samples of study. This dataset must have
+            an attribute containing the labels, and the __getitem__ method must return a tuple of tensors. In general,
+            pyrelational assumes that the first item of this tuple is a tensor of features.
         :param label_attr: string indicating name of attribute in the dataset class that correspond to the tensor
             containing the labels/values to be predicted; by default, pyrelational assumes it correspond to dataset.y
         :param train_indices: An iterable of indices mapping to training sample indices in the dataset
