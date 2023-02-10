@@ -24,23 +24,13 @@ logger = logging.getLogger()
 class Pipeline(ABC):
     """
     The pipeline facilitates the communication between
-    - DataManager
-    - ModelManager,
-    - ALStrategy,
-    - Oracle (Optional)
+
+        - DataManager
+        - ModelManager,
+        - Strategy,
+        - Oracle (Optional)
 
     To enact a generic active learning cycle.
-
-    :param data_manager: a pyrelational data manager
-            which keeps track of what has been labelled and creates data loaders for
-            active learning
-    :param model_manager: A pyrelational model manager which handles the instantiation, training, testing of
-            a machine learning model for the data in the data manager
-    :param strategy: A pyrelational active learning strategy
-            implements the informativeness measure and the selection algorithm being used
-    :param oracle: An oracle instance
-            interfaces with various concrete oracle to obtain labels for observations
-            suggested by the strategy
     """
 
     def __init__(
@@ -50,6 +40,18 @@ class Pipeline(ABC):
         strategy: Strategy,
         oracle: Optional[Oracle] = None,
     ):
+        """
+        :param data_manager: A pyrelational data manager
+            which keeps track of what has been labelled and creates data loaders for
+            active learning
+        :param model_manager: A pyrelational model manager which handles the instantiation, training, testing of
+            a machine learning model for the data in the data manager
+        :param strategy: A pyrelational active learning strategy
+            implements the informativeness measure and the selection algorithm being used
+        :param oracle: An oracle instance
+            interfaces with various concrete oracle to obtain labels for observations
+            suggested by the strategy
+        """
         super(Pipeline, self).__init__()
         self.data_manager = data_manager
         self.model_manager = model_manager
@@ -65,7 +67,8 @@ class Pipeline(ABC):
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
     def compute_theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
-        """Returns the performance of the full labelled dataset against the
+        """
+        Returns the performance of the full labelled dataset against the
         test data. Typically used for evaluation to establish theoretical benchmark
         of model performance given all available training data is labelled. The
         "horizontal" line in area under learning curve plots for active learning
@@ -74,11 +77,11 @@ class Pipeline(ABC):
         situation, hence not part of __init__
 
         :param test_loader: Pytorch Data Loader with
-                test data compatible with model, optional as often the test loader can be
-                generated from data_manager but is here for case when it hasn't been defined
-                or there is a new test set.
+            test data compatible with model, optional as often the test loader can be
+            generated from data_manager but is here for case when it hasn't been defined
+            or there is a new test set.
 
-        :return: performances
+        :return: dictionary containing metric results on test set
         """
         self.model_manager.train(self.train_loader, self.valid_loader)
 
@@ -98,9 +101,9 @@ class Pipeline(ABC):
         Compute performance of model.
 
         :param test_loader: Pytorch Data Loader with
-                test data compatible with model, optional as often the test loader can be
-                generated from data_manager but is here for case when it hasn't been defined
-                or there is a new test set.
+            test data compatible with model, optional as often the test loader can be
+            generated from data_manager but is here for case when it hasn't been defined
+            or there is a new test set.
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
         :return: dictionary containing metric results on test set
         """
@@ -114,11 +117,14 @@ class Pipeline(ABC):
         return None
 
     def compute_hit_ratio(self, result: Dict[str, float], query: Optional[List[int]] = None) -> Dict[str, float]:
-        """Utility function for computing the hit ratio as used within the current performance
+        """
+        Utility function for computing the hit ratio as used within the current performance
         and theoretical performance methods.
 
         :param result: Dict or Dict-like of metrics
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
+
+        :return: updated result dictionary with "hit_ratio" key, corresponding to hit ratio result
         """
         if self.data_manager.top_unlabelled is not None:
             result["hit_ratio"] = (
@@ -131,6 +137,10 @@ class Pipeline(ABC):
     def step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Ask the strategy to provide indices of unobserved observations for labelling by the oracle
+
+        :param num_annotate: Number of points to annotate
+
+        :return: list of indexes to label from dataset
         """
         default_kwargs = self.__dict__
         kwargs = {**default_kwargs, **kwargs}  # update kwargs with any user defined ones
@@ -142,7 +152,6 @@ class Pipeline(ABC):
         Updates labels based on indices selected for labelling
 
         :param indices: List of indices selected for labelling
-        Default behaviour is to map to iteration at which it was labelled
         """
         self.oracle.update_dataset(data_manager=self.data_manager, indices=indices)
 
@@ -237,38 +246,47 @@ class Pipeline(ABC):
 
     @property
     def u_indices(self) -> List[int]:
+        """Indices of unlabelled samples."""
         return self.data_manager.u_indices
 
     @property
     def u_loader(self) -> DataLoader[Any]:
+        """Dataloader containing unlabelled data."""
         return self.data_manager.get_unlabelled_loader()
 
     @property
     def l_indices(self) -> List[int]:
+        """Indices of labelled samples."""
         return self.data_manager.l_indices
 
     @property
     def l_loader(self) -> DataLoader[Any]:
+        """Dataloader containing labelled data."""
         return self.data_manager.get_labelled_loader()
 
     @property
     def train_loader(self) -> DataLoader[Any]:
+        """Dataloader containing train data."""
         return self.data_manager.get_train_loader(full=True)
 
     @property
     def valid_loader(self) -> Optional[DataLoader[Any]]:
+        """Dataloader containing validation data."""
         return self.data_manager.get_validation_loader()
 
     @property
     def test_loader(self) -> DataLoader[Any]:
+        """Dataloader containing test data."""
         return self.data_manager.get_test_loader()
 
     @property
     def percentage_labelled(self) -> float:
+        """Percentage of total available dataset labelled."""
         return self.data_manager.get_percentage_labelled()
 
     @property
     def dataset_size(self) -> int:
+        """Number of total data points."""
         return len(self.data_manager)
 
     def __repr__(self) -> str:

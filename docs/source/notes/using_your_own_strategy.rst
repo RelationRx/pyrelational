@@ -5,11 +5,8 @@ Creating your own active learning strategies with PyRelationAL
 
 While PyRelationAL already implements multiple standard active learning strategies, it is not exhaustive.
 However, users can easily define their own strategies by subclassing
-:py:class:`pyrelational.strategies.generic_al_strategy.Strategy`
-and overriding the methods necessary to compute the new strategy.
-Typically only the :py:meth:`pyrelational.strategies.generic_al_strategy.strategy.suggest`
-need to be overriden.
-
+:py:class:`pyrelational.strategies.abstract_strategy.Strategy`
+and overriding :py:meth:`pyrelational.strategies.abstract_strategy.Strategy.__call__`
 Let's look at some examples.
 
 
@@ -37,16 +34,15 @@ subset based on euclidean distance between input features.
         the list is then reduced based on representative_sampling.
         """
 
-        def __init(self, datamanager, model):
-            super(MixedStrategy, self).__init__(datamanager, model)
+        def __init(self):
+            super(MixedStrategy, self).__init__()
 
-        def suggest(self, num_annotate):
-            self.model.train(self.l_loader, self.valid_loader)
-            output = self.model(self.u_loader)
+        def __call__(self, num_annotate, data_manager, model_manager):
+            output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
             scores = regression_least_confidence(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
-            ixs = [self.u_indices[i] for i in ixs[: 10 * num_annotate]]
-            subquery = torch.stack(self.data_manager.get_sample_feature_vectors(ixs))
+            ixs = [data_manager.u_indices[i] for i in ixs[: 10 * num_annotate]]
+            subquery = torch.stack(data_manager.get_sample_feature_vectors(ixs))
             new_ixs = representative_sampling(subquery)
             return [ixs[i] for i in new_ixs]
 
@@ -71,18 +67,17 @@ random from the remaining queryable set.
         are selected randomly while the remaining are selected greedily.
         """
 
-        def __init(self, datamanager, model):
-            super(EpsilonGreedyStrategy, self).__init__(datamanager, model)
+        def __init(self):
+            super(EpsilonGreedyStrategy, self).__init__()
 
-        def suggest(self, num_annotate, eps=0.05):
+        def __call__(self, num_annotate, data_manager, model_manager, eps=0.05):
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
-            self.model.train(self.l_loader, self.valid_loader)
-            output = self.model(self.u_loader)
+            output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
             scores = regression_mean_prediction(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             greedy_annotate = int((1-eps)*num_annotate)
-            ixs = [self.u_indices[i] for i in ixs[: greedy_annotate]]
-            remaining_u_indices = list(set(self.u_indices) - set(ixs))
+            ixs = [data_manager.u_indices[i] for i in ixs[: greedy_annotate]]
+            remaining_u_indices = list(set(data_manager.u_indices) - set(ixs))
             random_annotate = np.random.choice(remaining_u_indices, num_annotate-greedy_annotate, replace=False)
             return ixs + random_annotate.tolist()
 

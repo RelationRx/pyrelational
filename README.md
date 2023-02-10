@@ -67,7 +67,8 @@ print(pipeline)
 
 The `PyRelationAL` package decomposes the active learning workflow into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
 
-The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools.
+The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools. The Dataset must have
+specific properties for compatibility: 1) The labels must be contained within an attribute (by default PyRelationAL assumes that this is 'y', but the user can change this) 2) The `__getitem__` method returns a tuple of tensors, where the first element is a tensor of features
 
 The **ModelManager** (`pyrelational.model_managers.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and primarily handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It enables the use of ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`) with PyRelationAL workflows.
 

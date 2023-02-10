@@ -18,7 +18,7 @@ from typing import (
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import DataLoader, Dataset, Sampler, Subset, TensorDataset
+from torch.utils.data import DataLoader, Dataset, Sampler, Subset
 
 from pyrelational.types import SizedDataset
 
@@ -36,28 +36,6 @@ class DataManager:
         :align: center
         :width: 50%
     |
-    :param dataset: A PyTorch dataset whose indices refer to individual samples of study
-    :param label_attr: string indicating name of attribute in the dataset class that correspond to the tensor
-        containing the labels/values to be predicted; by default, pyrelational assumes it correspond to dataset.y
-    :param train_indices: An iterable of indices mapping to training sample indices in the dataset
-    :param labelled_indices: An iterable of indices  mapping to labelled training samples
-    :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
-    :param validation_indices: An iterable of indices to observations used for model validation
-    :param test_indices: An iterable of indices to observations in the input dataset used for
-        test performance of the model
-    :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
-        labelled set (should either be the number of samples or ratio w.r.t. train set)
-    :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
-    :param random_seed: random seed used to generate labelled/unlabelled splits when none are provided.
-    :param loader_batch_size: batch size for dataloader
-    :param loader_shuffle: shuffle flag for labelled dataloader
-    :param loader_sampler: a sampler for the dataloaders
-    :param loader_batch_sampler: a batch sampler for the dataloaders
-    :param loader_num_workers: number of cpu workers for dataloaders
-    :param loader_collate_fn: collate fn for dataloaders
-    :param loader_pin_memory: pin memory flag for dataloaders
-    :param loader_drop_last: drop last flag for dataloaders
-    :param loader_timeout: timeout value for dataloaders
     """
 
     def __init__(
@@ -82,6 +60,32 @@ class DataManager:
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
+        """
+        :param dataset: A PyTorch dataset whose indices refer to individual samples of study. This dataset must have
+            an attribute containing the labels, and the __getitem__ method must return a tuple of tensors. In general,
+            pyrelational assumes that the first item of this tuple is a tensor of features.
+        :param label_attr: string indicating name of attribute in the dataset class that correspond to the tensor
+            containing the labels/values to be predicted; by default, pyrelational assumes it correspond to dataset.y
+        :param train_indices: An iterable of indices mapping to training sample indices in the dataset
+        :param labelled_indices: An iterable of indices  mapping to labelled training samples
+        :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
+        :param validation_indices: An iterable of indices to observations used for model validation
+        :param test_indices: An iterable of indices to observations in the input dataset used for
+            test performance of the model
+        :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
+            labelled set (should either be the number of samples or ratio w.r.t. train set)
+        :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
+        :param random_seed: random seed used to generate labelled/unlabelled splits when none are provided.
+        :param loader_batch_size: batch size for dataloader
+        :param loader_shuffle: shuffle flag for labelled dataloader
+        :param loader_sampler: a sampler for the dataloaders
+        :param loader_batch_sampler: a batch sampler for the dataloaders
+        :param loader_num_workers: number of cpu workers for dataloaders
+        :param loader_collate_fn: collate fn for dataloaders
+        :param loader_pin_memory: pin memory flag for dataloaders
+        :param loader_drop_last: drop last flag for dataloaders
+        :param loader_timeout: timeout value for dataloaders
+        """
         super(DataManager, self).__init__()
         dataset = self._check_is_sized(dataset)
 
@@ -155,12 +159,19 @@ class DataManager:
 
     @staticmethod
     def _ensure_no_l_u_intersection(labelled_indices: List[int], unlabelled_indices: List[int]) -> None:
+        """ "
+        Ensure that there is no overlap between labelled and unlabelled samples.
+
+        :param labelled_indices: list of indices in dataset which have been labelled
+        :param unlabelled_indices: list of indices in dataset which have not been labelled
+        """
         if set.intersection(set(labelled_indices), set(unlabelled_indices)):
             raise ValueError("There is overlap between labelled and unlabelled samples")
 
     def _ensure_no_l_or_u_leaks(self) -> None:
-        """ensures that there are no leaks of labelled or unlabelled indices
-        in the validation or tests indices
+        """
+        Ensures that there are no leaks of labelled or unlabelled indices
+        in the validation or tests indices.
         """
         if self.validation_indices is not None:
             v_overlap = set.intersection(set(self.l_indices), set(self.validation_indices))
@@ -194,7 +205,8 @@ class DataManager:
         validation_indices: Optional[List[int]],
         test_indices: Optional[List[int]],
     ) -> None:
-        """This function is used to resolve what values the indices should be given
+        """
+        This function is used to resolve what values the indices should be given
         when only a partial subset of them is supplied
 
 
@@ -230,11 +242,12 @@ class DataManager:
         return len(self.dataset)
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, ...]:
-        # So that one can access samples by index directly
+        """Access samples by index directly."""
         return self.dataset[idx]
 
     def set_target_value(self, idx: int, value: Any) -> None:
-        """Sets a value to the y value of the corresponding observation
+        """
+        Sets a value to the y value of the corresponding observation
         denoted by idx in the underlying dataset with the supplied value
 
         :param idx: index value to the observation
@@ -285,7 +298,7 @@ class DataManager:
         Get train dataloader. Returns full train loader, else return labelled loader
 
         :param full: whether to use full dataset with unlabelled included
-        :return: loader to use for training
+        :return: Pytorch Dataloader containing labelled training data for model
         """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
@@ -295,22 +308,38 @@ class DataManager:
             return self.get_labelled_loader()
 
     def get_validation_loader(self) -> Optional[DataLoader[Any]]:
-        """Get validation dataloader"""
+        """
+        Get validation dataloader if validation set exists, else returns None.
+
+        :return: Pytorch Dataloader containing validation set
+        """
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
         return self._create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader[Any]:
-        """Get test dataloader"""
+        """
+        Get test dataloader.
+
+        :return: Pytorch Dataloader containing test set
+        """
         return self._create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader[Any]:
-        """Get unlabelled dataloader"""
+        """
+        Get unlabelled dataloader.
+
+        :return: Pytorch Dataloader containing unlabelled subset from dataset
+        """
         return self._create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader[Any]:
-        """Get labelled dataloader"""
+        """
+        Get labelled dataloader.
+
+        :return: Pytorch Dataloader containing labelled subset from dataset
+        """
         return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def _generate_random_initial_state(self, seed: int = 0) -> None:
@@ -318,6 +347,8 @@ class DataManager:
         Process the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
         the data_loaders
+
+        :param seed: random seed for reproducibility
         """
         if isinstance(self.random_label_size, float):
             assert 0 < self.random_label_size < 1, "if a float, random_label_size should be between 0 and 1"
@@ -334,18 +365,25 @@ class DataManager:
         self.u_indices = list(u_indices)
 
     def update_train_labels(self, indices: List[int]) -> None:
-        """Updates the L and U sets of the dataset
+        """
+        Updates the labelled and unlabelled sets of the dataset.
 
         Different behaviour based on whether this is done in evaluation mode or real mode.
         The difference is that in evaluation mode the dataset already has the label, so it
         is a matter of making sure the observations are moved from the unlabelled set to the
         labelled set.
+
+        :param indices: list of indices corresponding to samples which have been labelled
         """
         self.l_indices = list(set(self.l_indices + indices))
         self.u_indices = list(set(self.u_indices) - set(indices))
 
     def get_percentage_labelled(self) -> float:
-        """Percentage of total available dataset labelled."""
+        """
+        Percentage of total available dataset labelled.
+
+        :return: percentage value
+        """
         total_len = len(self.l_indices) + len(self.u_indices)
         num_labelled = len(self.l_indices)
         return (num_labelled / float(total_len)) * 100
@@ -364,6 +402,12 @@ class DataManager:
         return res
 
     def get_sample_labels(self, ds_indices: List[int]) -> Tensor:
+        """
+        Get sample labels. This assumes that labels are last element in output of dataset
+
+        :param ds_indices: collection of indices for accessing samples in dataset.
+        :return: list of labels for provided indexes
+        """
         res = []
         for ds_index in ds_indices:
             label = getattr(self.dataset, self.label_attr)[ds_index]
@@ -377,8 +421,7 @@ class DataManager:
         :param dataset: Pytorch dataset to be used in DataLoader
         :param shuffle: whether to shuffle the data in dataloder
 
-        :return Pytorch DataLoader with correct specifications
-
+        :return: Pytorch DataLoader with correct specifications
         """
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
         loader = DataLoader(

@@ -1,34 +1,38 @@
 pyrelational.model_managers
 ===================
 
-pyrelational.model_managers.ensemble\_model module
-------------------------------------------
-
-.. automodule:: pyrelational.model_managers.ensemble_model
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyrelational.model_managers.generic\_model module
+Abstract Model Manager
 -----------------------------------------
 
-.. automodule:: pyrelational.model_managers.generic_model
+.. automodule:: pyrelational.model_managers.abstract_model_manager
    :members:
    :undoc-members:
+   :special-members: __call__
    :show-inheritance:
 
-pyrelational.model_managers.lightning\_model module
+Pytorch Lightning Model
 -------------------------------------------
 
-.. automodule:: pyrelational.model_managers.lightning_model
+.. automodule:: pyrelational.model_managers.lightning_model_manager
    :members:
    :undoc-members:
+   :special-members: __call__
    :show-inheritance:
 
-pyrelational.model_managers.mcdropout\_model module
--------------------------------------------
+Ensemble Models
+------------------------------------------
 
-.. automodule:: pyrelational.model_managers.mcdropout_model
+.. automodule:: pyrelational.model_managers.ensemble_model_manager
    :members:
    :undoc-members:
+   :special-members: __call__
+   :show-inheritance:
+
+MCDropout Models
+-------------------------------------------
+
+.. automodule:: pyrelational.model_managers.mcdropout_model_manager
+   :members:
+   :undoc-members:
+   :special-members: __call__
    :show-inheritance:

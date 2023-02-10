@@ -5,7 +5,7 @@
 # from the environment for the first two.
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
-SPHINXPROJ    = RelationAL
+SPHINXPROJ    = PyRelationAL
 SOURCEDIR     = source
 BUILDDIR      = build
 

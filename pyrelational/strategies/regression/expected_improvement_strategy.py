@@ -18,6 +18,19 @@ class ExpectedImprovementStrategy(Strategy):
     def __call__(
         self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
     ) -> List[int]:
+        """
+        Call function which identifies samples which need to be labelled
+
+        :param num_annotate: number of samples to annotate
+        :param data_manager: A pyrelational data manager
+            which keeps track of what has been labelled and creates data loaders for
+            active learning
+        :param model_manager: A pyrelational model manager
+            which wraps a user defined ML model to handle instantiation, training, testing,
+            as well as uncertainty quantification
+
+        :return: list of indices to annotate
+        """
         output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         max_label = torch.max(data_manager.get_sample_labels(data_manager.l_indices))
         uncertainty = regression_expected_improvement(x=output, max_label=max_label).squeeze(-1)

@@ -9,6 +9,11 @@ E = TypeVar("E")
 
 
 class ModelManager(ABC, Generic[ModelType, E]):
+    """
+    Abstract class used to wrap models to interact with the Strategy.
+    It handles model instantiation at each iteration, training, testing, and queries.
+    """
+
     def __init__(
         self,
         model_class: Type[ModelType],
@@ -16,9 +21,6 @@ class ModelManager(ABC, Generic[ModelType, E]):
         trainer_config: Union[str, Dict[str, Any]],
     ):
         """
-        Abstract class used to wrap models to interact with the ActiveLearningStrategy modules.
-        It handles model instantiation at each iteration, training, testing, and queries.
-
         :param model_class: a model constructor (e.g. torch.nn.Linear)
         :param model_config: a dictionary containing the config required to instantiate a model form the model_class
                 (e.g. {in_features=100, out_features=34, bias=True, device=None, dtype=None} for a torch.nn.Linear
@@ -72,8 +74,10 @@ class ModelManager(ABC, Generic[ModelType, E]):
 
     def __call__(self, loader: DataLoader[Any]) -> Any:
         """
+        Call method to output model predictions
+
         :param loader: pytorch dataloader
-        :return: uncertainties for each sample in dataloader
+        :return: model predictions for each sample in dataloader
         """
         pass
 

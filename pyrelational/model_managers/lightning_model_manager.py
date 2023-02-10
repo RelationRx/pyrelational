@@ -43,6 +43,12 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         model_config: Union[Dict[str, Any], str],
         trainer_config: Union[Dict[str, Any], str],
     ):
+        """
+        :param model_class: a model constructor class which inherits from pytorch lightning (see above example)
+        :param model_config: a dictionary containing the config required to instantiate a model form the model_class
+                (e.g. see above example)
+        :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
+        """
         super(LightningModelManager, self).__init__(model_class, model_config, trainer_config)
         self.device = _determine_device(self.trainer_config.get("gpus", 0))
 
@@ -103,9 +109,10 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
         """
+        Call function which outputs model predictions from dataloader
 
         :param loader: pytorch dataloader
-        :return: model predictions
+        :return: model predictions of shape (number of samples in loader,1)
         """
         if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")

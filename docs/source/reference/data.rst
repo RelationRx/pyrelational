@@ -1,7 +1,7 @@
 pyrelational.data_managers
-=================
+===========================
 
-pyrelational.data_managers.data\_manager module
+Data Manager
 --------------------------------------
 
 .. automodule:: pyrelational.data_managers.data_manager
