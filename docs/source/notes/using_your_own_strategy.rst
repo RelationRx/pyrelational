@@ -14,7 +14,7 @@ Implementing a mixed strategy
 _____________________________
 
 In the first example, we show how to implement a mixed strategy for a regression task using the least confidence scorer
-for informativeness in combination with representative sampling. The active_learning_step is decomposed in two steps:
+for informativeness in combination with representative sampling. The step is decomposed in two steps:
 1) identifying a subset of the queryable set based on the least confidence score (make sure that this subset is
 sufficiently larger than the number of annotations we want to query) and 2) select representative samples from this
 subset based on euclidean distance between input features.

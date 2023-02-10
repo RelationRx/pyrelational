@@ -70,16 +70,16 @@ class TestPipeline(TestCase):
 
     def test_performances(self) -> None:
         """Test theoretical and current performance returns."""
-        self.pipeline.theoretical_performance()
+        self.pipeline.compute_theoretical_performance()
         self.assertIn("full", self.pipeline.performances)
         self.assertEqual(len(list(self.pipeline.performances.keys())), 1)
 
     def test_full_active_learning_run(self) -> None:
         """Test that full run completes and attributes have the expected shapes."""
-        self.pipeline.theoretical_performance()
-        self.pipeline.full_active_learning_run(num_annotate=200)
+        self.pipeline.compute_theoretical_performance()
+        self.pipeline.run(num_annotate=200)
         # Test performance history data frame
-        df = self.pipeline.performance_history()
+        df = self.pipeline.summary()
         self.assertEqual(df.shape, (3, 3))
         self.assertEqual(len(self.pipeline.data_manager.l_indices), len(self.datamanager.train_indices))
         self.assertEqual(len(self.pipeline.data_manager.u_indices), 0)
@@ -89,7 +89,7 @@ class TestPipeline(TestCase):
 
     def test_get_percentage_labelled(self) -> None:
         """Test get percentage labelled method return correct output."""
-        percentage = self.pipeline.percentage_labelled
+        percentage = self.pipeline.get_percentage_labelled
         self.assertEqual(percentage, pytest.approx(10, 5))
 
     def test_get_dataset_size(self) -> None:

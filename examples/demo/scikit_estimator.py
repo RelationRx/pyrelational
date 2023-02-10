@@ -63,7 +63,7 @@ class SKRFC(ModelManager):
         self._current_model = estimator
 
     def test(self, loader):
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
         y_hat = self._current_model.predict(X)
@@ -71,7 +71,7 @@ class SKRFC(ModelManager):
         return {"test_acc": acc}
 
     def __call__(self, loader):
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, _ = next(iter(loader))
         model = self._current_model
@@ -95,12 +95,12 @@ oracle = BenchmarkOracle()
 pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=al_strategy, oracle=oracle)
 
 # theoretical performance if the full trainset is labelled
-pipeline.theoretical_performance()
+pipeline.compute_theoretical_performance()
 
 # New data to be annotated, followed by an update of the data_manager and model
-to_annotate = pipeline.active_learning_step(num_annotate=100)
-pipeline.active_learning_update(indices=to_annotate)
+to_annotate = pipeline.step(num_annotate=100)
+pipeline.query(indices=to_annotate)
 
 # Annotating data step by step until the trainset is fully annotated
-pipeline.full_active_learning_run(num_annotate=20)
+pipeline.run(num_annotate=20)
 print(pipeline)

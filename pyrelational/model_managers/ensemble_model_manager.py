@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cast
 
 import numpy as np
 import torch
@@ -46,12 +46,12 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         :param loader: pytorch dataloader
         :return: model predictions of shape (n_estimators, number of samples in loader, 1)
         """
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-
+        models = cast(List[ModelType], self._current_model)
         with torch.no_grad():
             predictions = []
-            for model in self._current_model:
+            for model in models:
                 model = model.to(self.device)
                 model.eval()
                 model_prediction = []
@@ -136,10 +136,11 @@ class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], Light
 
         :return: average performance for each metric (defined in the model_class)
         """
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
-        output = [trainer.test(model, dataloaders=loader)[0] for model in self._current_model]
+        models = cast(List[LightningModule], self._current_model)
+        output = [trainer.test(model, dataloaders=loader)[0] for model in models]
         # return average score across ensemble
         performances: Dict[str, float] = {}
         for k in output[0].keys():

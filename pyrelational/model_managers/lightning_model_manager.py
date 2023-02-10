@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
 import pytorch_lightning as pl
 import torch
@@ -101,7 +101,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         self._current_model = model
 
     def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
         ret: Dict[str, float] = trainer.test(self._current_model, dataloaders=loader)[0]
@@ -114,9 +114,9 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :param loader: pytorch dataloader
         :return: model predictions of shape (number of samples in loader,1)
         """
-        if self._current_model is None:
+        if not self.is_trained():
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
-        model = self._current_model.to(self.device)
+        model = cast(LightningModule, self._current_model).to(self.device)
         model.eval()
 
         with torch.no_grad():

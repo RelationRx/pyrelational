@@ -40,7 +40,7 @@ class Strategy(ABC):
     which assigns a measure of informativeness to unlabelled observations, and a selection algorithm which
     chooses what observations to present to the oracle.
 
-    The user defined __call__ method must have a num_annotate argument
+    The user defined __call__ method must have a "num_annotate" argument
     """
 
     def __init__(self, *args: Any, **kwargs: Any):
@@ -48,14 +48,14 @@ class Strategy(ABC):
 
     __call__: Callable[..., List[int]] = _call_unimplemented
 
-    def active_learning_step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
+    def suggest(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
         """
         Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
         as a list of dataset indices.
 
         :param num_annotate: number of samples to annotate
-        :param args: any arguments needed by private _active_learning_step method
-        :param kwargs: any kwargs (filtered to match internal _active_learning_step inputs)
+        :param args: any arguments needed by private suggest method
+        :param kwargs: any kwargs (filtered to match internal suggest inputs)
         :return: list of indices of samples to query from oracle
         """
         filtered_kwargs = self._filter_kwargs(**kwargs)
@@ -79,7 +79,7 @@ class Strategy(ABC):
 
     def _filter_kwargs(self, **kwargs: Any) -> Dict[str, Any]:
         """
-        Filter kwargs such that they match the active_learning_step signature of the concrete strategy.
+        Filter kwargs such that they match the step signature of the concrete strategy.
 
         :param kwargs: keyword arguments to filter
         :return: filtered keyword arguments

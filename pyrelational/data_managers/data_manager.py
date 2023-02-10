@@ -18,7 +18,7 @@ from typing import (
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import DataLoader, Dataset, Sampler, Subset
+from torch.utils.data import DataLoader, Dataset, Sampler, Subset, TensorDataset
 
 from pyrelational.types import SizedDataset
 
@@ -41,6 +41,7 @@ class DataManager:
     def __init__(
         self,
         dataset: Dataset[Tuple[Tensor, ...]],
+        label_attr: str = "y",
         train_indices: Optional[List[int]] = None,
         labelled_indices: Optional[List[int]] = None,
         unlabelled_indices: Optional[List[int]] = None,
@@ -61,6 +62,8 @@ class DataManager:
     ):
         """
         :param dataset: A PyTorch dataset whose indices refer to individual samples of study
+        :param label_attr: string indicating name of attribute in the dataset class that correspond to the tensor
+            containing the labels/values to be predicted; by default, pyrelational assumes it correspond to dataset.y
         :param train_indices: An iterable of indices mapping to training sample indices in the dataset
         :param labelled_indices: An iterable of indices  mapping to labelled training samples
         :param unlabelled_indices: An iterable of indices to unlabelled observations in the dataset
@@ -70,7 +73,7 @@ class DataManager:
         :param random_label_size: Only used when labelled and unlabelled indices are not provided. Sets the size of
             labelled set (should either be the number of samples or ratio w.r.t. train set)
         :param hit_ratio_at: optional argument setting the top percentage threshold to compute hit ratio metric
-        :param random_seed: random seed
+        :param random_seed: random seed used to generate labelled/unlabelled splits when none are provided.
         :param loader_batch_size: batch size for dataloader
         :param loader_shuffle: shuffle flag for labelled dataloader
         :param loader_sampler: a sampler for the dataloaders
@@ -84,7 +87,15 @@ class DataManager:
         super(DataManager, self).__init__()
         dataset = self._check_is_sized(dataset)
 
+        if not hasattr(dataset, label_attr):
+            raise AttributeError(
+                f"""
+                Dataset {dataset.__class__.__name__} does not have an attribute named {label_attr}.
+                This implies that the data manager would not be able to update the labels as the oracle provide them.
+                """
+            )
         self.dataset = dataset
+        self.label_attr = label_attr
 
         # Loader specific arguments
         self.loader_batch_size = loader_batch_size
@@ -240,10 +251,7 @@ class DataManager:
         :param idx: index value to the observation
         :param value: new value for the observation
         """
-        if hasattr(self.dataset, "y"):
-            self.dataset.y[idx] = value
-        if hasattr(self.dataset, "targets"):
-            self.dataset.targets[idx] = value
+        getattr(self.dataset, self.label_attr)[idx] = value
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
         """
@@ -292,7 +300,7 @@ class DataManager:
         """
         if full:
             # return full training set with unlabelled included (for strategy evaluation)
-            train_loader = self.create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
+            train_loader = self._create_loader(Subset(self.dataset, (self.l_indices + self.u_indices)))
             return train_loader
         else:
             return self.get_labelled_loader()
@@ -306,7 +314,7 @@ class DataManager:
         validation_set = self.get_validation_set()
         if validation_set is None:
             return None
-        return self.create_loader(validation_set)
+        return self._create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader[Any]:
         """
@@ -314,7 +322,7 @@ class DataManager:
 
         :return: Pytorch Dataloader containing test set
         """
-        return self.create_loader(self.get_test_set())
+        return self._create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader[Any]:
         """
@@ -322,15 +330,15 @@ class DataManager:
 
         :return: Pytorch Dataloader containing unlabelled subset from dataset
         """
-        return self.create_loader(Subset(self.dataset, self.u_indices))
+        return self._create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader[Any]:
         """
-        Get labelled dataloader
+        Get labelled dataloader.
 
         :return: Pytorch Dataloader containing labelled subset from dataset
         """
-        return self.create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
+        return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def process_random(self, seed: int = 0) -> None:
         """
@@ -368,7 +376,7 @@ class DataManager:
         self.l_indices = list(set(self.l_indices + indices))
         self.u_indices = list(set(self.u_indices) - set(indices))
 
-    def percentage_labelled(self) -> float:
+    def get_percentage_labelled(self) -> float:
         """
         Percentage of total available dataset labelled.
 
@@ -378,19 +386,9 @@ class DataManager:
         num_labelled = len(self.l_indices)
         return (num_labelled / float(total_len)) * 100
 
-    def get_sample(self, ds_index: int) -> Any:
-        """
-        Get sample from dataset based on index.
-
-        :param ds_index: index of sample to access in dataset
-
-        :return: tuple containing outputs of dataset for provided index
-        """
-        return self[ds_index]
-
     def get_sample_feature_vector(self, ds_index: int) -> Any:
         """To be reviewed for deprecation (for datasets without tensors)"""
-        sample = self.get_sample(ds_index)
+        sample = self[ds_index]
         ret = sample[0].flatten()
         return ret
 
@@ -413,7 +411,7 @@ class DataManager:
             res.append(self[ds_index][-1])  # assumes labels are last in output of dataset
         return torch.stack(res)
 
-    def create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
+    def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
         """
         Utility to help create dataloader with specifications set at initialisation.
 
@@ -442,7 +440,7 @@ class DataManager:
 
     def __str__(self) -> str:
         """Pretty print a summary of the data_manager contents"""
-        str_percentage_labelled = "%.3f" % (self.percentage_labelled())
+        str_percentage_labelled = "%.3f" % (self.get_percentage_labelled())
         str_out = self.__repr__()
         if self.train_indices is not None:
             str_out += "\nTraining set size: {}\n".format(len(self.train_indices))

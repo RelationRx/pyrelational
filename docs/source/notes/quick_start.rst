@@ -203,9 +203,9 @@ We obtain metrics for the performance of the method, eg performance of the model
     )
     data_manager = get_digit_data_manager()
     pipeline = Pipeline(data_manager=data_manager, model=model, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=250)
-    performance_history = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=250)
+    performance_history = pipeline.summary()
 
 Comparing performances of different strategies
 ----------------------------------------------
@@ -233,36 +233,36 @@ We can now compare the performances of different strategies on our digit classif
     strategy = LeastConfidenceStrategy()
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=num_annotate)
-    query['LeastConfidence'] = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=num_annotate)
+    query['LeastConfidence'] = pipeline.summary()
 
     # Maginal confidence
     dm = get_digit_data_manager()
     strategy = MarginalConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=num_annotate)
-    query['MarginalConfidence'] = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=num_annotate)
+    query['MarginalConfidence'] = pipeline.summary()
 
     # Ratio confidence
     dm = get_digit_data_manager()
     strategy = RatioConfidenceStrategy(data_manager=dm, model_manager=model_manager)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=num_annotate)
-    query['RatioConfidence'] = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=num_annotate)
+    query['RatioConfidence'] = pipeline.summary()
 
     # Entropy classification
     dm = get_digit_data_manager()
     strategy = EntropyClassificationStrategy(data_manager=dm, model_manager=model_manager)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=num_annotate)
-    query['EntropyClassification'] = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=num_annotate)
+    query['EntropyClassification'] = pipeline.summary()
 
 
     # Random classification
@@ -270,9 +270,9 @@ We can now compare the performances of different strategies on our digit classif
     strategy = RandomAcquisitionStrategy(data_manager=dm, model_manager=model_manager)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-    pipeline.theoretical_performance()
-    pipeline.full_active_learning_run(num_annotate=num_annotate)
-    query['RandomAcquistion'] = pipeline.performance_history()
+    pipeline.compute_theoretical_performance()
+    pipeline.run(num_annotate=num_annotate)
+    query['RandomAcquistion'] = pipeline.summary()
 
 Which give the results in the plot below, where we observe some improvement over a random strategy.
 
