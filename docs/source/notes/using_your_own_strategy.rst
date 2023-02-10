@@ -38,8 +38,7 @@ subset based on euclidean distance between input features.
             super(MixedStrategy, self).__init__()
 
         def __call__(self, num_annotate, data_manager, model_manager):
-            model_manager.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-            output = model_manager(data_manager.get_unlabelled_loader())
+            output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
             scores = regression_least_confidence(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             ixs = [data_manager.u_indices[i] for i in ixs[: 10 * num_annotate]]
@@ -73,8 +72,7 @@ random from the remaining queryable set.
 
         def __call__(self, num_annotate, data_manager, model_manager, eps=0.05):
             assert 0 <= eps <= 1, "epsilon should be a float between 0 and 1"
-            model_manager.train(data_manager.get_labelled_loader(), data_manager.get_validation_loader())
-            output = model_manager(data_manager.get_unlabelled_loader())
+            output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
             scores = regression_mean_prediction(x=output)
             ixs = torch.argsort(scores, descending=True).tolist()
             greedy_annotate = int((1-eps)*num_annotate)
