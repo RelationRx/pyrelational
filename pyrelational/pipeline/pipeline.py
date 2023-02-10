@@ -159,7 +159,7 @@ class Pipeline(ABC):
         self.iteration += 1
         logger.info("Length of labelled %s" % (len(self.l_indices)))
         logger.info("Length of unlabelled %s" % (len(self.u_indices)))
-        logger.info("Percentage labelled %s" % self.get_percentage_labelled)
+        logger.info("Percentage labelled %s" % self.percentage_labelled)
         self.log_labelled_by(indices)
 
     def run(
@@ -280,7 +280,7 @@ class Pipeline(ABC):
         return self.data_manager.get_test_loader()
 
     @property
-    def get_percentage_labelled(self) -> float:
+    def percentage_labelled(self) -> float:
         """Percentage of total available dataset labelled."""
         return self.data_manager.get_percentage_labelled()
 
@@ -297,13 +297,13 @@ class Pipeline(ABC):
         str_dm = str(self.data_manager)
         str_model = str(self.model_manager)
         str_dataset_size = str(self.dataset_size)
-        str_percentage_labelled = "%.3f" % self.get_percentage_labelled
+        str_percentage_labelled = "%.3f" % self.percentage_labelled
 
         str_out = self.__repr__()
         str_out += "DataManager: %s \n" % str_dm
         str_out += "Model: %s \n" % str_model
         str_out += "Size of Dataset: %s \n" % str_dataset_size
-        str_out += "Percentage of Dataset Labelled for Model: %s \n" % (str_percentage_labelled)
+        str_out += "Percentage of Dataset Labelled for Model: %s \n" % str_percentage_labelled
         if "full" in self.performances:
             str_out += "Theoretical performance: %s \n" % str(self.performances["full"])
         str_out += "Performance history \n"
