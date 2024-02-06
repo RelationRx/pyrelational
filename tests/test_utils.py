@@ -1,10 +1,10 @@
 from typing import Any, Optional, Tuple, Union
 
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from pytorch_lightning import LightningModule
+from lightning.pytorch import LightningModule
 from sklearn.datasets import load_breast_cancer, load_diabetes
 from torch import Tensor
 from torch.utils.data import Dataset

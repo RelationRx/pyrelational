@@ -1,10 +1,10 @@
 from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
-import pytorch_lightning as pl
 import torch
-from pytorch_lightning import Callback, LightningModule, Trainer
-from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
-from pytorch_lightning.utilities.model_helpers import is_overridden
+from lightning.pytorch import Callback, LightningModule, Trainer
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.loggers import TensorBoardLogger
+from lightning.pytorch.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
@@ -20,7 +20,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
     .. code-block:: python
 
         import torch
-        import pytorch_lightning as pl
+        import lightning.pytorch as pl
 
         class PyLModel(pl.LightningModule):
               def __init__(self, in_dim, out_dim):
@@ -59,6 +59,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :return: a pytorch lightning trainer object
         """
         config = self.trainer_config
+        config = _add_pyl_trainer_defaults(config)
         callbacks: List[Callback] = []
         if config["use_early_stopping"]:
             callbacks.append(
@@ -78,11 +79,12 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         )
         callbacks.append(checkpoint_callback)
 
-        tracker = pl.loggers.TensorBoardLogger(save_dir=config["checkpoints_dir"], name=config["checkpoints_name"])
-        trainer = pl.Trainer(
+        tracker = TensorBoardLogger(save_dir=config["checkpoints_dir"], name=config["checkpoints_name"])
+        trainer = Trainer(
             callbacks=callbacks,
             logger=tracker,
-            gpus=config["gpus"],
+            accelerator=config["accelerator"],
+            devices=config["devices"],
             max_epochs=config["epochs"],
             check_val_every_n_epoch=config["period_eval"],
             log_every_n_steps=1,
@@ -125,3 +127,26 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
                 model_prediction.append(model(x).detach().cpu())
         predictions = torch.cat(model_prediction, 0)
         return predictions
+
+
+def _add_pyl_trainer_defaults(config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Checks the trainer config for pytorch lightning and adds default values for missing required entries
+    :param config: a dictionary with key:values required by the init_trainer function
+    :return: dictionary with trainer config
+    """
+    default = {
+        "accelerator": "cpu",
+        "devices": "auto",
+        "epochs": 100,
+        "period_eval": 1,
+        "checkpoints_dir": "experiment_logs/",
+        "checkpoints_name": "run",
+        "monitor_metric_name": "loss",
+        "monitor_metric_mode": "min",
+        "use_early_stopping": False,
+        "patience": 100,
+        "save_top_k": 1,
+    }
+    config = {**default, **config}
+    return config
