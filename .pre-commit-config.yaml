@@ -24,7 +24,12 @@ repos:
     rev: v1.8.0
     hooks:
       - id: mypy
-        files: ^pyrelational/
+        exclude: |
+            (?x)(
+                ^tests/ |
+                ^examples/ |
+                ^docs/
+                )
         args: [
             --strict,
             --follow-imports=silent,

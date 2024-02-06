@@ -183,7 +183,7 @@ def _compute_mean(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Te
     if isinstance(x, Tensor):
         return x.mean(axis)
     elif isinstance(x, Distribution):
-        return cast(Tensor, x.mean)
+        return x.mean
     else:
         raise TypeError(f"Expected torch Tensor or Distribution, got {type(x)} instead.")
 
@@ -199,6 +199,6 @@ def _compute_std(x: Optional[Union[Distribution, Tensor]], axis: int = 0) -> Ten
     if isinstance(x, Tensor):
         return x.std(axis)
     elif isinstance(x, Distribution):
-        return cast(Tensor, x.stddev)
+        return x.stddev
     else:
         raise TypeError(f"Expected torch Tensor or Distribution, got {type(x)} instead.")
