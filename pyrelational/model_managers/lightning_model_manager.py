@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 import torch
 from lightning.pytorch import Callback, LightningModule, Trainer
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
-from lightning.pytorch.loggers import TensorBoardLogger
 from lightning.pytorch.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
@@ -79,10 +78,8 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         )
         callbacks.append(checkpoint_callback)
 
-        tracker = TensorBoardLogger(save_dir=config["checkpoints_dir"], name=config["checkpoints_name"])
         trainer = Trainer(
             callbacks=callbacks,
-            logger=tracker,
             accelerator=config["accelerator"],
             devices=config["devices"],
             max_epochs=config["epochs"],
