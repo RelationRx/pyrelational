@@ -36,7 +36,7 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         :param n_estimators: number of models in ensemble
         """
         super(EnsembleModelManager, self).__init__(model_class, model_config, trainer_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
         self.n_estimators = n_estimators
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:

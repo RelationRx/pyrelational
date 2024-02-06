@@ -50,7 +50,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
         """
         super(LightningModelManager, self).__init__(model_class, model_config, trainer_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
@@ -59,7 +59,6 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :return: a pytorch lightning trainer object
         """
         config = self.trainer_config
-        config = _check_pyl_trainer_config(config)
         callbacks: List[Callback] = []
         if config["use_early_stopping"]:
             callbacks.append(
@@ -126,25 +125,3 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
                 model_prediction.append(model(x).detach().cpu())
         predictions = torch.cat(model_prediction, 0)
         return predictions
-
-
-def _check_pyl_trainer_config(config: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Checks the trainer config for pytorch lightning and adds default values for missing required entries
-    :param config: a dictionary with key:values required by the init_trainer function
-    :return: dictionary with trainer config
-    """
-    default = {
-        "gpus": 0,
-        "epochs": 100,
-        "period_eval": 1,
-        "checkpoints_dir": "experiment_logs/",
-        "checkpoints_name": "run",
-        "monitor_metric_name": "loss",
-        "monitor_metric_mode": "min",
-        "use_early_stopping": False,
-        "patience": 100,
-        "save_top_k": 1,
-    }
-    config = {**default, **config}
-    return config

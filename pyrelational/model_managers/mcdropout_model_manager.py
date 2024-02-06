@@ -38,7 +38,7 @@ class MCDropoutModelManager(ModelManager[Module, Module], ABC):
         """
         super(MCDropoutModelManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
         self.n_estimators = n_estimators
         self.eval_dropout_prob = eval_dropout_prob
 
