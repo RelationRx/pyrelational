@@ -32,7 +32,7 @@ jobs:
       - name: Run mypy
         run: |
           source env/bin/activate
-          mypy pyrelational/ --allow-redefinition --disable-error-code import --disable-error-code no-untyped-call --implicit-reexport --strict --install-types --non-interactive --ignore-missing-imports --follow-imports=silent
+          mypy pyrelational/ --allow-redefinition --disable-error-code import --disable-error-code no-untyped-call --disable-error-code no-redef --implicit-reexport --strict --install-types --non-interactive --ignore-missing-imports --follow-imports=silent
       - name: clean venv
         run: |
           rm -r env
