@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score
 from torch.utils.data import Dataset
 
 # Data and data manager
-from examples.utils.datasets import BreastCancerDataset  # noqa: E402
+from utils.datasets import BreastCancerDataset  # noqa: E402
 from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
