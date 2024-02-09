@@ -13,6 +13,6 @@ def _determine_device(trainer_config: Dict[str, Any]) -> torch.device:
     """
     accelerator = _AcceleratorConnector(
             accelerator=trainer_config.get("accelerator", "cpu"),
-            devices = trainer_config.get("devices", "auto")
+            devices=trainer_config.get("devices", "auto")
         )
     return accelerator.strategy.root_device
