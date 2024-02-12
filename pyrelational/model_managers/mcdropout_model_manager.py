@@ -3,7 +3,7 @@ from abc import ABC
 from typing import Any, Dict, List, Optional, Type, Union, cast
 
 import torch
-from pytorch_lightning import LightningModule
+from lightning.pytorch import LightningModule
 from torch.nn.modules import Module
 from torch.utils.data import DataLoader
 
@@ -38,7 +38,7 @@ class MCDropoutModelManager(ModelManager[Module, Module], ABC):
         """
         super(MCDropoutModelManager, self).__init__(model_class, model_config, trainer_config)
         _check_mc_dropout_model(model_class, self.model_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
         self.n_estimators = n_estimators
         self.eval_dropout_prob = eval_dropout_prob
 
@@ -53,7 +53,7 @@ class MCDropoutModelManager(ModelManager[Module, Module], ABC):
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         predictions = []
         model = cast(Module, self._current_model)
-        model = model.to(self.device)
+        model: Module = model.to(self.device)
         model.eval()
 
         with torch.no_grad():
@@ -77,7 +77,7 @@ class LightningMCDropoutModelManager(MCDropoutModelManager, LightningModelManage
     .. code-block:: python
 
         import torch
-        import pytorch_lightning as pl
+        import lightning.pytorch as pl
 
         class PyLModel(pl.LightningModule):
               def __init__(self, in_dim, out_dim):

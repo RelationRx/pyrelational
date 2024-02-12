@@ -48,7 +48,7 @@ pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, stra
 
 
 # Remove lightning prints
-logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
+logging.getLogger("lightning.pytorch").setLevel(logging.ERROR)
 
 # performance with the full trainset labelled
 pipeline.compute_theoretical_performance()

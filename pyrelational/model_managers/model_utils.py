@@ -1,23 +1,20 @@
-import warnings
-from typing import List, Union
+from typing import Any, Dict
 
 import torch
+from lightning.pytorch.trainer.connectors.accelerator_connector import (
+    _AcceleratorConnector,
+)
 
 
-def _determine_device(gpus: Union[List[int], str, int, None]) -> torch.device:
+def _determine_device(trainer_config: Dict[str, Any]) -> torch.device:
     """
     Determines the torch device of the model from the gpus argument for pytorch lightning trainer
 
-    :param gpus: Number of gpus (int) or which gpus to train on (str, list)
-    :return: torch device
+    :param trainer_config: configuration dictionary for a pytorch lightning Trainer
+    :return: torch device object
     """
-    if isinstance(gpus, list):
-        gpus = str(gpus[0])
-        warnings.warn("Multiple GPUs provided, setting the first GPU to be device used in call function of model")
-        return torch.device(f"cuda:{gpus}")
-    elif isinstance(gpus, str):
-        return torch.device(f"cuda:{gpus}")
-    elif isinstance(gpus, int) and (gpus > 0):
-        return torch.device("cuda")
-    else:
-        return torch.device("cpu")
+    accelerator = _AcceleratorConnector(
+        accelerator=trainer_config.get("accelerator", "cpu"), devices=trainer_config.get("devices", "auto")
+    )
+    device: torch.device = accelerator.strategy.root_device
+    return device

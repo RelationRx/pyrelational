@@ -1,10 +1,9 @@
 from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
-import pytorch_lightning as pl
 import torch
-from pytorch_lightning import Callback, LightningModule, Trainer
-from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
-from pytorch_lightning.utilities.model_helpers import is_overridden
+from lightning.pytorch import Callback, LightningModule, Trainer
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
 from .abstract_model_manager import ModelManager
@@ -20,7 +19,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
     .. code-block:: python
 
         import torch
-        import pytorch_lightning as pl
+        import lightning.pytorch as pl
 
         class PyLModel(pl.LightningModule):
               def __init__(self, in_dim, out_dim):
@@ -50,7 +49,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :param trainer_config: a dictionary containing the config required to instantiate the pytorch lightning trainer
         """
         super(LightningModelManager, self).__init__(model_class, model_config, trainer_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
 
     def init_trainer(self) -> Tuple[Trainer, ModelCheckpoint]:
         """
@@ -59,7 +58,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         :return: a pytorch lightning trainer object
         """
         config = self.trainer_config
-        config = _check_pyl_trainer_config(config)
+        config = _add_pyl_trainer_defaults(config)
         callbacks: List[Callback] = []
         if config["use_early_stopping"]:
             callbacks.append(
@@ -79,11 +78,10 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         )
         callbacks.append(checkpoint_callback)
 
-        tracker = pl.loggers.TensorBoardLogger(save_dir=config["checkpoints_dir"], name=config["checkpoints_name"])
-        trainer = pl.Trainer(
+        trainer = Trainer(
             callbacks=callbacks,
-            logger=tracker,
-            gpus=config["gpus"],
+            accelerator=config["accelerator"],
+            devices=config["devices"],
             max_epochs=config["epochs"],
             check_val_every_n_epoch=config["period_eval"],
             log_every_n_steps=1,
@@ -128,14 +126,15 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         return predictions
 
 
-def _check_pyl_trainer_config(config: Dict[str, Any]) -> Dict[str, Any]:
+def _add_pyl_trainer_defaults(config: Dict[str, Any]) -> Dict[str, Any]:
     """
     Checks the trainer config for pytorch lightning and adds default values for missing required entries
     :param config: a dictionary with key:values required by the init_trainer function
     :return: dictionary with trainer config
     """
     default = {
-        "gpus": 0,
+        "accelerator": "cpu",
+        "devices": "auto",
         "epochs": 100,
         "period_eval": 1,
         "checkpoints_dir": "experiment_logs/",

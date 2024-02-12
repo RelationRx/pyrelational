@@ -3,8 +3,8 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cas
 
 import numpy as np
 import torch
-from pytorch_lightning import LightningModule
-from pytorch_lightning.utilities.model_helpers import is_overridden
+from lightning.pytorch import LightningModule
+from lightning.pytorch.utilities.model_helpers import is_overridden
 from torch.nn import Module
 from torch.utils.data import DataLoader
 
@@ -36,7 +36,7 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         :param n_estimators: number of models in ensemble
         """
         super(EnsembleModelManager, self).__init__(model_class, model_config, trainer_config)
-        self.device = _determine_device(self.trainer_config.get("gpus", 0))
+        self.device = _determine_device(self.trainer_config)
         self.n_estimators = n_estimators
 
     def __call__(self, loader: DataLoader[Any]) -> torch.Tensor:
@@ -52,7 +52,7 @@ class EnsembleModelManager(Generic[ModelType], ModelManager[ModelType, List[Mode
         with torch.no_grad():
             predictions = []
             for model in models:
-                model = model.to(self.device)
+                model: ModelType = model.to(self.device)
                 model.eval()
                 model_prediction = []
                 for x, _ in loader:
@@ -73,7 +73,7 @@ class LightningEnsembleModelManager(EnsembleModelManager[LightningModule], Light
     .. code-block:: python
 
         import torch
-        import pytorch_lightning as pl
+        import lightning.pytorch as pl
 
         class PyLModel(pl.LightningModule):
            def __init__(self, in_dim, out_dim):
