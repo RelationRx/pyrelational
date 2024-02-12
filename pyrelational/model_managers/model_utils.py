@@ -1,7 +1,8 @@
-import warnings
-from typing import Any, Dict, List, Union
-
+from typing import Any, Dict
 import torch
+from lightning.pytorch.trainer.connectors.accelerator_connector import (
+    _AcceleratorConnector,
+)
 
 
 def _determine_device(trainer_config: Dict[str, Any]) -> torch.device:
@@ -9,17 +10,10 @@ def _determine_device(trainer_config: Dict[str, Any]) -> torch.device:
     Determines the torch device of the model from the gpus argument for pytorch lightning trainer
 
     :param trainer_config: configuration dictionary for a pytorch lightning Trainer
-    :return: torch device
+    :return: torch device object
     """
-    if trainer_config.get("accelerator", "cpu") == "cpu":
-        return torch.device("cpu")
-    else:
-        devices: Union[List[int], str, int] = trainer_config.get("devices", "auto")
-        if isinstance(devices, str):
-            return torch.device("cuda:0")
-        elif isinstance(devices, int):
-            i = 0 if devices == -1 else devices  # device==-1 means using all available devices
-            return torch.device(f"cuda:{i}")
-        else:
-            warnings.warn("Multiple GPUs provided, pyrelational will use the first one in the model's __call__ method.")
-            return torch.device(f"cuda:{devices[0]}")
+    accelerator = _AcceleratorConnector(
+        accelerator=trainer_config.get("accelerator", "cpu"), devices=trainer_config.get("devices", "auto")
+    )
+    device: torch.device = accelerator.strategy.root_device
+    return device
