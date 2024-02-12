@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix-examples
 
 permissions:
   contents: read
