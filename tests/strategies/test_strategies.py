@@ -39,7 +39,7 @@ class TestStrategies(TestCase):
         self.model_manager = LightningMCDropoutModelManager(
             model_class,
             {"ensemble_size": 3},
-            {"epochs": 5, "gpus": 0},
+            {"epochs": 5},
         )
         self.strategy = self.strategy_class(**self.strategy_kwargs)
 

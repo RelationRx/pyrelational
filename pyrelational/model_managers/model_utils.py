@@ -8,7 +8,7 @@ from lightning.pytorch.trainer.connectors.accelerator_connector import (
 
 def _determine_device(trainer_config: Dict[str, Any]) -> torch.device:
     """
-    Determines the torch device of the model from the gpus argument for pytorch lightning trainer
+    Determines the torch device of the model from the arguments for the pytorch lightning trainer
 
     :param trainer_config: configuration dictionary for a pytorch lightning Trainer
     :return: torch device object
