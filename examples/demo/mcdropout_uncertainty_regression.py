@@ -11,8 +11,8 @@ import logging
 import torch
 
 # Dataset and machine learning model
-from examples.utils.datasets import DiabetesDataset  # noqa: E402
-from examples.utils.ml_models import DiabetesRegression  # noqa: E402
+from utils.datasets import DiabetesDataset
+from utils.ml_models import DiabetesRegression
 
 # Active Learning package
 from pyrelational.data_managers import DataManager

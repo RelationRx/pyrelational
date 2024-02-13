@@ -1,5 +1,4 @@
 {
-  "gpus": 0,
   "epochs": 100,
   "period_eval": 1,
   "checkpoints_dir": "experiment_logs/",
