@@ -14,7 +14,7 @@ import torch
 from torchvision import datasets, transforms
 
 # Dataset and machine learning model
-from utils.ml_models import MnistClassification  # noqa: E402
+from utils.ml_models import MnistClassification
 
 # Active Learning package
 from pyrelational.data_managers import DataManager

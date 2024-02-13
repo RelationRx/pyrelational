@@ -13,7 +13,7 @@ import lightning.pytorch as pl
 import torch
 
 # Dataset and machine learning model
-from utils.datasets import DiabetesDataset  # noqa: E402
+from utils.datasets import DiabetesDataset
 
 # Active Learning package
 from pyrelational.data_managers import DataManager
