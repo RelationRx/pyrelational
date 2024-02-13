@@ -8,12 +8,13 @@ jobs:
   live-test:
     name: Test
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.10"
       - name: Install basic dependencies
         run: |
           pip install --upgrade pip==21.3.0
@@ -42,6 +43,7 @@ jobs:
           echo "Coverage Tests - ${{ steps.coverageComment.outputs.tests }}"
           echo "Coverage Time - ${{ steps.coverageComment.outputs.time }}"
           echo "Not Success Test Info - ${{ steps.coverageComment.outputs.notSuccessTestInfo }}"
+
       - name: Create the Badge
         uses: schneegans/dynamic-badges-action@v1.0.0
         with:

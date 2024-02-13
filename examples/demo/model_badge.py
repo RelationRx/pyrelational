@@ -10,8 +10,8 @@ from typing import List
 import torch
 
 # Dataset and machine learning model
-from examples.utils.datasets import BreastCancerDataset  # noqa: E402
-from examples.utils.ml_models import BreastCancerClassification  # noqa: E402
+from utils.datasets import BreastCancerDataset
+from utils.ml_models import BreastCancerClassification
 
 # Active Learning package
 from pyrelational.data_managers import DataManager

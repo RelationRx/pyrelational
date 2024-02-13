@@ -136,7 +136,7 @@ For example, users can create ensembles of pytorch lightning modules directly as
     wrapper = LightningEnsembleModelManager(
                   DigitClassifier,
                   {"dropout_rate":0.1, "lr":3e-4},
-                  {"epochs":1,"gpus":1},
+                  {"epochs":1,"accelerator":"gpu", "devices":1},
                   n_estimators=5,
             )
 
