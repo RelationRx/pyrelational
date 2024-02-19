@@ -92,9 +92,6 @@ In the next section we briefly outline currently available strategies, informati
 
 - MCDropout
 - Ensemble of models (a.k.a. commitee)
-- DropConnect (coming soon)
-- SWAG (coming soon)
-- MultiSWAG (coming soon)
 
 #### Informativeness measures included in the library
 
@@ -114,9 +111,6 @@ In the next section we briefly outline currently available strategies, informati
 - Entropy based confidence
 - Ratio based confidence
 - BALD
-- Thompson Sampling (coming soon)
-- BatchBALD (coming soon)
-
 
 ##### Model agnostic and diversity sampling based approaches
 
