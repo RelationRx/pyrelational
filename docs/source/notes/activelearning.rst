@@ -2,24 +2,25 @@
 
 What is Active Learning?
 ========================
-Machine learning models, particularly those based on deep learning play an increasing role in scientific research and
+Machine learning models, particularly those based on deep learning, play an increasing role in scientific research and
 the broader society due to their strong performances and ability to generalise across tasks and domains. However, the
-success of deep learning models has largely been dictated by large annotated datasets and well designed inductive biases.
-Unfortunately, many important domains -- such as chemistry, biology, and medicine -- operate in low data regime,
+success of recent machine learning models has largely been dictated by large annotated datasets and well designed inductive biases.
+Unfortunately, many important domains -- such as chemistry, biology, and medicine -- operate in low data regimes,
 especially when the amount of data is compared to the incredibly rich and complex representations each observation is
 encoded in. This is partially because it is expensive to label observations, requiring large material and human expenses.
 
-Hence, if we have the capability of obtaining annotations from an oracle it is in our interest to give labels to
-observations that are most *informative* to improving the model's performance economically. This motivation serves
-as the foundation for active learning development.
+Therefore, if we have the capability to obtain annotations from an oracle it is in our interest to give labels to
+observations that are most ***informative*** to improving the model's performance economically. This motivation serves
+as the foundation for research and development in **active learning**.
 
 Active learning is a machine learning paradigm where the aim is to develop methods, or **strategies**, which propose
 observations for labelling by an *oracle* for inclusion in the data used to train a set model in a subsequent
 training cycle. Active learning is not a novel concept and is known under different names in various domains, for instance
-*optimal experiment design* in statistics. To build our intuition for active learning and its terminology, we
-take a step back and look at the aims and pipelines of standard machine learning development paradigm. Then we compare
-this to the aims and pipelines of active learning. Along the way we demonstrate how **PyRelationAL** can help implement active
-learning strategies for all kinds of data and models rapidly and reliably.
+*optimal experiment design* in statistics. It also utilises ideas from a wide variety of domains such as information theory,
+reinforcement learning, game theory, and machine learning to name a few. To build our intuition for active learning and
+its terminology, we take a step back and look at the aims and pipelines of standard machine learning development paradigm.
+Then we compare this to the aims and pipelines of active learning. Along the way we demonstrate how **PyRelationAL** can
+help implement active learning strategies for all kinds of data and models rapidly and reliably.
 
 The standard machine learning paradigm
 --------------------------------------
@@ -31,17 +32,18 @@ model :math:`f_{\theta}` with parameters :math:`\theta` to produce the function 
   :width: 65%
   :alt: The standard ML pipeline.
 
-Performance of :math:`f_{\hat{\theta}}` is evaluated on some hold out labelled test set :math:`E` via some task specific
-metric of interest (AUC, accuracy, precision, MSELoss, or :math:`\mathcal{L}_{\textrm{loss}}` in the example below) which
-quantify the quality of the model with respect to the task.
+The performance of :math:`f_{\hat{\theta}}` is evaluated on some hold out labelled test set :math:`E` via some task specific
+metric of interest (AUC, accuracy, precision, MSELoss, or another specified :math:`\mathcal{L}}` as in the example below) which
+quantifies the quality of the model with respect to the task.
 
 .. image:: eval.png
   :width: 65%
   :alt: The standard ML evaluation pipeline.
 
 
-The ML practitioner is concerned with improving the model :math:`f_{\theta}` through different modelling choices,
-architecture changes, optimisation changes, hyperparameter search, etc. etc.
+This is the standard machine learning paradigm. The ML practitioner's job is to improve the model :math:`f_{\theta}`
+through different modelling choices, architecture changes, optimisation changes, new inductive biases,
+hyperparameter searches, etc. etc.
 
 The active learning paradigm
 ----------------------------
@@ -50,22 +52,66 @@ The active learning paradigm
   :width: 100%
   :alt: The standard ML evaluation pipeline.
 
-In contrast within active learning we assume the model is set and we do not just work with the labelled set :math:`L` for
-training. We assume there is a dataset :math:`\mathcal{D}` which contains labelled subset :math:`L` and an ***unlabelled***
-subset :math:`U`. We are interested in iteratively labelling small groups of observations from :math:`U` for inclusion
-:math:`L` in a subsequent active learning cycle.
+In active learning we assume the model :math:`f_{\theta}` is *set*. Instead, we are interested in *adding useful and
+informative observations to* training data :math:`L` so that the performance of the model improves in a future round
+of training and evaluation. By nature, this is an iterative process following several *active learning rounds*
+starting from round :math:`k=0` to :math:`K>0` set by some labelling budget or we run out of observations to label.
+Given the training data at round :math:`k`, :math:`L_k`, The active learning practitioner's job is to design **strategies**
+that will select or suggest **informative** observations to an oracle capable of providing labels --- then, construct an improved
+training dataset :math:`L_{k+1}` which will improve the model's understanding of the underlying data distribution and hopefully
+improve it's performance on the task.
 
-Starting as before we use :math:`L` to train a model and produce :math:`f_{\hat{\theta}}`. We could evaluate the
-performance of this set model based on the current iteration of :math:`L` with the test set :math:`E` again. We will
-then use the trained model :math:`f_{\hat{\theta}}` to make predictions for each of the unlabelled observations
-:math:`f_{\hat{\theta}}(u) \textrm{for} u \in U` [#f1]_. We follow this up with computing an ***informativeness*** score
-for :math:`u`. This "informativeness" is a measure which encapsulates how useful we believe labelling this observation will be.
+The figure above summarises a generic active learning cycle. In this setup we have:
+
+* A dataset of observations :math:`D`, which is split into
+    * a labelled subset :math:`L`
+    * an unlabelled subset :math:`U`
+* A fixed model :math:`f_{\theta}`, which will be trained on :math:`L`
+* An oracle which can provide labels to unlabeled observations :math:`u \in U`
+* An active learning strategy, which in this case is split into
+    * a informativeness function :math:`g`
+    * a selection function SELECT, which selects observations based on the informativeness values coming from :math:`g`.
+
+Starting as before we use :math:`L` to train a model and produce :math:`f_{\hat{\theta}}`. We can optionally evaluate the
+performance of this model based on the current iteration of :math:`L` with a hold-out test set :math:`E`. In order to suggest
+useful observations to the oracle, we have to be able to compute the *informativeness* of observations.
+
+"Informativeness" is a measure which encapsulates how useful we believe labelling this observation will be to improving our model.
+Computing informativeness values stands at the very core of all active learning strategies. In Bayesian optimisation based active
+learning strategies, the acquisition function computes informativeness values so this term pops up often as well.
 Many different informativeness measures exist, one family of informativeness measures stems from the model's uncertainty about
 its prediction. The intuition is that observations with high uncertainty in the posterior predictive distribution are
-useful and hence "informative" [#f2]_. Applying this example to our figure, if :math:`g(\cdot)` a function for computing
-uncertainty over predictions, :math:`g(f_{\hat{\theta}}(u))` will give us an informativeness score for each :math:`u`
-that we can then rank and pick to be labelled by the oracle. Once labelled the cycle begins again, hopefully increasing
-our test performance in subsequent iterations.
+useful and hence "informative" [#f2]_.
+
+Our figure follows this logic. We use the trained model :math:`f_{\hat{\theta}}` to make predictions for each of the
+unlabelled observations :math:`f_{\hat{\theta}}(u) \textrm{for} u \in U` [#f1]_. :math:`g(\cdot)` is a function for computing
+uncertainty over predictions, :math:`g(f_{\hat{\theta}}(u))` and will give us an informativeness score for each :math:`u \in U`
+that we can then rank and pick to be labelled by the oracle using the selection logic specified by SELECT.
+Once labelled the cycle begins again, hopefully increasing our test performance in subsequent iterations.
+
+That's it, this is the workflow and set of principles behind almost all active learning strategies.
+
+In essence, active learning is a non-differentiable optimisation problem. We are interested in obtaining observations containing
+high information about the data distribution. It is often compared to Bayesian optimisation, which is often used to
+explore the space of model hyper-parameters to find the best model for the task at hand. Of course, Bayesian optimisation
+would be a valid strategy for active learning if we fix the model and optimise over observations to select instead of hyper-parameters.
+For more on the differences between active learning and bayesian optimisation, you can look at this article by Agnihotri and
+Batra (distill.pub/2020/bayesian-optimization/).
+
+There are several active learning scenarios:
+
+1. Pool-based active learning
+2. Stream-based selective sampling
+3. Membership query synthesis
+
+| Pool based active learning | Stream based selective sampling | Membership query synthesis |
+| :---: | :---: | :---: |
+| asdfasdfasdfasfdfasdfasdfasdfasdfasdfasdfasdf | asdfasdfasdfasdfasdfasdfasdfasdfa | asdffffffffffffffffffffffffffffffff |
+
+.. and we do not just work with the labelled set :math:`L` for training. We assume there is a dataset :math:`\mathcal{D}` which contains labelled subset :math:`L` and an ***unlabelled***
+.. subset :math:`U`. We are interested in iteratively labelling small groups of observations from :math:`U` for inclusion into
+.. :math:`L` in a subsequent active learning cycle.
+
 
 That's it, this is the workflow and set of principles behind almost all active learning strategies.
 
