@@ -1,5 +1,6 @@
 """Unit tests for benchmark datamanager functions
 """
+
 from unittest import TestCase
 
 from pyrelational.datasets import BreastCancerDataset, DiabetesDataset

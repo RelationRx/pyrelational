@@ -1,6 +1,7 @@
 """
 Class to help download and do the initial processing of dataset on the UCI database
 """
+
 import os
 import urllib.request
 import zipfile
