@@ -49,7 +49,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
         self._current_model = None
 
     def is_trained(self) -> bool:
-        """Check if model was trained. Plop."""
+        """Check if model was trained."""
         return self._current_model is not None
 
     @abstractmethod
