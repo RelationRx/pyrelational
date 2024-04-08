@@ -228,7 +228,7 @@ class DataManager:
         elif test_indices is None:
             test_indices = list(remaining_indices)
         elif remaining_indices:
-            warnings.warn(f"{len(remaining_indices)} indices are not found in any split")
+            warnings.warn(f"{len(remaining_indices)} indices are not found in any split", stacklevel=3)
 
         self._ensure_not_empty("train", train_indices)
         self._ensure_not_empty("test", test_indices)

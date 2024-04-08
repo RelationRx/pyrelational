@@ -5,6 +5,7 @@ is the composition of a informativeness function which assigns a measure of
 informativeness to unlabelled observations and a selection algorithm which chooses
 what observations to present to the oracle
 """
+
 import inspect
 import logging
 from abc import ABC
@@ -48,18 +49,17 @@ class Strategy(ABC):
 
     __call__: Callable[..., List[int]] = _call_unimplemented
 
-    def suggest(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
+    def suggest(self, num_annotate: int, **kwargs: Any) -> List[int]:
         """
         Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
         as a list of dataset indices.
 
         :param num_annotate: number of samples to annotate
-        :param args: any arguments needed by private suggest method
         :param kwargs: any kwargs (filtered to match internal suggest inputs)
         :return: list of indices of samples to query from oracle
         """
         filtered_kwargs = self._filter_kwargs(**kwargs)
-        return self(num_annotate=num_annotate, *args, **filtered_kwargs)
+        return self(num_annotate=num_annotate, **filtered_kwargs)
 
     @staticmethod
     def train_and_infer(data_manager: DataManager, model_manager: ModelManager[Any, Any]) -> Any:
