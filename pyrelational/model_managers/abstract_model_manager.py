@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, Mapping, Optional, Type, TypeVar, Union
 
 from torch.utils.data import DataLoader
 
@@ -63,7 +63,7 @@ class ModelManager(ABC, Generic[ModelType, E]):
         pass
 
     @abstractmethod
-    def test(self, loader: DataLoader[Any]) -> Dict[str, float]:
+    def test(self, loader: DataLoader[Any]) -> Mapping[str, float]:
         """
         Run test routine.
 
