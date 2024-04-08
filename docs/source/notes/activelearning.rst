@@ -89,14 +89,12 @@ uncertainty over predictions, :math:`g(f_{\hat{\theta}}(u))` and will give us an
 that we can then rank and pick to be labelled by the oracle using the selection logic specified by SELECT.
 Once labelled the cycle begins again, hopefully increasing our test performance in subsequent iterations.
 
-That's it, this is the workflow and set of principles behind almost all active learning strategies.
+That's it, this is the workflow and set of principles behind almost all active learning strategies[#f3]_. Of course,
+The additional data, processes, and iterative nature of the active learning pipeline necessitates several new components.
+This is where PyRelationAL comes in.
 
-In essence, active learning is a non-differentiable optimisation problem. We are interested in obtaining observations containing
-high information about the data distribution. It is often compared to Bayesian optimisation, which is often used to
-explore the space of model hyper-parameters to find the best model for the task at hand. Of course, Bayesian optimisation
-would be a valid strategy for active learning if we fix the model and optimise over observations to select instead of hyper-parameters.
-For more on the differences between active learning and bayesian optimisation, you can look at this article by Agnihotri and
-Batra (distill.pub/2020/bayesian-optimization/).
+Active learning scenarios
+-------------------------
 
 There are several active learning scenarios:
 
@@ -104,17 +102,18 @@ There are several active learning scenarios:
 2. Stream-based selective sampling
 3. Membership query synthesis
 
-| Pool based active learning | Stream based selective sampling | Membership query synthesis |
-| :---: | :---: | :---: |
-| asdfasdfasdfasfdfasdfasdfasdfasdfasdfasdfasdf | asdfasdfasdfasdfasdfasdfasdfasdfa | asdffffffffffffffffffffffffffffffff |
+Pool-based sampling is the most common scenario and the form PyRelationAL primarily supports through its data management and pipeline
+modules. In pool-based sampling, we have access to the entirety of :math:`D` and through it the: :math:`L`, :math:`U` subsets. At each
+active learning round, we consider the entirety of :math:`U` and select the most informative points based on the strategy from this pool.
 
-.. and we do not just work with the labelled set :math:`L` for training. We assume there is a dataset :math:`\mathcal{D}` which contains labelled subset :math:`L` and an ***unlabelled***
-.. subset :math:`U`. We are interested in iteratively labelling small groups of observations from :math:`U` for inclusion into
-.. :math:`L` in a subsequent active learning cycle.
+As the name suggests, stream-based selective sampling is based in data streaming scenarios where the model is streamed observations.
+The active learning strategy in this scenario is tasked with deciding whether the current observation being seen should be labelled or not.
+In other words, we only can see a small sample of :math:`U` at any time, and make a decision on whether it should be labelled, at that moment
+in time. In PyRelationAL, we can interface with these scenarios by adjusting the pipeline modules.
 
+Finally, in membership query synthesis the active learning strategy utilises the model to generate samples that should be labelled.
 
-That's it, this is the workflow and set of principles behind almost all active learning strategies.
-
+We can see that the generic active learning pipeline from above applies in all of these scenarios with minor adjustment.
 
 The components and functionalities necessary for active learning
 ----------------------------------------------------------------
@@ -146,3 +145,4 @@ datasets, models, performing bayesian approximation, creating your own novel act
 
 .. [#f1] For diversity sampling or model agnostic based strategies this step is not necessary. For example, imagine a strategy where we randomly pick observations for labelling; there's no need to use the model.
 .. [#f2] There are many uncertainty measures differing between models for classification and regression, many of them included in **PyRelationAL**!
+.. [#f3] In essence, active learning is a non-differentiable optimisation problem. We are interested in obtaining observations containing high information about the data distribution. It is often compared to Bayesian optimisation, which is often used to explore the space of model hyper-parameters to find the best model for the task at hand. Of course, Bayesian optimisation would be a valid strategy for active learning if we fix the model and optimise over observations to select instead of hyper-parameters. For more on the differences between active learning and bayesian optimisation, you can look at this article by Agnihotri and Batra (distill.pub/2020/bayesian-optimization/).
