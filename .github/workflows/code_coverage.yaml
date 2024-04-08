@@ -19,7 +19,7 @@ jobs:
         run: |
           pip install --upgrade pip==21.3.0
           pip install pytest-cov
-          pip install -r requirements.txt
+          pip install -r requirements/dev_requirements.txt
       - name: Build coverage file
         run: |
           python -m pytest --junitxml=pytest.xml --cov=pyrelational tests/ | tee pytest-coverage.txt
