@@ -1,6 +1,7 @@
 """
 This file contains the implementation of an abstract oracle interface for PyRelationAL
 """
+
 from abc import ABC, abstractmethod
 from typing import Any, List
 

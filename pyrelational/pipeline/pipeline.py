@@ -2,8 +2,8 @@
 the data manager, sampling functions, and model to create acquisition
 functions and general arbiters of the active learning pipeline
 """
+
 import logging
-from abc import ABC
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Union
 
@@ -21,7 +21,7 @@ from pyrelational.strategies.abstract_strategy import Strategy
 logger = logging.getLogger()
 
 
-class Pipeline(ABC):
+class Pipeline:
     """
     The pipeline facilitates the communication between
 

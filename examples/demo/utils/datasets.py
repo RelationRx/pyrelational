@@ -1,6 +1,7 @@
 """
 Simple datasets in PyTorch to use in examples
 """
+
 import torch
 from sklearn.datasets import load_breast_cancer, load_diabetes
 from torch.utils.data import Dataset

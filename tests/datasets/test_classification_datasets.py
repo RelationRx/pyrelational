@@ -1,5 +1,6 @@
 """Unit tests for classification datasets
 """
+
 from typing import Type, Union
 from unittest import TestCase
 

@@ -1,5 +1,6 @@
 """Unit tests for uncertainty sampling methods
 """
+
 import math
 from typing import Union
 from unittest import TestCase
