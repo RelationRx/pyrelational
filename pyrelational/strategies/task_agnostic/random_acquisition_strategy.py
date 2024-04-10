@@ -1,5 +1,6 @@
 """Defines and implements a random acquisition active learning strategy.
 """
+
 from typing import List
 
 import numpy as np

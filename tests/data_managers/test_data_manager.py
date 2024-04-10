@@ -1,5 +1,6 @@
 """Unit tests for data manager
 """
+
 import copy
 from unittest import TestCase
 
