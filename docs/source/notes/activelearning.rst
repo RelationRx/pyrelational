@@ -2,6 +2,7 @@
 
 What is Active Learning?
 ========================
+
 Machine learning models, particularly those based on deep learning, play an increasing role in scientific research and
 the broader society due to their strong performances and ability to generalise across tasks and domains. However, the
 success of recent machine learning models has largely been dictated by large annotated datasets and well designed inductive biases.
@@ -54,7 +55,9 @@ The active learning paradigm
 
 In active learning we assume the model :math:`f_{\theta}` is *set*. Instead, we are interested in *adding useful and
 informative observations to* training data :math:`L` so that the performance of the model improves in a future round
-of training and evaluation. By nature, this is an iterative process following several *active learning rounds*
+of training and evaluation.
+
+By nature, this is an iterative process following several *active learning rounds*
 starting from round :math:`k=0` to :math:`K>0` set by some labelling budget or we run out of observations to label.
 Given the training data at round :math:`k`, :math:`L_k`, The active learning practitioner's job is to design **strategies**
 that will select or suggest **informative** observations to an oracle capable of providing labels --- then, construct an improved
@@ -76,15 +79,15 @@ Starting as before we use :math:`L` to train a model and produce :math:`f_{\hat{
 performance of this model based on the current iteration of :math:`L` with a hold-out test set :math:`E`. In order to suggest
 useful observations to the oracle, we have to be able to compute the *informativeness* of observations.
 
-"Informativeness" is a measure which encapsulates how useful we believe labelling this observation will be to improving our model.
+"Informativeness" is a measure which encapsulates how useful we believe labelling an observation will be to improving our model.
 Computing informativeness values stands at the very core of all active learning strategies. In Bayesian optimisation based active
 learning strategies, the acquisition function computes informativeness values so this term pops up often as well.
 Many different informativeness measures exist, one family of informativeness measures stems from the model's uncertainty about
 its prediction. The intuition is that observations with high uncertainty in the posterior predictive distribution are
-useful and hence "informative" [#f2]_.
+useful and hence "informative" [#f1]_.
 
 Our figure follows this logic. We use the trained model :math:`f_{\hat{\theta}}` to make predictions for each of the
-unlabelled observations :math:`f_{\hat{\theta}}(u) \textrm{for} u \in U` [#f1]_. :math:`g(\cdot)` is a function for computing
+unlabelled observations :math:`f_{\hat{\theta}}(u) \textrm{for} u \in U` [#f2]_. :math:`g(\cdot)` is a function for computing
 uncertainty over predictions, :math:`g(f_{\hat{\theta}}(u))` and will give us an informativeness score for each :math:`u \in U`
 that we can then rank and pick to be labelled by the oracle using the selection logic specified by SELECT.
 Once labelled the cycle begins again, hopefully increasing our test performance in subsequent iterations.
@@ -143,6 +146,6 @@ datasets, models, performing bayesian approximation, creating your own novel act
 
 .. rubric:: Footnotes
 
-.. [#f1] For diversity sampling or model agnostic based strategies this step is not necessary. For example, imagine a strategy where we randomly pick observations for labelling; there's no need to use the model.
-.. [#f2] There are many uncertainty measures differing between models for classification and regression, many of them included in **PyRelationAL**!
+.. [#f1] There are many uncertainty measures differing between models for classification and regression, many of them included in **PyRelationAL**!
+.. [#f2] For diversity sampling or model agnostic based strategies this step is not necessary. For example, imagine a strategy where we randomly pick observations for labelling; there's no need to use the model.
 .. [#f3] In essence, active learning is a non-differentiable optimisation problem. We are interested in obtaining observations containing high information about the data distribution. It is often compared to Bayesian optimisation, which is often used to explore the space of model hyper-parameters to find the best model for the task at hand. Of course, Bayesian optimisation would be a valid strategy for active learning if we fix the model and optimise over observations to select instead of hyper-parameters. For more on the differences between active learning and bayesian optimisation, you can look at this article by Agnihotri and Batra (distill.pub/2020/bayesian-optimization/).

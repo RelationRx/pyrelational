@@ -4,14 +4,21 @@ Defining learning models compatible with PyRelationAL
 =====================================================
 
 To interact with the PyRelationAL library, models need to be wrapped within a PyRelationAL model manager (:mod:`pyrelational.model_managers`)
-that defines required methods for instantiation, training, and testing.
+that defines required methods for instantiation, training, and testing (optionally). Below are a couple of examples of specifying model model_manager
+with model implementations based in common ML frameworks such as PyTorch, Scikit-Learn, Pytorch Lightning
+
+Using a scikit-learn module
+___________________________
+
+Let's look at an example model manager based on an ensemble of SVMs, each implemented in scikit-learn. This
+could be used in query-by-committee based strategies.
 
 
 
 Using a pytorch module
 ______________________
 
-Let's first look an an example model manager for a simple pytorch Module
+Let's look at an example model manager for a simple pytorch Module
 
 .. code-block:: python
 
