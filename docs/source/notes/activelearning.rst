@@ -34,7 +34,7 @@ model :math:`f_{\theta}` with parameters :math:`\theta` to produce the function 
   :alt: The standard ML pipeline.
 
 The performance of :math:`f_{\hat{\theta}}` is evaluated on some hold out labelled test set :math:`E` via some task specific
-metric of interest (AUC, accuracy, precision, MSELoss, or another specified :math:`\mathcal{L}}` as in the example below) which
+metric of interest (AUC, accuracy, precision, MSE, etc. as in the example below) which
 quantifies the quality of the model with respect to the task.
 
 .. image:: eval.png
