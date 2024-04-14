@@ -9,18 +9,8 @@ pip install -e .
 setup_requires = ["pytest-runner"]
 tests_require = ["pytest", "pytest-cov", "mock"]
 
-install_requires = [
-    "numpy>=1.22.0",
-    "pandas>=1.3.0",
-    "lightning>=1.8.6",
-    "torch>=1.9.0",
-    "scikit-learn>=1.0.2",
-    "tabulate>=0.7.0",
-    "pyreadr>=0.4.4",
-    "xlrd>=2.0.1",
-    "openpyxl>=3.0.9",
-]
-
+with open("requirements/base_requirements.txt", "r") as req:
+    install_requires = [line.strip() for line in req if line.strip()]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()

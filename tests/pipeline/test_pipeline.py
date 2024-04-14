@@ -1,5 +1,6 @@
 """Unit tests for active learning manager
 """
+
 from typing import Type
 from unittest import TestCase
 

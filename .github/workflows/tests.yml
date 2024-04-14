@@ -25,8 +25,8 @@ jobs:
       - name: Install basic dependencies
         run: |
           pip install --upgrade pip
+          pip install -r requirements/dev_requirements.txt
           pip install pytest-cov
-          pip install -r requirements.txt
       - name: Test with pytest
         run: |
           python -m pytest --cache-clear --cov=pyrelational tests > pytest-coverage.txt

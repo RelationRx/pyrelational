@@ -1,5 +1,6 @@
 """Regression datasets that can be used for benchmarking AL strategies
 """
+
 from typing import Tuple
 
 import numpy as np

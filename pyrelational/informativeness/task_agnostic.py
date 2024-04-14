@@ -26,7 +26,7 @@ def relative_distance(
     query_set: Union[Array, DataLoader[Any]],
     reference_set: Union[Array, DataLoader[Any]],
     metric: Optional[Union[str, Callable[..., Any]]] = "euclidean",
-    axis: int = -1,
+    axis: int = 1,
 ) -> Tensor:
     """
     Function that return the minimum distance, according to input metric, from each sample in the query_set to the

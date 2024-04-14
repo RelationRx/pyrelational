@@ -1,0 +1,13 @@
+black==24.3.0
+flake8==7.0.0
+flake8-bugbear==24.2.6
+isort==5.13.2
+mypy==1.9.0
+parameterized==0.9.0
+pre-commit==2.21.0
+protobuf>=3.19.0
+pyreadr>=0.4.4
+pytest==8.1.1
+pytest-cov
+setuptools>=59.5.0
+-r base_requirements.txt

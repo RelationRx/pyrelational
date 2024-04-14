@@ -1,5 +1,6 @@
 """Representative sampling based active learning strategy
 """
+
 from typing import Any, List, Union
 
 import numpy as np
