@@ -7,14 +7,6 @@ To interact with the PyRelationAL library, models need to be wrapped within a Py
 that defines required methods for instantiation, training, and testing (optionally). Below are a couple of examples of specifying model model_manager
 with model implementations based in common ML frameworks such as PyTorch, Scikit-Learn, Pytorch Lightning
 
-Using a scikit-learn module
-___________________________
-
-Let's look at an example model manager based on an ensemble of SVMs, each implemented in scikit-learn. This
-could be used in query-by-committee based strategies.
-
-
-
 Using a pytorch module
 ______________________
 
@@ -146,5 +138,75 @@ For example, users can create ensembles of pytorch lightning modules directly as
                   {"epochs":1,"accelerator":"gpu", "devices":1},
                   n_estimators=5,
             )
+
+
+Using a scikit-learn module
+___________________________
+
+Let's look at an example model manager based on an ensemble of k-fold SVMs regressors, each implemented in
+scikit-learn. This could be used in query-by-committee based strategies.
+
+.. code-block:: python
+
+    class ScikitSVMEnsemble(ModelManager):
+        """Custom ModelManager for an ensemble of K-fold SVM regressors, as found in query-by-commitee
+        strategies. Can easily be adapted to any other regressor
+
+        Args:
+        model_class (sklearn estimator): Estimator that should be ensembled (e.g. MLPRegressor)
+        num_estimators (int): number of estimators in the ensemble
+        model_config (dict): dictionary containing any model_class specific arguments
+        trainer_config (dict): dictionary containing any taining specific arguments
+        """
+
+    def __init__(self, model_class, num_estimators, model_config, trainer_config):
+        super(EnsembleScikit, self).__init__(model_class, model_config, trainer_config)
+        self.model_config = model_config
+        self.trainer_config = trainer_config
+        self.num_estimators = num_estimators
+
+    def train(self, train_loader):
+        """
+        Args:
+        train_loader (torch.utils.data.DataLoader): A torch dataloader with a numpy compatible collate function
+            you can also just adapt this to something else.
+        """
+        train_x, train_y = next(iter(train_loader)) # assumes dataloader returns full set of available observations
+        estimators = []
+
+        k = self.num_estimators
+        kf = KFold(n_splits=k)
+        from joblib import Parallel, delayed
+        estimators = Parallel(n_jobs=-1)(delayed(self._init_model().fit)(train_x[train_index], train_y[train_index]) for train_index, _ in kf.split(train_x))
+
+        # Set the current model to the list of trained regressors
+        self._current_model = estimators
+
+    def test(self, loader):
+        if not self.is_trained():
+            raise ValueError(
+                "No current model, call 'train(X, y)' to train the model first"
+            )
+        X, y = next(iter(loader))
+        scores = []
+        for idx in range(self.num_estimators):
+            estimator = self._current_model[idx]
+            predictions = estimator.predict(X)
+            score = mean_squared_error(y, predictions)
+            scores.append(score)
+        return {"MSE": np.mean(scores)}
+
+    def __call__(self, loader):
+        if not self.is_trained():
+            raise ValueError(
+                "No current model, call 'train(X, y)' to train the model first"
+            )
+        X, _ = next(iter(loader))
+        predictions = []  # list of num_estimator predictions of shape y
+        for est_idx in range(self.num_estimators):
+            estimator = self._current_model[est_idx]
+            predictions.append(torch.FloatTensor(estimator.predict(X)))
+        predictions = torch.vstack(predictions)
+        return predictions
 
 See the `examples folder <https://github.com/RelationRx/pyrelational/examples>`_ in the source repository for more examples.
