@@ -1,6 +1,6 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional
 
 import requests
 
