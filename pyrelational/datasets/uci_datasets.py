@@ -29,7 +29,7 @@ class UCIDatasets:
         "airfoil": "https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat",
     }
 
-    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 10) -> None:
+    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 10, random_seed: int = 0) -> None:
         self.data_dir = data_dir
         self.name = name
         self.n_splits = n_splits
@@ -40,9 +40,9 @@ class UCIDatasets:
         else:
             self.classification = False
 
-        self._load_dataset()
+        self._load_dataset(random_seed)
 
-    def _load_dataset(self) -> None:
+    def _load_dataset(self, random_seed: int = 0) -> None:
         if self.name not in self.datasets:
             raise Exception("Not part of datasets supported in PyRelationAL at the moment")
         if not path.exists(self.data_dir):
@@ -55,21 +55,22 @@ class UCIDatasets:
         if not path.exists(self.data_dir + "UCI/" + file_name):
             urllib.request.urlretrieve(self.datasets[self.name], self.data_dir + "UCI/" + file_name)
 
+        rng = np.random.default_rng(random_seed)
         if self.name == "housing":
             data = pd.read_csv(self.data_dir + "UCI/housing.data", header=0, delimiter=r"\s+").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "airfoil":
             data = pd.read_csv(self.data_dir + "UCI/airfoil_self_noise.dat", header=0, delimiter=r"\s+").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "concrete":
             data = pd.read_excel(self.data_dir + "UCI/Concrete_Data.xls", header=0).values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "energy":
             data = pd.read_excel(self.data_dir + "UCI/ENB2012_data.xlsx", header=0).values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "power":
             zipfile.ZipFile(self.data_dir + "UCI/CCPP.zip").extractall(self.data_dir + "UCI/")
@@ -78,15 +79,15 @@ class UCIDatasets:
 
         elif self.name == "wine":
             data = pd.read_csv(self.data_dir + "UCI/winequality-red.csv", header=1, delimiter=";").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "yacht":
             data = pd.read_csv(self.data_dir + "UCI/yacht_hydrodynamics.data", header=1, delimiter=r"\s+").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "glass":
             data = pd.read_csv(self.data_dir + "UCI/glass.data", delimiter=",").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "parkinsons":
             data = pd.read_csv(self.data_dir + "UCI/parkinsons.data", header=0, delimiter=",", index_col=0)
@@ -96,11 +97,11 @@ class UCIDatasets:
             reordered_columns.extend(["status"])
             data = data[reordered_columns]
             data = data.values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "seeds":
             data = pd.read_csv(self.data_dir + "UCI/seeds_dataset.txt", delimiter=r"\s+", engine="python").values
-            self.data = data[np.random.permutation(np.arange(len(data)))]
+            self.data = data[rng.permutation(np.arange(len(data)))]
 
         else:
             raise NameError(
@@ -112,11 +113,11 @@ class UCIDatasets:
 
         if self.classification:
             x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
-            skf = StratifiedKFold(n_splits=self.n_splits)
+            skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
             self.data_splits = skf.split(x, y)
             self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
         else:
-            kf = KFold(n_splits=self.n_splits)
+            kf = KFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
             self.data_splits = kf.split(data)
             self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 

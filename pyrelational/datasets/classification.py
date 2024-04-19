@@ -52,7 +52,7 @@ class SynthClass1(Dataset[Tuple[Tensor, Tensor]]):
         self.x = torch.cat([pos_samples, neg_samples])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_seed)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -113,7 +113,7 @@ class SynthClass2(Dataset[Tuple[Tensor, Tensor]]):
         self.x = torch.cat([pos_samples_1, pos_samples_2, pos_samples_3, neg_samples_1, neg_samples_2, neg_samples_3])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed, shuffle=True)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -143,7 +143,6 @@ class SynthClass3(Dataset[Tuple[Tensor, Tensor]]):
     def __init__(self, n_splits: int = 5, size: int = 500, random_seed: int = 1234):
         super(SynthClass3, self).__init__()
         self.size = size
-        self.random_seed = random_seed
         self.n_splits = n_splits
 
         cov = torch.FloatTensor([[0.60834549, -0.63667341], [-0.40887718, 0.85253229]])
@@ -167,7 +166,7 @@ class SynthClass3(Dataset[Tuple[Tensor, Tensor]]):
         self.x = torch.cat([pos_samples_1, pos_samples_2, neg_samples_1])
         self.y = torch.cat([pos_targets, neg_targets])
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_seed)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -189,15 +188,16 @@ class BreastCancerDataset(Dataset[Tuple[Tensor, Tensor]]):
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, n_splits: int = 5):
+    def __init__(self, n_splits: int = 5, random_seed: int = 0):
         super(BreastCancerDataset, self).__init__()
         sk_x, sk_y = load_breast_cancer(return_X_y=True)
         self.x = torch.FloatTensor(sk_x)
         self.y = torch.LongTensor(sk_y)
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed, shuffle=True)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -218,15 +218,16 @@ class DigitDataset(Dataset[Tuple[Tensor, Tensor]]):
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: int setting the random seed for reproducibility
     """
 
-    def __init__(self, n_splits: int = 5):
+    def __init__(self, n_splits: int = 5, random_seed: int = 0):
         super(DigitDataset, self).__init__()
         sk_x, sk_y = load_digits(return_X_y=True)
         self.x = torch.FloatTensor(sk_x)  # data
         self.y = torch.LongTensor(sk_y)  # target
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed, shuffle=True)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -243,11 +244,13 @@ class FashionMNIST(Dataset[Tuple[Tensor, Tensor]]):
     From Fashion-MNIST: a Novel Image Dataset for Benchmarking Machine Learning
     Algorithms. Han Xiao, Kashif Rasul, Roland Vollgraf. arXiv:1708.07747
 
+    :param data_dir: where to download the data
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: int setting the random seed for reproducibility
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(FashionMNIST, self).__init__()
         train_dataset = datasets.FashionMNIST(root=data_dir, train=True, download=True, transform=transforms.ToTensor())
         test_dataset = datasets.FashionMNIST(root=data_dir, train=False, download=True, transform=transforms.ToTensor())
@@ -255,7 +258,7 @@ class FashionMNIST(Dataset[Tuple[Tensor, Tensor]]):
         self.x = torch.stack([(dataset[i][0]).flatten() for i in range(len(dataset))])
         self.y = torch.stack([torch.tensor(dataset[i][1]) for i in range(len(dataset))])
 
-        skf = StratifiedKFold(n_splits=n_splits)
+        skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed, shuffle=True)
         self.data_splits = skf.split(self.x, self.y)
         self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
 
@@ -274,11 +277,12 @@ class UCIClassification(Dataset[Tuple[Tensor, Tensor]]):
         as specified in uci_datasets.UCIDatasets
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(UCIClassification, self).__init__()
-        dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits)
+        dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits, random_seed=random_seed)
         torch_dataset = dataset.get_simple_dataset()
 
         self.data_dir = dataset.data_dir
@@ -323,10 +327,11 @@ class UCIGlass(UCIClassification):
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
-        super(UCIGlass, self).__init__(name="glass", data_dir=data_dir, n_splits=n_splits)
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
+        super(UCIGlass, self).__init__(name="glass", data_dir=data_dir, n_splits=n_splits, random_seed=random_seed)
         self.y -= 1  # for 0 - k-1 class relabelling
         self.y = remap_to_int(self.y).long()  # UCIGlass has mislabelling
 
@@ -336,10 +341,13 @@ class UCIParkinsons(UCIClassification):
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
-        super(UCIParkinsons, self).__init__(name="parkinsons", data_dir=data_dir, n_splits=n_splits)
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
+        super(UCIParkinsons, self).__init__(
+            name="parkinsons", data_dir=data_dir, n_splits=n_splits, random_seed=random_seed
+        )
 
 
 class UCISeeds(UCIClassification):
@@ -347,10 +355,11 @@ class UCISeeds(UCIClassification):
 
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
-        super(UCISeeds, self).__init__(name="seeds", data_dir=data_dir, n_splits=n_splits)
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
+        super(UCISeeds, self).__init__(name="seeds", data_dir=data_dir, n_splits=n_splits, random_seed=random_seed)
         self.y -= 1  # for 0 - k-1 class relabeling
 
 
@@ -363,9 +372,10 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(StriatumDataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -378,7 +388,7 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
         )
         self.test_label_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/striatum_test_labels_mini.mat"
 
-        self._load_dataset()
+        self._load_dataset(random_seed)
 
     def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
@@ -388,7 +398,7 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self) -> None:
+    def _load_dataset(self, random_seed: int = 0) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -406,7 +416,7 @@ class StriatumDataset(Dataset[Tuple[Tensor, Tensor]]):
         x = np.vstack([train_feat, test_feat])
         y = np.vstack([train_label, test_label])
 
-        skf = StratifiedKFold(n_splits=self.n_splits)
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=random_seed)
         self.in_dim = x.shape[1]
         self.out_dim = 1
         self.data_splits = skf.split(x, y)
@@ -434,17 +444,21 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         self.data_dir = data_dir
         self.n_splits = n_splits
-        self._load_dataset()
+        self._load_dataset(random_seed=random_seed)
 
-    def _load_dataset(self, size: int = 1000, n_dim: int = 2, random_balance: bool = False, n_splits: int = 10) -> None:
+    def _load_dataset(
+        self, size: int = 1000, n_dim: int = 2, random_balance: bool = False, n_splits: int = 10, random_seed: int = 0
+    ) -> None:
+        rng = np.random.default_rng(random_seed)
         if random_balance:
             # proportion of class 1 to vary from 10% to 90%
-            cl1_prop = np.random.rand()
+            cl1_prop = rng.random()
             cl1_prop = (cl1_prop - 0.5) * 0.8 + 0.5
         else:
             cl1_prop = 0.8
@@ -455,23 +469,23 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
         testSize2 = trainSize2 * 10
 
         # Generate parameters of datasets
-        mean1 = np.random.rand(n_dim)
-        cov1 = np.random.rand(n_dim, n_dim) - 0.5
+        mean1 = rng.random(n_dim)
+        cov1 = rng.random((n_dim, n_dim)) - 0.5
         cov1 = np.dot(cov1, cov1.transpose())
-        mean2 = np.random.rand(n_dim)
-        cov2 = np.random.rand(n_dim, n_dim) - 0.5
+        mean2 = rng.random(n_dim)
+        cov2 = rng.random((n_dim, n_dim)) - 0.5
         cov2 = np.dot(cov2, cov2.transpose())
 
         # Training data generation
-        trainX1 = np.random.multivariate_normal(mean1, cov1, trainSize1)
+        trainX1 = rng.multivariate_normal(mean1, cov1, trainSize1)
         trainY1 = np.ones((trainSize1, 1))
-        trainX2 = np.random.multivariate_normal(mean2, cov2, trainSize2)
+        trainX2 = rng.multivariate_normal(mean2, cov2, trainSize2)
         trainY2 = np.zeros((trainSize2, 1))
 
         # Testing data generation
-        testX1 = np.random.multivariate_normal(mean1, cov1, testSize1)
+        testX1 = rng.multivariate_normal(mean1, cov1, testSize1)
         testY1 = np.ones((testSize1, 1))
-        testX2 = np.random.multivariate_normal(mean2, cov2, testSize2)
+        testX2 = rng.multivariate_normal(mean2, cov2, testSize2)
         testY2 = np.zeros((testSize2, 1))
 
         train_data = np.concatenate((trainX1, trainX2), axis=0)
@@ -482,7 +496,7 @@ class GaussianCloudsDataset(Dataset[Tuple[Tensor, Tensor]]):
         x = np.vstack([train_data, test_data])
         y = np.vstack([train_labels, test_labels]).squeeze()
 
-        skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
+        skf = StratifiedKFold(n_splits=self.n_splits, random_state=rng, shuffle=True)
         self.in_dim = x.shape[1]
         self.out_dim = 1
         self.data_splits = skf.split(x, y)
@@ -508,10 +522,10 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
-
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(Checkerboard2x2Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -519,7 +533,7 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
         self.raw_train_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard2x2_train.npz"
         self.raw_test_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard2x2_test.npz"
 
-        self._load_dataset()
+        self._load_dataset(random_seed)
 
     def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
@@ -529,7 +543,7 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self) -> None:
+    def _load_dataset(self, random_seed: int = 0) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -546,7 +560,7 @@ class Checkerboard2x2Dataset(Dataset[Tuple[Tensor, Tensor]]):
         x = np.vstack([train_feat, test_feat])
         y = np.vstack([train_label, test_label])
 
-        skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
+        skf = StratifiedKFold(n_splits=self.n_splits, random_state=random_seed, shuffle=True)
         self.in_dim = x.shape[1]
         self.out_dim = 1
         self.data_splits = skf.split(x, y)
@@ -572,10 +586,10 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
-
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(Checkerboard4x4Dataset, self).__init__()
         self.data_dir = data_dir
         self.n_splits = n_splits
@@ -583,7 +597,7 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
         self.train_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard4x4_train.npz"
         self.test_url = "https://github.com/ksenia-konyushkova/LAL/raw/master/data/checkerboard4x4_test.npz"
 
-        self._load_dataset()
+        self._load_dataset(random_seed)
 
     def _download_dataset(self, url: str) -> None:
         if not path.exists(self.data_dir):
@@ -593,7 +607,7 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
         if not path.exists(self.data_dir + file_name):
             urllib.request.urlretrieve(url, self.data_dir + file_name)
 
-    def _load_dataset(self) -> None:
+    def _load_dataset(self, random_seed: int = 0) -> None:
         """Download, process, and get stratified splits"""
 
         # download
@@ -610,7 +624,7 @@ class Checkerboard4x4Dataset(Dataset[Tuple[Tensor, Tensor]]):
         x = np.vstack([train_feat, test_feat])
         y = np.vstack([train_label, test_label])
 
-        skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=random_seed)
         self.in_dim = x.shape[1]
         self.out_dim = 1
         self.data_splits = skf.split(x, y)
@@ -640,18 +654,18 @@ class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
     :param data_dir: path where to save the raw data default to /tmp/
     :param n_splits: an int describing the number of class stratified
             splits to compute
-
+    :param random_seed: random seed for reproducibility on splits
     """
 
-    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5):
+    def __init__(self, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(CreditCardDataset, self).__init__()
         self.raw_url = "http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata"
         self.data_dir = data_dir
         self.n_splits = n_splits
 
-        self._load_dataset()
+        self._load_dataset(random_seed)
 
-    def _load_dataset(self) -> None:
+    def _load_dataset(self, random_seed: int) -> None:
         if not path.exists(self.data_dir):
             os.mkdir(self.data_dir)
 
@@ -671,7 +685,7 @@ class CreditCardDataset(Dataset[Tuple[Tensor, Tensor]]):
         y = data[ycol].to_numpy()
         _, y = np.unique(y, return_inverse=True)  # map string classes to ints
 
-        skf = StratifiedKFold(n_splits=self.n_splits)  # change to Stratified later
+        skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=random_seed)
         self.in_dim = len(xcols)
         self.out_dim = 1
         self.data_splits = skf.split(x, y)
