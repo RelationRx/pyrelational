@@ -1,4 +1,5 @@
 import os
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, List, Optional
 
@@ -18,7 +19,19 @@ def fetch_data(api_url: str) -> Any:
         raise requests.RequestException(f"Failed to fetch data:{response.status_code}")
 
 
-def download_file(url: str, directory: str = ".", filename: Optional[str] = None, num_chunks: int = 4) -> Optional[str]:
+def download_file(url: str, directory: str = ".", filename: Optional[str] = None) -> str:
+    """Download a file from a URL into specified directory."""
+    if filename is None:
+        filename = url.split("/")[-1]
+    file_path = os.path.join(directory, filename)
+    create_directory_if_not_exists(directory)
+    urllib.request.urlretrieve(url, file_path)
+    return file_path
+
+
+def download_file_in_chunks(
+    url: str, directory: str = ".", filename: Optional[str] = None, num_chunks: int = 4
+) -> Optional[str]:
     """Downloads a file from a URL into a specified directory with parallel downloads."""
     if filename is None:
         filename = url.split("/")[-1]

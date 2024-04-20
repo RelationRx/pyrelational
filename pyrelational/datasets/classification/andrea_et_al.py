@@ -40,9 +40,6 @@ class CreditCardDataset(BaseDataset):
         data = data["creditcard"]
         data.reset_index(inplace=True)
         xcols = data.columns[1:-1]
-        x = data[xcols].to_numpy()
-        y = remap_to_int(data["Class"].to_numpy())
-
-        self.x = torch.from_numpy(x).float()
-        self.y = torch.from_numpy(y).long().squeeze()
-        self._create_splits
+        self.x = torch.from_numpy(data[xcols].to_numpy()).float()
+        self.y = remap_to_int(torch.from_numpy(data["Class"].to_numpy().astype(int)))
+        self._create_splits()

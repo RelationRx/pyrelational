@@ -33,16 +33,16 @@ class StriatumDataset(BaseDataset):
 
     def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
-        download_file(self.train_feat_url, self.data_dir)
-        download_file(self.test_feat_url, self.data_dir)
-        download_file(self.train_label_url, self.data_dir)
-        download_file(self.test_label_url, self.data_dir)
+        train_feat_file = download_file(self.train_feat_url, self.data_dir)
+        test_feat_file = download_file(self.test_feat_url, self.data_dir)
+        train_label_file = download_file(self.train_label_url, self.data_dir)
+        test_label_file = download_file(self.test_label_url, self.data_dir)
 
         # process
-        train_feat = (scipy.io.loadmat(self.data_dir + "striatum_train_features_mini.mat"))["features"]
-        test_feat = scipy.io.loadmat(self.data_dir + "striatum_test_features_mini.mat")["features"]
-        train_label = scipy.io.loadmat(self.data_dir + "striatum_train_labels_mini.mat")["labels"]
-        test_label = scipy.io.loadmat(self.data_dir + "striatum_test_labels_mini.mat")["labels"]
+        train_feat = scipy.io.loadmat(train_feat_file)["features"]
+        test_feat = scipy.io.loadmat(test_feat_file)["features"]
+        train_label = scipy.io.loadmat(train_label_file)["labels"]
+        test_label = scipy.io.loadmat(test_label_file)["labels"]
 
         x = np.vstack([train_feat, test_feat])
         y = np.vstack([train_label, test_label])
@@ -157,13 +157,12 @@ class Checkerboard2x2Dataset(BaseDataset):
 
     def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
-        # download
-        download_file(self.raw_train_url, self.data_dir)
-        download_file(self.raw_test_url, self.data_dir)
+        train_data_file = download_file(self.raw_train_url, self.data_dir)
+        test_data_file = download_file(self.raw_test_url, self.data_dir)
 
         # process
-        train = np.load(self.data_dir + "checkerboard2x2_train.npz")
-        test = np.load(self.data_dir + "checkerboard2x2_test.npz")
+        train = np.load(train_data_file)
+        test = np.load(test_data_file)
 
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]
@@ -199,13 +198,12 @@ class Checkerboard4x4Dataset(BaseDataset):
 
     def _load_dataset(self) -> None:
         """Download, process, and get stratified splits"""
-        # download
-        download_file(self.train_url, self.data_dir)
-        download_file(self.test_url, self.data_dir)
+        train_data_file = download_file(self.train_url, self.data_dir)
+        test_data_file = download_file(self.test_url, self.data_dir)
 
         # process
-        train = np.load(self.data_dir + "checkerboard4x4_train.npz")
-        test = np.load(self.data_dir + "checkerboard4x4_test.npz")
+        train = np.load(train_data_file)
+        test = np.load(test_data_file)
 
         train_feat, train_label = train["x"], train["y"]
         test_feat, test_label = test["x"], test["y"]

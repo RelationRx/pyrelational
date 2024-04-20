@@ -113,11 +113,11 @@ class UCIDatasets:
 
         if self.classification:
             x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
-            skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
+            skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=random_seed)
             data_splits = skf.split(x, y)
             self.data_splits = [(idx[0], idx[1]) for idx in data_splits]
         else:
-            kf = KFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
+            kf = KFold(n_splits=self.n_splits, shuffle=True, random_state=random_seed)
             data_splits = kf.split(data)
             self.data_splits = [(idx[0], idx[1]) for idx in data_splits]
 
