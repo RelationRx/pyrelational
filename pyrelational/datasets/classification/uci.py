@@ -18,9 +18,8 @@ class UCIClassification(BaseDataset):
 
     def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super().__init__(n_splits=n_splits, random_seed=random_seed)
-        self.name = name
         self.data_dir = data_dir
-        self.dataset = UCIDatasets(name=self.name, data_dir=self.data_dir)
+        self.dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits, random_seed=random_seed)
         self._load_data()
 
     def _load_data(self) -> None:
@@ -31,8 +30,9 @@ class UCIClassification(BaseDataset):
         data, labels = self.dataset.get_data()
         self.x = torch.tensor(data, dtype=torch.float)
         self.y = torch.tensor(labels, dtype=torch.long)
-        self.y = remap_to_int(self.y)  # Ensure labels are continuous and start from 0
-        self._create_splits()
+        self.y = remap_to_int(self.y)
+        self.name = self.dataset.name
+        self.data_splits = self.dataset.data_splits
 
 
 class UCIGlass(UCIClassification):
