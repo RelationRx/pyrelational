@@ -29,9 +29,7 @@ def download_file(url: str, directory: str = ".", filename: Optional[str] = None
     return file_path
 
 
-def download_file_in_chunks(
-    url: str, directory: str = ".", filename: Optional[str] = None, num_chunks: int = 4
-) -> Optional[str]:
+def download_file_in_chunks(url: str, directory: str = ".", filename: Optional[str] = None, num_chunks: int = 4) -> str:
     """Downloads a file from a URL into a specified directory with parallel downloads."""
     if filename is None:
         filename = url.split("/")[-1]
