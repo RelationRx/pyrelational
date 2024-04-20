@@ -194,9 +194,9 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             with open(os.path.join(self.data_directory, "synergy_scores.pkl"), "rb") as f:
                 self.y = pickle.load(f)
             with open(os.path.join(self.data_directory, "drug_fingerprints.pkl"), "rb") as f:
-                self.indices = pickle.load(f)
+                self.drug_id_to_fingerprint = pickle.load(f)
             with open(os.path.join(self.data_directory, "cell_line_expression.pkl"), "rb") as f:
-                self.indices = pickle.load(f)
+                self.cell_id_to_expression = pickle.load(f)
             return True
         except FileNotFoundError:
             return False
