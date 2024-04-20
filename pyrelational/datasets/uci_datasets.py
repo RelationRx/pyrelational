@@ -6,11 +6,14 @@ import os
 import urllib.request
 import zipfile
 from os import path
+from typing import Tuple, cast
 
 import numpy as np
 import pandas as pd
 import torch
+from numpy.typing import ArrayLike, NDArray
 from sklearn.model_selection import KFold, StratifiedKFold
+from torch import Tensor
 from torch.utils.data import TensorDataset
 
 
@@ -28,6 +31,7 @@ class UCIDatasets:
         "seeds": "https://archive.ics.uci.edu/ml/machine-learning-databases/00236/seeds_dataset.txt",
         "airfoil": "https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat",
     }
+    data: NDArray[np.float_]
 
     def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 10, random_seed: int = 0) -> None:
         self.data_dir = data_dir
@@ -35,11 +39,7 @@ class UCIDatasets:
         self.n_splits = n_splits
 
         # flag for classification/regression dataset
-        if name in ["glass", "parkinsons", "seeds"]:
-            self.classification = True
-        else:
-            self.classification = False
-
+        self.classification = name in ["glass", "parkinsons", "seeds"]
         self._load_dataset(random_seed)
 
     def _load_dataset(self, random_seed: int = 0) -> None:
@@ -96,7 +96,7 @@ class UCIDatasets:
             reordered_columns = list(set(columns) - {"status"})
             reordered_columns.extend(["status"])
             data = data[reordered_columns]
-            data = data.values
+            data = cast(NDArray[np.float_], data.values)
             self.data = data[rng.permutation(np.arange(len(data)))]
 
         elif self.name == "seeds":
@@ -114,12 +114,12 @@ class UCIDatasets:
         if self.classification:
             x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
             skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
-            self.data_splits = skf.split(x, y)
-            self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+            data_splits = skf.split(x, y)
+            self.data_splits = [(idx[0], idx[1]) for idx in data_splits]
         else:
             kf = KFold(n_splits=self.n_splits, shuffle=True, random_state=rng)
-            self.data_splits = kf.split(data)
-            self.data_splits = [(idx[0], idx[1]) for idx in self.data_splits]
+            data_splits = kf.split(data)
+            self.data_splits = [(idx[0], idx[1]) for idx in data_splits]
 
     def get_split(self, split: int = -1, train: bool = True) -> TensorDataset:
         if split == -1:
@@ -189,16 +189,14 @@ class UCIDatasets:
         else:
             raise ValueError(f"split index specified is out of bounds. Max is {self.n_splits-1}")
 
-    def get_simple_dataset(self) -> TensorDataset:
+    def get_data(self) -> Tuple[Tensor, Tensor]:
         """Simply return the dataset so that we can apply the splits on top after"""
         x, y = self.data[:, : self.in_dim], self.data[:, self.in_dim :]
 
+        inps = torch.from_numpy(x).float()
         if self.classification:
-            inps = torch.from_numpy(x).float()
             tgts = torch.from_numpy(y).long()
         else:
-            inps = torch.from_numpy(x).float()
             tgts = torch.from_numpy(y).float()
 
-        dataset = TensorDataset(inps, tgts)
-        return dataset
+        return inps, tgts

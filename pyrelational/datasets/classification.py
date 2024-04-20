@@ -283,15 +283,15 @@ class UCIClassification(Dataset[Tuple[Tensor, Tensor]]):
     def __init__(self, name: str, data_dir: str = "/tmp/", n_splits: int = 5, random_seed: int = 0):
         super(UCIClassification, self).__init__()
         dataset = UCIDatasets(name=name, data_dir=data_dir, n_splits=n_splits, random_seed=random_seed)
-        torch_dataset = dataset.get_simple_dataset()
+        x, y = dataset.get_data()
 
         self.data_dir = dataset.data_dir
         self.name = dataset.name
         self.data_splits = dataset.data_splits
 
-        self.len_dataset = len(torch_dataset)
-        self.x = torch_dataset[:][0]
-        self.y = torch_dataset[:][1].squeeze()
+        self.len_dataset = len(x)
+        self.x = torch.tensor(x, dtype=torch.float)
+        self.y = torch.tensor(y, dtype=torch.long)
 
     def __len__(self) -> int:
         ret: int = self.x.shape[0]

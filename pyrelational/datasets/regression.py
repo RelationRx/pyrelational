@@ -136,10 +136,10 @@ class UCIRegression(Dataset[Tuple[Tensor, Tensor]]):
         self.name = dataset.name
         self.data_splits = dataset.data_splits
 
-        dataset = dataset.get_simple_dataset()
-        self.len_dataset = len(dataset)
-        self.x = dataset[:][0]
-        self.y = dataset[:][1].squeeze()
+        x, y = dataset.get_data()
+        self.len_dataset = len(x)
+        self.x = x
+        self.y = y
 
     def __len__(self) -> int:
         ret: int = self.x.shape[0]
