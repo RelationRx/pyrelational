@@ -21,7 +21,7 @@ class SynthReg1(BaseDataset):
     """
 
     def __init__(self, n_splits: int = 5, size: int = 1000, random_seed: int = 1234):
-        super(SynthReg1, self).__init__(n_splits=n_splits, random_seed=random_seed)
+        super().__init__(n_splits=n_splits, random_seed=random_seed)
         self._create_data(size, random_seed)
 
     def _create_data(self, size: int, random_seed: int) -> None:
@@ -51,7 +51,7 @@ class SynthReg2(BaseDataset):
     """
 
     def __init__(self, n_splits: int = 5, size: int = 1000, random_seed: int = 1234):
-        super(SynthReg2, self).__init__(n_splits=n_splits, random_seed=random_seed)
+        super().__init__(n_splits=n_splits, random_seed=random_seed)
         self._create_data(size)
 
     def _create_data(self, size: int) -> None:
