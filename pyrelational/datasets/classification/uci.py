@@ -1,8 +1,8 @@
 import torch
 
+from pyrelational.datasets.base import BaseDataset
 from pyrelational.datasets.uci_datasets import UCIDatasets
 
-from .base import BaseDataset
 from .utils import remap_to_int
 
 

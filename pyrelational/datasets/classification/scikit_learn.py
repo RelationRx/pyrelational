@@ -1,7 +1,9 @@
 import torch
 from sklearn.datasets import load_breast_cancer, load_digits
 
-from .base import BaseDataset
+from pyrelational.datasets.base import BaseDataset
+
+from .utils import create_splits
 
 
 class BreastCancerDataset(BaseDataset):
@@ -27,7 +29,7 @@ class BreastCancerDataset(BaseDataset):
         data, labels = load_breast_cancer(return_X_y=True)
         self.x = torch.tensor(data, dtype=torch.float)
         self.y = torch.tensor(labels, dtype=torch.long)
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class DigitDataset(BaseDataset):
@@ -55,4 +57,4 @@ class DigitDataset(BaseDataset):
         sk_x, sk_y = load_digits(return_X_y=True)
         self.x = torch.FloatTensor(sk_x)
         self.y = torch.LongTensor(sk_y)
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)

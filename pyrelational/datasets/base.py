@@ -1,8 +1,5 @@
-import os
-import urllib.request
 from typing import Tuple
 
-from sklearn.model_selection import StratifiedKFold
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -46,21 +43,3 @@ class BaseDataset(Dataset[Tuple[Tensor, Tensor]]):
         :return: Tuple containing the sample and its label.
         """
         return self.x[idx], self.y[idx]
-
-    def _download_dataset(self, url: str, save_path: str) -> None:
-        """
-        Download the dataset from a URL if it doesn't exist at the specified path.
-
-        :param url: URL from where to download the dataset.
-        :param save_path: Full path to save the dataset file.
-        """
-        if not os.path.exists(save_path):
-            os.mkdir(os.path.dirname(save_path))
-            urllib.request.urlretrieve(url, save_path)
-
-    def _create_splits(self) -> None:
-        """
-        Create stratified k-fold splits for the dataset using the dataset's features and labels.
-        """
-        skf = StratifiedKFold(n_splits=self.n_splits, random_state=self.random_seed, shuffle=True)
-        self.data_splits = list(skf.split(self.x.numpy(), self.y.numpy()))

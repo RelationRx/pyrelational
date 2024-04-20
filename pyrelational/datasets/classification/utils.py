@@ -1,3 +1,8 @@
+from typing import List
+
+import numpy as np
+from numpy.typing import NDArray
+from sklearn.model_selection import StratifiedKFold
 from torch import Tensor
 
 
@@ -16,3 +21,11 @@ def remap_to_int(torch_class_array: Tensor) -> Tensor:
     """
     remapped_labels: Tensor = torch_class_array.unique(return_inverse=True)[1]
     return remapped_labels
+
+
+def create_splits(x: Tensor, y: Tensor, n_splits: int, random_seed: int) -> List[NDArray[np.int_]]:
+    """
+    Create stratified k-fold splits for the dataset using the dataset's features and labels.
+    """
+    skf = StratifiedKFold(n_splits=n_splits, random_state=random_seed, shuffle=True)
+    return list(skf.split(x.numpy(), y.numpy()))

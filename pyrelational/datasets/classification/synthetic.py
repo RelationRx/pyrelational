@@ -3,7 +3,9 @@ from typing import Any, Generator, Sequence
 import torch
 import torch.distributions as distributions
 
-from .base import BaseDataset
+from pyrelational.datasets.base import BaseDataset
+
+from .utils import create_splits
 
 
 class SynthClass1(BaseDataset):
@@ -29,7 +31,7 @@ class SynthClass1(BaseDataset):
 
         self.x = torch.cat([pos_samples, neg_samples])
         self.y = torch.cat([torch.ones(num_pos, dtype=torch.long), torch.zeros(self.size - num_pos, dtype=torch.long)])
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class SynthClass2(BaseDataset):
@@ -68,7 +70,7 @@ class SynthClass2(BaseDataset):
 
         self.x = torch.cat(samples)
         self.y = torch.cat(targets)
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class SynthClass3(BaseDataset):
@@ -106,7 +108,7 @@ class SynthClass3(BaseDataset):
 
         self.x = torch.cat([pos_samples_1, pos_samples_2, neg_samples_1])
         self.y = torch.cat([pos_targets, neg_targets])
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
     @staticmethod
     def _split(iterable: Sequence[Any], n: int) -> Generator[Sequence[Any], None, None]:

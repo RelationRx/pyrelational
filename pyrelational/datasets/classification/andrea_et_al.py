@@ -1,11 +1,10 @@
-import numpy as np
 import pyreadr
 import torch
 
+from pyrelational.datasets.base import BaseDataset
 from pyrelational.datasets.download_utils import download_file
 
-from .base import BaseDataset
-from .utils import remap_to_int
+from .utils import create_splits, remap_to_int
 
 
 class CreditCardDataset(BaseDataset):
@@ -42,4 +41,4 @@ class CreditCardDataset(BaseDataset):
         xcols = data.columns[1:-1]
         self.x = torch.from_numpy(data[xcols].to_numpy()).float()
         self.y = remap_to_int(torch.from_numpy(data["Class"].to_numpy().astype(int)))
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)

@@ -5,7 +5,9 @@ from torch import Tensor
 from torch.utils.data import ConcatDataset
 from torchvision import datasets, transforms
 
-from .base import BaseDataset
+from pyrelational.datasets.base import BaseDataset
+
+from .utils import create_splits
 
 
 class FashionMNIST(BaseDataset):
@@ -42,4 +44,4 @@ class FashionMNIST(BaseDataset):
         self.y = torch.stack([torch.tensor(self.full_dataset[i][1]) for i in range(len(self.full_dataset))])
 
         # Create splits for cross-validation
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)

@@ -2,10 +2,10 @@ import numpy as np
 import scipy
 import torch
 
+from pyrelational.datasets.base import BaseDataset
 from pyrelational.datasets.download_utils import download_file
 
-from .base import BaseDataset
-from .utils import remap_to_int
+from .utils import create_splits, remap_to_int
 
 
 class StriatumDataset(BaseDataset):
@@ -50,7 +50,7 @@ class StriatumDataset(BaseDataset):
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).long().squeeze()
         self.y = remap_to_int(self.y).long()
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class GaussianCloudsDataset(BaseDataset):
@@ -131,7 +131,7 @@ class GaussianCloudsDataset(BaseDataset):
 
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).long().squeeze()
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class Checkerboard2x2Dataset(BaseDataset):
@@ -172,7 +172,7 @@ class Checkerboard2x2Dataset(BaseDataset):
 
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).long().squeeze()
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
 
 
 class Checkerboard4x4Dataset(BaseDataset):
@@ -213,4 +213,4 @@ class Checkerboard4x4Dataset(BaseDataset):
 
         self.x = torch.from_numpy(x).float()
         self.y = torch.from_numpy(y).long().squeeze()
-        self._create_splits()
+        self.data_splits = create_splits(self.x, self.y, self.n_splits, self.random_seed)
