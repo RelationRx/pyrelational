@@ -23,11 +23,7 @@ logger.setLevel(RDLogger.CRITICAL)
 
 
 class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
-    """_summary_
-
-    :param Dataset: _description_
-    :return: _description_
-    """
+    """Pytorch dataset for DrugComb drug combination data."""
 
     ALLOWED_SYNERGY = ["zip", "loewe", "hsa", "bliss"]
     ALLOWED_STUDIES = {
@@ -93,7 +89,10 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         assert (
             synergy_score in self.ALLOWED_SYNERGY
         ), f"{synergy_score} not supported, pick a synergy score in {self.ALLOWED_SYNERGY}"
-        assert all(study in self.ALLOWED_STUDIES for study in studies), f"Some studies are not allowed: {studies}"
+        assert all(study in self.ALLOWED_STUDIES for study in studies), (
+            f"Some studies are not allowed: {set(studies) - self.ALLOWED_STUDIES}."
+            f"Make sure they are all in {self.ALLOWED_STUDIES}."
+        )
 
     def setup_paths(self, studies: list[str], synergy_score: str) -> None:
         """Set up data_directory path."""
@@ -194,9 +193,9 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             with open(os.path.join(self.data_directory, "synergy_scores.pkl"), "rb") as f:
                 self.y = pickle.load(f)
             with open(os.path.join(self.data_directory, "drug_fingerprints.pkl"), "rb") as f:
-                self.indices = pickle.load(f)
+                self.drug_id_to_fingerprint = pickle.load(f)
             with open(os.path.join(self.data_directory, "cell_line_expression.pkl"), "rb") as f:
-                self.indices = pickle.load(f)
+                self.cell_id_to_expression = pickle.load(f)
             return True
         except FileNotFoundError:
             return False
@@ -217,7 +216,3 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
 
     def __len__(self) -> int:
         return len(self.indices)
-
-
-if __name__ == "__main__":
-    data = DrugCombDataset()
