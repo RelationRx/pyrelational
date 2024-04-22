@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -8,6 +8,7 @@ import torch
 from numpy.typing import NDArray
 from rdkit import Chem, DataStructs, RDLogger
 from rdkit.Chem import AllChem, MolStandardize
+from sklearn.model_selection import ShuffleSplit
 from torch import Tensor
 from torch.utils.data import Dataset
 from tqdm import tqdm
@@ -67,8 +68,23 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
     CCLE_EXPRESSION_URL = "https://ndownloader.figshare.com/files/34989919"
 
     def __init__(
-        self, root: str = ".", studies: Optional[list[str]] = None, synergy_score: str = "bliss", random_seed: int = 0
+        self,
+        root: str = ".",
+        studies: Optional[list[str]] = None,
+        synergy_score: str = "bliss",
+        n_splits: int = 1,
+        test_size: Union[float, int] = 0.2,
+        random_seed: int = 0,
     ):
+        """Create instance of DrugCombDataset.
+
+        :param root: path to folder where the data should be cached, defaults to "."
+        :param studies: list of studies to restrict the data to, defaults to None (i.e. ["ALMANAC"])
+        :param synergy_score: which synergy score to use, defaults to "bliss"
+        :param n_splits: number of splits, defaults to 1
+        :param test_size: size of the test set, either in proportion (float) or in absolute size (int), defaults to 0.2
+        :param random_seed: random seed for reproducibility, defaults to 0
+        """
         if studies is None:
             studies = ["ALMANAC"]
         self.validate_inputs(studies, synergy_score)
@@ -83,6 +99,8 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
 
         if not self.load_cache():
             self.setup_dataset()
+
+        self._create_splits(n_splits=n_splits, random_seed=random_seed, test_size=test_size)
 
     def validate_inputs(self, studies: list[str], synergy_score: str) -> None:
         """Check user input against allowed values"""
@@ -199,6 +217,11 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             return True
         except FileNotFoundError:
             return False
+
+    def _create_splits(self, n_splits: int = 1, test_size: Union[float, int] = 0.2, random_seed: int = 0) -> None:
+        """Create splits for the data."""
+        splitter = ShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=random_seed)
+        self.data_splits = list(splitter.split(self.y))
 
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """Return item associate to index.
