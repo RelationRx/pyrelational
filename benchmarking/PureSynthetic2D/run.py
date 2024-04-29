@@ -7,7 +7,6 @@ import os
 from typing import Any, Dict
 
 import pandas as pd
-from benchmarking_utils import config_to_string
 
 # from regression_eval_pipeline import RegressionEvalPipeline
 from data_manager import Synthetic2D, Synthetic2DDataManager
@@ -15,6 +14,7 @@ from ensemble_scikit import EnsembleScikit
 from sklearn.neural_network import MLPRegressor
 from tqdm import tqdm
 
+from benchmarking.benchmarking_utils import config_to_string
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import (
