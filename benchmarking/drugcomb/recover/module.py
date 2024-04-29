@@ -9,7 +9,7 @@ from torchmetrics import MeanSquaredError, MetricCollection, PearsonCorrCoef, R2
 from .model import BilinearFiLMMLPPredictor
 
 
-class RECOVER(LightningModule):
+class RecoverModel(LightningModule):
 
     train_metrics: MetricCollection
     val_metrics: MetricCollection
