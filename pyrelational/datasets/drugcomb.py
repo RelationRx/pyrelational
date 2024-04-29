@@ -8,6 +8,7 @@ import torch
 from numpy.typing import NDArray
 from rdkit import Chem, DataStructs, RDLogger
 from rdkit.Chem import AllChem, MolStandardize
+from sklearn.decomposition import PCA
 from sklearn.model_selection import ShuffleSplit
 from torch import Tensor
 from torch.utils.data import Dataset
@@ -75,6 +76,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         n_splits: int = 1,
         test_size: Union[float, int] = 0.2,
         random_seed: int = 0,
+        cell_lines_embed_dim: Optional[int] = 128,
     ):
         """Create instance of DrugCombDataset.
 
@@ -84,6 +86,9 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         :param n_splits: number of splits, defaults to 1
         :param test_size: size of the test set, either in proportion (float) or in absolute size (int), defaults to 0.2
         :param random_seed: random seed for reproducibility, defaults to 0
+        :param cell_lines_embed_dim: dimension of cell lines embedding, defaults to 128
+            - if != None, we use PCA to reduce the dimension to stipulated dimension
+            - if == None, we use the original dimension
         """
         if studies is None:
             studies = ["ALMANAC"]
@@ -93,8 +98,9 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         self.seed = random_seed
         self.studies = studies
         self.synergy_score = f"synergy_{synergy_score}"
+        self.cell_lines_embed_dim = cell_lines_embed_dim
 
-        self.setup_paths(studies, synergy_score)
+        self.setup_paths(studies, synergy_score, cell_lines_embed_dim)
         create_directory_if_not_exists(self.root)
 
         if not self.load_cache():
@@ -112,9 +118,11 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             f"Make sure they are all in {self.ALLOWED_STUDIES}."
         )
 
-    def setup_paths(self, studies: list[str], synergy_score: str) -> None:
+    def setup_paths(self, studies: list[str], synergy_score: str, cell_line_dim: Optional[int]) -> None:
         """Set up data_directory path."""
         dataset_name = f"{'_'.join(studies)}-{synergy_score}"
+        if cell_line_dim is not None:
+            dataset_name += f"-cell_dim:{cell_line_dim}"
         self.data_directory = os.path.join(self.root, dataset_name)
 
     def setup_dataset(self) -> None:
@@ -148,7 +156,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             mol = Chem.MolFromSmiles(smiles)
             fragment = MolStandardize.rdMolStandardize.ChargeParent(mol)
             cmol = MolStandardize.rdMolStandardize.TautomerEnumerator().Canonicalize(fragment)
-            fingerprint = AllChem.GetMorganFingerprintAsBitVect(cmol, radius=2, nBits=2048)
+            fingerprint = AllChem.GetMorganFingerprintAsBitVect(cmol, radius=2, nBits=1024)
             array = np.zeros((2048,), dtype=int)
             DataStructs.ConvertToNumpyArray(fingerprint, array)
             return array
@@ -162,10 +170,23 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         expression_data = pd.read_csv(download_file(self.CCLE_EXPRESSION_URL, self.root), index_col=0)
         expression_data.index = expression_data.index.map({d["depmap_id"]: d["id"] for d in cell_line_data})
         expression_data = expression_data.dropna().astype(int)
+        if self.cell_lines_embed_dim is not None:
+            expression_data = self.reduce_dim_with_pca(expression_data, self.cell_lines_embed_dim)
         self.cell_id_to_expression = {
             idx: torch.from_numpy(data.values).float() for idx, data in expression_data.iterrows()
         }
         return {cell["name"]: cell["id"] for cell in cell_line_data}
+
+    @staticmethod
+    def reduce_dim_with_pca(data: pd.DataFrame, dim: int) -> pd.DataFrame:
+        """Reduce data dimension using PCA.
+
+        :param data: dataframe containing data
+        :param dim: dimension to reduce to
+        """
+        pca = PCA(n_components=dim)
+        transformed_data = pca.fit_transform(data)
+        return pd.DataFrame(data=transformed_data, index=data.index)
 
     def download_and_process_drugcomb_data(self, drug_to_id: Dict[str, int], cell_to_id: Dict[str, int]) -> None:
         """Download and process synergy data from drugcomb."""
