@@ -4,6 +4,7 @@ This script runs the benchmark for the drug combination synergy regression activ
 
 import json
 import os
+import pathlib
 from typing import Any, Dict
 
 import pandas as pd
@@ -21,7 +22,7 @@ from pyrelational.strategies.regression import (
 from pyrelational.strategies.task_agnostic import RandomAcquisitionStrategy
 
 # Setup results folder
-results_folder = os.path.join("results")
+results_folder = os.path.join(pathlib.Path(__file__).parent.resolve(), "results")
 os.makedirs(results_folder, exist_ok=True)
 
 """
