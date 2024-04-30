@@ -169,12 +169,11 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         cell_line_data = fetch_data(self.CELL_LINE_API_URL)
         expression_data = pd.read_csv(download_file(self.CCLE_EXPRESSION_URL, self.root), index_col=0)
         expression_data.index = expression_data.index.map({d["depmap_id"]: d["id"] for d in cell_line_data})
-        expression_data = expression_data.dropna()
-        expression_data.index = expression_data.index.astype(int)
+        expression_data = expression_data[~expression_data.index.isna()]
         if self.cell_lines_embed_dim is not None:
             expression_data = self.reduce_dim_with_pca(expression_data, self.cell_lines_embed_dim)
         self.cell_id_to_expression = {
-            idx: torch.from_numpy(data.values).float() for idx, data in expression_data.iterrows()
+            int(idx): torch.from_numpy(data.values).float() for idx, data in expression_data.iterrows()
         }
         return {cell["name"]: cell["id"] for cell in cell_line_data}
 
