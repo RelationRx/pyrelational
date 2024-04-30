@@ -2,11 +2,11 @@ from typing import Any, Dict, List, Tuple
 
 import torch
 from lightning import LightningModule
-from lightning.pytorch.utilities.types import STEP_OUTPUT
+from lightning.pytorch.utilities.types import STEP_OUTPUT, OptimizerLRScheduler
 from torch import Tensor
 from torchmetrics import MeanSquaredError, MetricCollection, PearsonCorrCoef, R2Score
 
-from .model import BilinearFiLMMLPPredictor
+from benchmarking.drugcomb.recover.model import BilinearFiLMMLPPredictor
 
 
 class RecoverModel(LightningModule):
@@ -16,11 +16,19 @@ class RecoverModel(LightningModule):
     test_metrics: MetricCollection
 
     def __init__(
-        self, drugs_dim: int, cell_lines_dim: int, encoder_layer_dims: List[int], decoder_layer_dims: List[int]
+        self,
+        drugs_dim: int,
+        cell_lines_dim: int,
+        encoder_layer_dims: List[int],
+        decoder_layer_dims: List[int],
+        learning_rate: float = 1e-4,
+        weight_decay: float = 1e-4,
     ) -> None:
         super().__init__()
         self.mu_predictor = BilinearFiLMMLPPredictor(drugs_dim, cell_lines_dim, encoder_layer_dims, decoder_layer_dims)
         self.std_predictor = BilinearFiLMMLPPredictor(drugs_dim, cell_lines_dim, encoder_layer_dims, decoder_layer_dims)
+        self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
 
     def set_metrics(self) -> None:
         for split in ["train", "val", "test"]:
@@ -78,3 +86,7 @@ class RecoverModel(LightningModule):
         self.log_dict(scores)
         metrics.reset()
         return scores
+
+    def configure_optimizers(self) -> OptimizerLRScheduler:
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate, weight_decay=self.weight_decay)
+        return optimizer
