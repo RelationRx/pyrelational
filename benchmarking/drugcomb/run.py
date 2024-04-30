@@ -9,9 +9,7 @@ from typing import Any, Dict
 import pandas as pd
 from tqdm import tqdm
 
-from benchmarking.benchmarking_utils import config_to_string, make_reproducible
-from pyrelational.data_managers import DataManager
-from pyrelational.datasets import DrugCombDataset
+from benchmarking.benchmarking_utils import hash_dictionary, make_reproducible
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import (
     LeastConfidenceStrategy,
@@ -68,7 +66,7 @@ strategies = [
 for strategy_name in tqdm(strategies, desc="Strategy Progress"):
 
     experiment_config["strategy"] = strategy_name
-    results_fh = os.path.join(results_folder, config_to_string(experiment_config))
+    results_fh = os.path.join(results_folder, hash_dictionary(experiment_config))
     # Results logging setup
     if os.path.exists(results_fh):
         print(f"Skipping: {results_fh} as it exists.")
@@ -91,5 +89,5 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         results_df = pipeline.summary()
         results_df["repetition"] = repetition
         results_dfs.append(results_df)
-    pd.concat(results_dfs).to_csv(results_fh + "/results.csv")
+    pd.concat(results_dfs).to_csv(os.path.join(results_fh, "results.csv"))
     json.dump(experiment_config, open(os.path.join(results_fh, "config.json"), "w"))
