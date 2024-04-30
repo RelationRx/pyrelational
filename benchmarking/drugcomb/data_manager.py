@@ -10,8 +10,8 @@ class DrugCombDataManager(DataManager):
         train_indices, test_indices = dataset.data_splits[0]
         super().__init__(
             dataset,
-            train_indices=train_indices,
-            test_indices=test_indices,
+            train_indices=train_indices.tolist(),
+            test_indices=test_indices.tolist(),
             random_label_size=256,
             hit_ratio_at=5,
             random_seed=seed,
