@@ -4,9 +4,8 @@ import torch
 from torch import Tensor
 from torch.utils.data import DataLoader
 
+from benchmarking.drugcomb.recover.module import RecoverModel
 from pyrelational.model_managers import LightningModelManager
-
-from .module import RecoverModel
 
 
 class RecoverModelManager(LightningModelManager):
