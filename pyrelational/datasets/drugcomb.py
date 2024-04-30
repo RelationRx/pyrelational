@@ -76,7 +76,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         n_splits: int = 1,
         test_size: Union[float, int] = 0.2,
         random_seed: int = 0,
-        cell_lines_embed_dim: Optional[int] = 128,
+        cell_lines_embed_dim: Optional[int] = 512,
     ):
         """Create instance of DrugCombDataset.
 
@@ -169,7 +169,8 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         cell_line_data = fetch_data(self.CELL_LINE_API_URL)
         expression_data = pd.read_csv(download_file(self.CCLE_EXPRESSION_URL, self.root), index_col=0)
         expression_data.index = expression_data.index.map({d["depmap_id"]: d["id"] for d in cell_line_data})
-        expression_data = expression_data.dropna().astype(int)
+        expression_data = expression_data.dropna()
+        expression_data.index = expression_data.index.astype(int)
         if self.cell_lines_embed_dim is not None:
             expression_data = self.reduce_dim_with_pca(expression_data, self.cell_lines_embed_dim)
         self.cell_id_to_expression = {

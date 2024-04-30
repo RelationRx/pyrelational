@@ -10,6 +10,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from benchmarking.benchmarking_utils import hash_dictionary, make_reproducible
+from benchmarking.drugcomb.data_manager import DrugCombDataManager
+from benchmarking.drugcomb.recover.model_manager import RecoverModelManager
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import (
     LeastConfidenceStrategy,
@@ -17,9 +19,6 @@ from pyrelational.strategies.regression import (
     UpperConfidenceBoundStrategy,
 )
 from pyrelational.strategies.task_agnostic import RandomAcquisitionStrategy
-
-from .data_manager import DrugCombDataManager
-from .recover.model_manager import RecoverModelManager
 
 # Setup results folder
 results_folder = os.path.join("results")
@@ -34,7 +33,7 @@ os.makedirs(results_folder, exist_ok=True)
 # The model and trainer configs should stay same
 model_config = {
     "drugs_dim": 1024,
-    "cell_lines_dim": 100,
+    "cell_lines_dim": 512,
     "encoder_layer_dims": [1024, 128],
     "decoder_layer_dims": [64],
 }
@@ -65,7 +64,7 @@ strategies = [
 
 for strategy_name in tqdm(strategies, desc="Strategy Progress"):
 
-    experiment_config["strategy"] = strategy_name
+    experiment_config["strategy"] = strategy_name.__class__.__name__
     results_fh = os.path.join(results_folder, hash_dictionary(experiment_config))
     # Results logging setup
     if os.path.exists(results_fh):
