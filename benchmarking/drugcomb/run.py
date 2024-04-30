@@ -49,6 +49,7 @@ experiment_config: Dict[str, Any] = {
     "trainer_config": trainer_config,
     "model_config": model_config,
     "batch_size": 256,
+    "num_workers": 4,
 }
 
 """
@@ -71,14 +72,14 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
     if os.path.exists(results_fh):
         print(f"Skipping: {results_fh} as it exists.")
         continue
-    else:
-        os.makedirs(results_fh, exist_ok=False)
 
     results_dfs = []
     for repetition in tqdm(range(3), desc="Repeated Experiment", leave=False):
         # Pipeline setup
         make_reproducible(repetition)
-        data_manager = DrugCombDataManager(seed=repetition, batch_size=experiment_config["batch_size"])
+        data_manager = DrugCombDataManager(
+            seed=repetition, batch_size=experiment_config["batch_size"], num_workers=experiment_config["num_workers"]
+        )
         model_manager = RecoverModelManager(trainer_config=trainer_config, model_config=model_config)
         strategy = strategy_name()
 
@@ -89,5 +90,6 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         results_df = pipeline.summary()
         results_df["repetition"] = repetition
         results_dfs.append(results_df)
+    os.makedirs(results_fh, exist_ok=False)
     pd.concat(results_dfs).to_csv(os.path.join(results_fh, "results.csv"))
     json.dump(experiment_config, open(os.path.join(results_fh, "config.json"), "w"))

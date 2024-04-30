@@ -143,11 +143,11 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         drug_to_id = {drug["dname"]: drug["id"] for drug in drug_data if drug["dname"] != "NULL"}
 
         self.drug_id_to_fingerprint = {
-            drug_to_id[name]: torch.from_numpy(self.parse_smiles_to_fingerprint(smiles))
+            drug_to_id[name]: torch.from_numpy(self.parse_smiles_to_fingerprint(smiles)).float()
             for name, smiles in tqdm(drug_to_smiles.items(), desc="Converting drug SMILES to fingerprints")
             if self.parse_smiles_to_fingerprint(smiles) is not None
         }
-        return drug_to_id
+        return {k: v for k, v in drug_to_id.items() if v in self.drug_id_to_fingerprint}
 
     @staticmethod
     def parse_smiles_to_fingerprint(smiles: str) -> Optional[NDArray[np.int_]]:
@@ -175,7 +175,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         self.cell_id_to_expression = {
             int(idx): torch.from_numpy(data.values).float() for idx, data in expression_data.iterrows()
         }
-        return {cell["name"]: cell["id"] for cell in cell_line_data}
+        return {cell["name"]: cell["id"] for cell in cell_line_data if cell["id"] in self.cell_id_to_expression}
 
     @staticmethod
     def reduce_dim_with_pca(data: pd.DataFrame, dim: int) -> pd.DataFrame:

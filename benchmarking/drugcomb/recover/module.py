@@ -38,7 +38,8 @@ class RecoverModel(LightningModule):
                 MetricCollection({"mse": MeanSquaredError(), "r2": R2Score(), "pearson": PearsonCorrCoef()}),
             )
 
-    def training_step(self, drugs_a: Tensor, drugs_b: Tensor, cell_lines: Tensor, synergies: Tensor) -> STEP_OUTPUT:
+    def training_step(self, batch: Tuple[Tensor, Tensor, Tensor, Tensor], batch_idx: int) -> STEP_OUTPUT:
+        drugs_a, drugs_b, cell_lines, synergies = batch
         predicted_mean, predicted_log_sigma2 = self.forward(drugs_a, drugs_b, cell_lines)
         self.train_metrics.update(preds=predicted_mean, target=synergies)
         return self.loss(predicted_mean, predicted_log_sigma2, synergies)
@@ -57,11 +58,13 @@ class RecoverModel(LightningModule):
     def forward(self, drugs_a: Tensor, drugs_b: Tensor, cell_lines: Tensor) -> Tuple[Tensor, Tensor]:
         return self.mu_predictor(drugs_a, drugs_b, cell_lines), self.std_predictor(drugs_a, drugs_b, cell_lines)
 
-    def validation_step(self, drugs_a: Tensor, drugs_b: Tensor, cell_lines: Tensor, synergies: Tensor) -> None:
+    def validation_step(self, batch: Tuple[Tensor, Tensor, Tensor, Tensor], batch_idx: int) -> None:
+        drugs_a, drugs_b, cell_lines, synergies = batch
         predicted_mean, _ = self.forward(drugs_a, drugs_b, cell_lines)
         self.val_metrics.update(preds=predicted_mean, target=synergies)
 
-    def test_step(self, drugs_a: Tensor, drugs_b: Tensor, cell_lines: Tensor, synergies: Tensor) -> None:
+    def test_step(self, batch: Tuple[Tensor, Tensor, Tensor, Tensor], batch_idx: int) -> None:
+        drugs_a, drugs_b, cell_lines, synergies = batch
         predicted_mean, _ = self.forward(drugs_a, drugs_b, cell_lines)
         self.test_metrics.update(preds=predicted_mean, target=synergies)
 
