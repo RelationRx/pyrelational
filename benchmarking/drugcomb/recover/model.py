@@ -26,7 +26,9 @@ class BilinearFiLMMLPPredictor(Module):
         :param decoder_layer_dims: list of sequential dims for decoder layers
         """
         super().__init__()
-        encoder_layer_dims.insert(0, drugs_dim)
+        encoder_layer_dims = [drugs_dim] + encoder_layer_dims
+        if encoder_layer_dims[-1] != decoder_layer_dims[0]:
+            decoder_layer_dims = [encoder_layer_dims[-1]] + decoder_layer_dims
         self.encoder = MLPFiLMModule(encoder_layer_dims, cell_lines_dim)
         self.decoder = MLPFiLMModule(decoder_layer_dims, cell_lines_dim)
 

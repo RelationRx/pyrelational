@@ -22,4 +22,4 @@ class RecoverModelManager(LightningModelManager):
             raise ValueError("No current model, call 'train(train_loader, valid_loader)' to train the model first")
         trainer, _ = self.init_trainer()
         preds = cast(List[Tensor], trainer.predict(self._current_model, dataloaders=loader))
-        return torch.cat(preds)
+        return torch.cat(preds, 1)

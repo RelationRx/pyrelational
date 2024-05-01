@@ -202,7 +202,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         drug_col = summary.drug_col.apply(drug_to_id.get).values
         cell_id = summary.cell_line_name.apply(cell_to_id.get).values
         self.indices = np.stack((drug_row, drug_col, cell_id), axis=1).astype(int)
-        self.y = torch.from_numpy(summary[self.synergy_score].values).float()
+        self.y = torch.from_numpy(summary[self.synergy_score].values).float().unsqueeze(1)
         self.drug_id_to_fingerprint = {
             k: v for k, v in self.drug_id_to_fingerprint.items() if (k in drug_row) or (k in drug_col)
         }

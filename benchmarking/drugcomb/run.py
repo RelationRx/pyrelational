@@ -36,19 +36,20 @@ model_config = {
     "drugs_dim": 1024,
     "cell_lines_dim": 512,
     "encoder_layer_dims": [1024, 128],
-    "decoder_layer_dims": [64],
+    "decoder_layer_dims": [64, 1],
 }
 trainer_config = {
     "accelerator": "gpu",
     "devices": 1,
     "epochs": 100,
+    "monitor_metric_name": "mse",
 }
 
 experiment_config: Dict[str, Any] = {
-    "num_annotate": 256,
+    "num_annotate": 1024,
     "trainer_config": trainer_config,
     "model_config": model_config,
-    "batch_size": 256,
+    "batch_size": 1024,
     "num_workers": 4,
 }
 
