@@ -25,7 +25,20 @@ class RecoverModel(LightningModule):
         weight_decay: float = 1e-4,
         num_samples: int = 100,
         exponent_cap: float = 80,
+        epsilon: float = 1e-8,
     ) -> None:
+        """Instantiate RecoverModel.
+
+        :param drugs_dim: dimension of drugs' feature representation
+        :param cell_lines_dim: dimension of cell lines' feature representation
+        :param encoder_layer_dims: sequence of dimension defining the number of layers of the encoder
+        :param decoder_layer_dims: sequence of dimension defining the number of layers of the decoder
+        :param learning_rate: learning rate for Adam optimizer, defaults to 1e-4
+        :param weight_decay: weight decay for Adam optimizer, defaults to 1e-4
+        :param num_samples: number of samples to generate when generating predictions, defaults to 100
+        :param exponent_cap: cap on the exponent in loss computation, necessary for stability, defaults to 80
+        :param epsilon: small value added to denominator in loss to avoid overflows, defaults to 1e-8
+        """
         super().__init__()
         self.mu_predictor = BilinearFiLMMLPPredictor(drugs_dim, cell_lines_dim, encoder_layer_dims, decoder_layer_dims)
         self.std_predictor = BilinearFiLMMLPPredictor(drugs_dim, cell_lines_dim, encoder_layer_dims, decoder_layer_dims)
@@ -33,6 +46,7 @@ class RecoverModel(LightningModule):
         self.weight_decay = weight_decay
         self.num_samples = num_samples
         self.exponent_cap = exponent_cap
+        self.eps = epsilon
         self.set_metrics()
 
     def set_metrics(self) -> None:
@@ -55,7 +69,7 @@ class RecoverModel(LightningModule):
         """The mu_predictor model is trained using MSE while the std_predictor is trained using
         the adaptive NLL criterion."""
         mse = (predicted_mean - synergies) ** 2
-        denom = 1e-8 + 2 * torch.exp(
+        denom = self.eps + 2 * torch.exp(
             torch.min(
                 predicted_log_sigma2, torch.tensor(self.exponent_cap, dtype=synergies.dtype, device=synergies.device)
             )  # exponent capped for stability
