@@ -49,8 +49,8 @@ experiment_config: Dict[str, Any] = {
     "num_annotate": 1024,
     "trainer_config": trainer_config,
     "model_config": model_config,
-    "batch_size": 1024,
-    "num_workers": 4,
+    "batch_size": 2048,
+    "num_workers": 8,
 }
 
 """
