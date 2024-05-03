@@ -4,15 +4,16 @@ import torch
 from pyrelational.datasets.base import BaseDataset
 from .utils import create_splits
 
+
 class AIAUSynth(BaseDataset):
     """
     2D example dataset used in Scherer et al. 2024 for active learning
-    
+
     This is a 2D regression problem with a single output. The function is
     g(x1, x2) = sin(1.5 * x1) * sin(1.5 * x2). To replicate the results in
     the paper one will have to compute the evaluation over training and test,
     as it attempts to study how quickly the model can learn the function over
-    the full input space. This is only applicable to the "T1" scenario 
+    the full input space. This is only applicable to the "T1" scenario
     described in the paper.
 
     :param n_splits: an int describing the number of class stratified
@@ -34,7 +35,7 @@ class AIAUSynth(BaseDataset):
         x1, x2 = np.meshgrid(x1_range, x2_range)
 
         # Calculate the function values
-        g = np.sin( 1.5 * x1 ) * np.sin( 1.5 * x2 )  # no noise
+        g = np.sin(1.5 * x1) * np.sin(1.5 * x2)  # no noise
 
         # construct x as two dimensional vector observations
         x1 = x1.flatten()
