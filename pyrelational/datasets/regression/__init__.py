@@ -8,3 +8,4 @@ from pyrelational.datasets.regression.uci import (
     UCIWine,
     UCIYacht,
 )
+from pyrelational.datasets.regression.aiau_synth import AIAUSynth

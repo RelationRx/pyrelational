@@ -25,5 +25,6 @@ from pyrelational.datasets.regression import (
     UCIPower,
     UCIWine,
     UCIYacht,
+    AIAUSynth,
 )
 from pyrelational.datasets.uci_datasets import UCIDatasets
