@@ -67,7 +67,7 @@ strategies = [
 
 for strategy_name in tqdm(strategies, desc="Strategy Progress"):
 
-    experiment_config["strategy"] = strategy_name.__class__.__name__
+    experiment_config["strategy"] = strategy_name.__name__
     results_fh = os.path.join(results_folder, hash_dictionary(experiment_config))
     # Results logging setup
     if os.path.exists(results_fh):
@@ -93,4 +93,4 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         results_dfs.append(results_df)
     os.makedirs(results_fh, exist_ok=False)
     pd.concat(results_dfs).to_csv(os.path.join(results_fh, "results.csv"))
-    json.dump(experiment_config, open(os.path.join(results_fh, "config.json"), "w"))
+    json.dump(experiment_config, open(os.path.join(results_fh, "config.json"), "w"), indent=4)
