@@ -129,6 +129,7 @@ class DataManager:
             self.random_label_size = random_label_size
             self._generate_random_initial_state(random_seed)
         self._ensure_no_l_or_u_leaks()
+        self._ensure_unique_indices()
         self._top_unlabelled_set(hit_ratio_at)
 
     @staticmethod
@@ -145,6 +146,25 @@ class DataManager:
             vt = set.intersection(set(validation_indices), set(test_indices))
         if tv or tt or vt:
             raise ValueError("There is an overlap between the split indices supplied")
+
+    def _ensure_unique_indices(self) -> None:
+        """
+        Makes sure that all the indices have no repeated values,
+        and that the train indices are the union of the labelled and unlabelled indices.
+        raises a ValueError if any of these conditions are not met.
+        """
+        if len(set(self.l_indices)) != len(self.l_indices):
+            raise ValueError("There are repeated values in labelled indices")
+        if len(set(self.u_indices)) != len(self.u_indices):
+            raise ValueError("There are repeated values in unlabelled indices")
+        if self.validation_indices is not None and len(set(self.validation_indices)) != len(self.validation_indices):
+            raise ValueError("There are repeated values in validation indices")
+        if len(set(self.test_indices)) != len(self.test_indices):
+            raise ValueError("There are repeated values in test indices")
+
+        # Check that the train indices are the union of the labelled and unlabelled indices
+        if set(self.train_indices) != set(self.l_indices + self.u_indices):
+            raise ValueError("The train indices are not the union of the labelled and unlabelled indices")
 
     @staticmethod
     def _ensure_not_empty(mode: Literal["train", "test"], indices: List[int]) -> None:
