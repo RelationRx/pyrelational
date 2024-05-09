@@ -39,8 +39,9 @@ class TestUCIBenchmarkDatasets(TestCase):
 
     def test_get_simple_data(self) -> None:
         """Check size of returned simple dataset."""
-        torch_dataset = self.dataset.get_simple_dataset()
-        self.assertEqual(len(torch_dataset), len(self.dataset.data))
+        x, y = self.dataset.get_data()
+        self.assertEqual(len(x), len(self.dataset.data))
+        self.assertEqual(len(y), len(self.dataset.data))
 
     def tearDown(self) -> None:
         """Tear down class."""
