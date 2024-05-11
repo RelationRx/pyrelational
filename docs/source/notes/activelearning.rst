@@ -93,7 +93,7 @@ that we can then rank and pick to be labelled by the oracle using the selection 
 Once labelled the cycle begins again, hopefully increasing our test performance in subsequent iterations.
 
 That's it, this is the workflow and set of principles behind almost all active learning strategies[#f3]_. Of course,
-The additional data, processes, and iterative nature of the active learning pipeline necessitates several new components.
+the additional data, processes, and iterative nature of the active learning pipeline necessitates several new components.
 This is where PyRelationAL comes in.
 
 Active learning scenarios
