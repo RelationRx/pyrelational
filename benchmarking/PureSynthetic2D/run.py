@@ -14,7 +14,7 @@ from ensemble_scikit import EnsembleScikit
 from sklearn.neural_network import MLPRegressor
 from tqdm import tqdm
 
-from benchmarking.benchmarking_utils import config_to_string
+from benchmarking.benchmarking_utils import hash_dictionary, make_reproducible
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 from pyrelational.strategies.regression import (
@@ -49,24 +49,27 @@ model_config = {
     "batch_size": 32,
 }
 trainer_config: Dict[str, Any] = {}  # scikit learn has train configs inside model_config
-ensemble_size = 10
 
-num_annotate = 1
-num_iterations = 10
+experiment_config: Dict[str, Any] = {
+    "num_annotate": 1,
+    "num_iterations": 10,
+    "trainer_config": trainer_config,
+    "model_config": model_config,
+    "ensemble_size": 5,
+}
 
-experiment_config = {}
 
 """
 ##################################################
 ###### Benchmarking settings
 ##################################################
 """
-strategies = [LeastConfidenceStrategy, RandomAcquisitionStrategy]
+strategies = [BALDStrategy, LeastConfidenceStrategy, ThompsonSamplingStrategy, UpperConfidenceBoundStrategy]
 
 for strategy_name in tqdm(strategies, desc="Strategy Progress"):
 
-    experiment_config["strategy"] = strategy_name
-    results_fh = os.path.join(results_folder, config_to_string(experiment_config))
+    experiment_config["strategy"] = strategy_name().__class__.__name__
+    results_fh = os.path.join(results_folder, hash_dictionary(experiment_config))
     # Results logging setup
     if os.path.exists(results_fh):
         print(f"Skipping: {results_fh} as it exists.")
@@ -75,7 +78,8 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         os.makedirs(results_fh, exist_ok=False)
 
     results_dfs = []
-    for repetition in tqdm(range(2), desc="Repeated Experiment", leave=False):
+    for repetition in tqdm(range(5), desc="Repeated Experiment", leave=False):
+        make_reproducible(repetition)
 
         # Pipeline setup
         dataset = Synthetic2D()
@@ -84,7 +88,7 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         model_config["random_state"] = repetition
         model_manager = EnsembleScikit(
             model_class=MLPRegressor,
-            num_estimators=ensemble_size,
+            num_estimators=experiment_config["ensemble_size"],
             model_config=model_config,
             trainer_config=trainer_config,
         )
@@ -92,7 +96,7 @@ for strategy_name in tqdm(strategies, desc="Strategy Progress"):
         strategy = strategy_name()
 
         pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
-        pipeline.run(num_annotate=num_annotate, num_iterations=num_iterations)
+        pipeline.run(num_annotate=experiment_config["num_annotate"], num_iterations=experiment_config["num_iterations"])
 
         # Save results
         results_df = pipeline.summary()
