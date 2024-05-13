@@ -1,0 +1,24 @@
+{
+    "num_annotate": 1024,
+    "trainer_config": {
+        "accelerator": "gpu",
+        "devices": 1,
+        "epochs": 100,
+        "monitor_metric_name": "mse"
+    },
+    "model_config": {
+        "drugs_dim": 1024,
+        "cell_lines_dim": 512,
+        "encoder_layer_dims": [
+            1024,
+            128
+        ],
+        "decoder_layer_dims": [
+            64,
+            1
+        ]
+    },
+    "batch_size": 2048,
+    "num_workers": 8,
+    "strategy": "RandomAcquisitionStrategy"
+}
