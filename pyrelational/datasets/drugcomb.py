@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -71,7 +71,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
     def __init__(
         self,
         root: str = ".",
-        studies: Optional[list[str]] = None,
+        studies: Optional[List[str]] = None,
         synergy_score: str = "bliss",
         n_splits: int = 1,
         test_size: Union[float, int] = 0.2,
@@ -108,7 +108,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
 
         self._create_splits(n_splits=n_splits, random_seed=random_seed, test_size=test_size)
 
-    def validate_inputs(self, studies: list[str], synergy_score: str) -> None:
+    def validate_inputs(self, studies: List[str], synergy_score: str) -> None:
         """Check user input against allowed values"""
         assert (
             synergy_score in self.ALLOWED_SYNERGY
@@ -118,7 +118,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
             f"Make sure they are all in {self.ALLOWED_STUDIES}."
         )
 
-    def setup_paths(self, studies: list[str], synergy_score: str, cell_line_dim: Optional[int]) -> None:
+    def setup_paths(self, studies: List[str], synergy_score: str, cell_line_dim: Optional[int]) -> None:
         """Set up data_directory path."""
         dataset_name = f"{'_'.join(studies)}-{synergy_score}"
         if cell_line_dim is not None:
@@ -202,7 +202,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         drug_col = summary.drug_col.apply(drug_to_id.get).values
         cell_id = summary.cell_line_name.apply(cell_to_id.get).values
         self.indices = np.stack((drug_row, drug_col, cell_id), axis=1).astype(int)
-        self.y = torch.from_numpy(summary[self.synergy_score].values).float()
+        self.y = torch.from_numpy(summary[self.synergy_score].values).float().unsqueeze(1)
         self.drug_id_to_fingerprint = {
             k: v for k, v in self.drug_id_to_fingerprint.items() if (k in drug_row) or (k in drug_col)
         }

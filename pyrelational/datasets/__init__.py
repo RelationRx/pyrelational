@@ -14,6 +14,7 @@ from pyrelational.datasets.classification import (
     UCIParkinsons,
     UCISeeds,
 )
+from pyrelational.datasets.drugcomb import DrugCombDataset
 from pyrelational.datasets.regression import (
     DiabetesDataset,
     SynthReg1,
@@ -24,5 +25,6 @@ from pyrelational.datasets.regression import (
     UCIPower,
     UCIWine,
     UCIYacht,
+    AIAUSynth,
 )
 from pyrelational.datasets.uci_datasets import UCIDatasets

@@ -16,6 +16,7 @@ from pyrelational.datasets import (
     UCIPower,
     UCIWine,
     UCIYacht,
+    AIAUSynth,
 )
 
 
@@ -84,4 +85,11 @@ class TestRegressionBenchmarkDatasets(TestCase):
         dataset = UCIAirfoil(data_dir="test_data/")
         self.assertEqual(len(dataset), 1502)
         self.assertEqual(dataset.x.shape[1], 5)
+        self.assertEqual(len(dataset.data_splits), 5)
+
+    def test_AIAUSynth(self) -> None:
+        """Check attribute shapes of created dataset."""
+        dataset = AIAUSynth()
+        self.assertEqual(len(dataset), 2500)
+        self.assertEqual(dataset.x.shape[1], 2)
         self.assertEqual(len(dataset.data_splits), 5)
