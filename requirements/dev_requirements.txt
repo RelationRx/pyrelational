@@ -7,7 +7,7 @@ parameterized==0.9.0
 pre-commit==2.21.0
 protobuf>=3.19.0
 pyreadr>=0.4.4
-pytest==8.1.1
+pytest==8.2.2
 pytest-cov
 setuptools>=59.5.0
 -r base_requirements.txt
