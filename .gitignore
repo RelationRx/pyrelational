@@ -1,5 +1,6 @@
 data/
 .idea
+.vscode
 
 # Dev files
 deprecated/
