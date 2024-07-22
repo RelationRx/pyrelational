@@ -1,33 +1,27 @@
-from abc import ABC, abstractmethod
 from typing import Any, List
 
-import torch
-from torch import Tensor
-
 from pyrelational.data_managers import DataManager
-from pyrelational.informativeness import softmax
+from pyrelational.informativeness.abstract_scorers import AbstractScorer
 from pyrelational.model_managers import ModelManager
+from pyrelational.samplers.abstract_sampler import AbstractSampler
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
-class ClassificationStrategy(Strategy, ABC):
+class GenericStrategy(Strategy):
     """
-    A base active learning strategy class for classification in which the top n indices,
-    according to user-specified scoring function, are queried at each iteration.
+    This module defines an abstract active learning strategy.
+
+    Any strategy should be a subclass of this class and override the `__call__` method to suggest observations
+    to be labeled. In the general case `__call__` would be the composition of an informativeness function,
+    which assigns a measure of informativeness to unlabelled observations, and a selection algorithm which
+    chooses what observations to present to the oracle.
+
+    The user defined __call__ method must have a "num_annotate" argument
     """
 
-    def __init__(self) -> None:
-        super(ClassificationStrategy, self).__init__()
-
-    @abstractmethod
-    def scoring_function(self, predictions: Tensor) -> Tensor:
-        """
-        Compute sco
-        re of each sample.
-
-        :param predictions: model predictions for each sample
-        :return: scores for each sample
-        """
+    def __init__(self, scorer: AbstractScorer, sampler: AbstractSampler):
+        self.scorer = scorer
+        self.sampler = sampler
 
     def __call__(
         self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
@@ -47,8 +41,5 @@ class ClassificationStrategy(Strategy, ABC):
         :return: list of indices to annotate
         """
         output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager).mean(0)
-        if not torch.allclose(output.sum(1), torch.tensor(1.0)):
-            output = softmax(output)
-        uncertainty = self.scoring_function(softmax(output))
-        ixs = torch.argsort(uncertainty, descending=True).tolist()
-        return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
+        scores = self.scorer(output)
+        return self.sampler(scores, data_manager.u_indices, num_annotate)
