@@ -1,4 +1,4 @@
-"""Collection of samplers defining AL strategies."""
+"""Collection of samplers for active learning strategies."""
 
 from abc import ABC, abstractmethod
 from typing import List
