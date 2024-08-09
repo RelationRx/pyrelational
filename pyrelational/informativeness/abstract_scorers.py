@@ -1,3 +1,5 @@
+"""Abstract scorer classes to define the interface for informativeness scorers."""
+
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -7,38 +9,37 @@ from .decorators import require_2d_tensor, require_probabilities
 
 
 class AbstractScorer(ABC):
-    """_summary_"""
+    """Abstract scorer class."""
 
     @abstractmethod
     def __call__(self, *args: Any, **kwargs: Any) -> Tensor:
-        """_summary_
+        """Score the input data.
 
-        :return: _description_
+        This method should be implemented by the subclasses.
+        :return: scores associated with the input data.
         """
         pass
 
 
-class AbstractClassificationScorer(AbstractScorer):
-    """_summary_"""
+class DecoratedClassificationScorerMeta(type):
+    """Metaclass for classification scorers."""
+
+    def __new__(cls, name: str, bases: tuple[Any, ...], dct: dict[str, Any]) -> "DecoratedClassificationScorerMeta":
+        """Decorate the `__call__` method with the `require_2d_tensor` and `require_probabilities` decorators."""
+        for key, value in dct.items():
+            if callable(value) and key == "__call__":
+                dct[key] = require_probabilities(require_2d_tensor(value))
+        return super().__new__(cls, name, bases, dct)
+
+
+class AbstractClassificationScorer(metaclass=DecoratedClassificationScorerMeta):
+    """Abstract classification scorer class."""
 
     @abstractmethod
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int) -> Tensor:
-        """_summary_
+        """Score the input data.
 
-        :return: _description_
-        """
-        pass
-
-
-class AbstractRegressionScorer(AbstractScorer):
-    """_summary_"""
-
-    @abstractmethod
-    def __call__(self, *args: Any, **kwargs: Any) -> Tensor:
-        """_summary_
-
-        :return: _description_
+        This method should be implemented by the subclasses conserving the decorators and signature.
+        :return: scores associated with the input data.
         """
         pass

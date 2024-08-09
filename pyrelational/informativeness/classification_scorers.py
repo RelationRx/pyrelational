@@ -1,21 +1,24 @@
+"""Collection of classification scorers for active learning strategies."""
+
 import math
 
 import torch
 from torch import Tensor
 
 from .abstract_scorers import AbstractClassificationScorer
-from .decorators import require_2d_tensor, require_probabilities
 
 
 class ClassificationLeastConfidence(AbstractClassificationScorer):
-    """_summary_"""
+    """Least confidence classification scorer."""
 
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int = -1) -> Tensor:
-        """_summary_
+        """Compute the least confidence score.
 
-        :return: _description_
+        Returns the informativeness score of an array using least confidence
+        sampling in a 0-1 range where 1 is the most uncertain.
+
+        The least confidence uncertainty is the normalised difference between
+        the most confident prediction and 100 percent confidence.
         """
         simple_least_conf, _ = torch.max(prob_dist, dim=axis)
         num_labels = prob_dist.size(axis)
@@ -24,14 +27,15 @@ class ClassificationLeastConfidence(AbstractClassificationScorer):
 
 
 class MarginConfidence(AbstractClassificationScorer):
-    """_summary_"""
+    """Margin confidence classification scorer."""
 
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int = -1) -> Tensor:
-        """_summary_
+        """Compute the margin confidence score.
 
-        :return: _description_
+        Returns the informativeness score of a probability distribution using
+        margin of confidence sampling in a 0-1 range where 1 is the most uncertain
+        The margin confidence uncertainty is the difference between the top two
+        most confident predictions.
         """
         prob_dist = torch.sort(prob_dist, descending=True, dim=axis)[0]
         difference = prob_dist.select(axis, 0) - prob_dist.select(axis, 1)
@@ -40,14 +44,15 @@ class MarginConfidence(AbstractClassificationScorer):
 
 
 class RatioConfidence(AbstractClassificationScorer):
-    """_summary_"""
+    """Ratio confidence classification scorer."""
 
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int = -1) -> Tensor:
-        """_summary_
+        """Compute the ratio confidence score.
 
-        :return: _description_
+        Returns the informativeness score of a probability distribution using
+        ratio of confidence sampling in a 0-1 range where 1 is the most uncertain
+        The ratio confidence uncertainty is the ratio between the top two most
+        confident predictions.
         """
         prob_dist = torch.sort(prob_dist, descending=True, dim=axis)[0]
         ratio_conf: Tensor = prob_dist.select(axis, 0) / prob_dist.select(axis, 1)
@@ -55,14 +60,14 @@ class RatioConfidence(AbstractClassificationScorer):
 
 
 class Entropy(AbstractClassificationScorer):
-    """_summary_"""
+    """Entropy classification scorer."""
 
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int = -1) -> Tensor:
-        """_summary_
+        r"""Compute the entropy score.
 
-        :return: _description_
+        Returns the informativeness score of a probability distribution using entropy.
+        The entropy based uncertainty is defined as:
+        :math:`- \frac{1}{\log(n)} \sum_{i}^{n} p_i \log (p_i)`
         """
         log_probs = prob_dist * torch.log2(prob_dist)
         raw_entropy = 0 - torch.sum(log_probs, dim=axis)
@@ -71,17 +76,17 @@ class Entropy(AbstractClassificationScorer):
 
 
 class ClassificationBald(AbstractClassificationScorer):
-    """_summary_"""
+    """Entropy classification scorer."""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialise the scorer."""
         super().__init__()
         self.entropy = Entropy()
 
-    @require_probabilities
-    @require_2d_tensor
     def __call__(self, prob_dist: Tensor, axis: int = -1) -> Tensor:
-        """_summary_
+        r"""Compute the BALD score.
 
-        :return: _description_
+        Implementation of Bayesian Active Learning by Disagreement (BALD) for classification task
+        `reference <https://arxiv.org/pdf/1112.5745.pdf>`__
         """
         return self.entropy(prob_dist, axis) - torch.mean(prob_dist * torch.log2(prob_dist), dim=axis)
