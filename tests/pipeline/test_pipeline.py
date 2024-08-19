@@ -1,5 +1,4 @@
-"""Unit tests for active learning manager
-"""
+"""Unit tests for active learning manager."""
 
 from typing import Type
 from unittest import TestCase
@@ -19,9 +18,9 @@ from pyrelational.strategies.classification import (
     RatioConfidenceStrategy,
 )
 from pyrelational.strategies.regression import (
+    AverageScoreStrategy,
     BALDStrategy,
     ExpectedImprovementStrategy,
-    MeanPredictionStrategy,
     SoftBALDStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,
@@ -36,7 +35,7 @@ from tests.test_utils import (
 REGRESSION_STRATEGIES = [
     BALDStrategy,
     ExpectedImprovementStrategy,
-    MeanPredictionStrategy,
+    AverageScoreStrategy,
     SoftBALDStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,

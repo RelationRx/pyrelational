@@ -226,7 +226,7 @@ class TestInformativenessScorer(TestCase):
         prob_dist = torch.tensor([[0.1, 0.5, 0.4]])
         self.assertEqual(MarginConfidence()(prob_dist), pytest.approx(0.9, 0.01))
 
-    def test_classificaiton_bald(self) -> None:
+    def test_classification_bald(self) -> None:
         """Check correctness."""
         prob_dist = torch.tensor([[0.1, 0.5, 0.4], [0.3, 0.3, 0.4]]).unsqueeze(1)
         self.assertEqual(ClassificationBald()(prob_dist), pytest.approx(0.035, 0.01))

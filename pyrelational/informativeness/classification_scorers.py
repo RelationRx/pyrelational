@@ -55,7 +55,7 @@ class RatioConfidence(AbstractClassificationScorer):
         confident predictions.
         """
         prob_dist = torch.sort(prob_dist, descending=True, dim=self.axis)[0]
-        ratio_conf: Tensor = prob_dist.select(self.axis, 0) / prob_dist.select(self.axis, 1)
+        ratio_conf: Tensor = prob_dist.select(self.axis, 1) / prob_dist.select(self.axis, 0)
         return ratio_conf
 
 
@@ -78,10 +78,10 @@ class Entropy(AbstractClassificationScorer):
 class ClassificationBald(AbstractClassificationScorer):
     """Entropy classification scorer."""
 
-    def __init__(self, axis: int = -1) -> None:
+    def __init__(self) -> None:
         """Initialise the scorer."""
-        super().__init__(axis=axis)
-        self.entropy = Entropy(axis=axis)
+        super().__init__(axis=-1)
+        self.entropy = Entropy(axis=-1)
 
     def __call__(self, prob_dist: Tensor) -> Tensor:
         r"""Compute the BALD score.
@@ -89,4 +89,4 @@ class ClassificationBald(AbstractClassificationScorer):
         Implementation of Bayesian Active Learning by Disagreement (BALD) for classification task
         `reference <https://arxiv.org/pdf/1112.5745.pdf>`__
         """
-        return self.entropy(prob_dist) - torch.mean(prob_dist * torch.log2(prob_dist), dim=self.axis)
+        return self.entropy(prob_dist.mean(0)) - torch.mean(self.entropy(prob_dist)).mean(0)

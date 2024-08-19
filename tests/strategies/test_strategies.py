@@ -1,3 +1,4 @@
+"""Unit tests for strategies.""" ""
 from typing import Any, Dict, Type
 from unittest import TestCase
 
@@ -7,11 +8,11 @@ from pyrelational.model_managers.mcdropout_model_manager import (
     LightningMCDropoutModelManager,
 )
 from pyrelational.strategies import Strategy
-from tests.strategies.agnostic_strategy_test_cases import TASK_AGNOSTIC_TEST_CASES
-from tests.strategies.classification_strategy_test_cases import (
+from tests.strategies._agnostic_strategy_test_cases import TASK_AGNOSTIC_TEST_CASES
+from tests.strategies._classification_strategy_test_cases import (
     CLASSIFICATION_TEST_CASES,
 )
-from tests.strategies.regression_strategy_test_cases import REGRESSION_TEST_CASES
+from tests.strategies._regression_strategy_test_cases import REGRESSION_TEST_CASES
 from tests.test_utils import (
     BreastCancerClassifier,
     DiabetesRegressionModel,
@@ -49,5 +50,5 @@ class TestStrategies(TestCase):
         self.assertEqual(len(out), 5)
 
     def test_str_print(self) -> None:
-        """Check str returns expected string"""
+        """Check str returns expected string."""
         self.assertEqual(str(self.strategy), f"Strategy: {self.strategy.__class__.__name__}")
