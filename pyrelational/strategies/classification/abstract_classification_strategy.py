@@ -22,8 +22,7 @@ class ClassificationStrategy(Strategy, ABC):
     @abstractmethod
     def scoring_function(self, predictions: Tensor) -> Tensor:
         """
-        Compute sco
-        re of each sample.
+        Compute score of each sample.
 
         :param predictions: model predictions for each sample
         :return: scores for each sample
