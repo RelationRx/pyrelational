@@ -40,4 +40,5 @@ class ProbabilisticSampler(AbstractSampler):
 
         :return: List of sampled indices.
         """
+        num_samples = min(num_samples, len(indices))
         return [indices[i] for i in torch.multinomial(scores, num_samples, replacement=False).tolist()]
