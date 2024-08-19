@@ -8,7 +8,7 @@ from torch import Tensor
 from .abstract_scorers import AbstractClassificationScorer
 
 
-class ClassificationLeastConfidence(AbstractClassificationScorer):
+class LeastConfidence(AbstractClassificationScorer):
     """Least confidence classification scorer."""
 
     def __call__(self, prob_dist: Tensor) -> Tensor:

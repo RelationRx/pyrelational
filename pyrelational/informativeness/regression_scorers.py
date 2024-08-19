@@ -10,8 +10,8 @@ from pyrelational.informativeness.abstract_scorers import AbstractRegressionScor
 from pyrelational.informativeness.decorators import check_regression_input
 
 
-class MeanPrediction(AbstractRegressionScorer):
-    """Scorer for mean prediction in regression."""
+class AverageScorer(AbstractRegressionScorer):
+    """Scorer returning average prediction for each element."""
 
     @check_regression_input
     def __call__(self, x: Optional[Union[Tensor, Distribution]] = None, mean: Optional[Tensor] = None) -> Tensor:
@@ -29,7 +29,7 @@ class MeanPrediction(AbstractRegressionScorer):
         return mean
 
 
-class RegressionLeastConfidence(AbstractRegressionScorer):
+class StandardDeviation(AbstractRegressionScorer):
     """Scorer for least confidence in regression."""
 
     @check_regression_input
@@ -145,7 +145,7 @@ class ThompsonSampling(AbstractRegressionScorer):
         return x.gather(self.axis, idx).squeeze(-1)
 
 
-class Bald(AbstractRegressionScorer):
+class RegressionBald(AbstractRegressionScorer):
     r"""Scorer for Bayesian Active Learning by Disagreement (BALD) in regression.
 
     `reference <https://arxiv.org/pdf/1112.5745.pdf>`__.
