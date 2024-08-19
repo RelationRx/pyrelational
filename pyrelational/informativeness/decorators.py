@@ -1,20 +1,24 @@
 """Decorators for checking input shapes and types for scorers."""
 
+from functools import wraps
 from typing import Any, Callable
 
 import torch
 from torch import Tensor
 
+from pyrelational.informativeness.abstract_scorers import AbstractClassificationScorer
+
 
 def require_probabilities(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
     """Ensure that the input tensor is a probability distribution."""
 
-    def wrapper(prob_dist: Tensor, axis: int) -> Tensor:
+    @wraps(func)
+    def wrapper(self: AbstractClassificationScorer, prob_dist: Tensor) -> Tensor:
         """Check the input tensor sums to 1 along axis."""
         assert torch.allclose(
-            prob_dist.sum(axis), torch.tensor(1.0)
+            prob_dist.sum(self.axis), torch.tensor(1.0)
         ), "input should be probability distributions along specified axis"
-        return func(prob_dist, axis)
+        return func(prob_dist)
 
     return wrapper
 
@@ -22,10 +26,10 @@ def require_probabilities(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
 def require_2d_tensor(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
     """Ensure that the input tensor is a 2D tensor."""
 
-    def wrapper(x: Tensor, axis: int) -> Tensor:
+    def wrapper(x: Tensor) -> Tensor:
         """Check the shape of the input tensor."""
         assert x.ndim == 2, "x input should be a 2D tensor"
-        return func(x, axis)
+        return func(x)
 
     return wrapper
 
