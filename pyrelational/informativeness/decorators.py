@@ -1,19 +1,22 @@
 """Decorators for checking input shapes and types for scorers."""
 
 from functools import wraps
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import torch
 from torch import Tensor
 
-from pyrelational.informativeness.abstract_scorers import AbstractClassificationScorer
+if TYPE_CHECKING:
+    from pyrelational.informativeness.abstract_scorers import (
+        AbstractClassificationScorer,
+    )
 
 
 def require_probabilities(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
     """Ensure that the input tensor is a probability distribution."""
 
     @wraps(func)
-    def wrapper(self: AbstractClassificationScorer, prob_dist: Tensor) -> Tensor:
+    def wrapper(self: "AbstractClassificationScorer", prob_dist: Tensor) -> Tensor:
         """Check the input tensor sums to 1 along axis."""
         assert torch.allclose(
             prob_dist.sum(self.axis), torch.tensor(1.0)
