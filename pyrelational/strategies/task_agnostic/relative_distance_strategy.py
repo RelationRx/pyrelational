@@ -1,3 +1,4 @@
+"""Relative distance based active learning strategy.""" ""
 from typing import List
 
 import torch
@@ -11,16 +12,15 @@ class RelativeDistanceStrategy(Strategy):
     """Diversity sampling based active learning strategy."""
 
     def __init__(self, metric: str = "euclidean"):
-        """
+        """Initialise the strategy with a distance metric.
+
         :param metric: Name of distance metric to use. This should be supported by scikit-learn
             pairwise_distances function.
         """
-        super(RelativeDistanceStrategy, self).__init__()
         self.metric = metric
 
     def __call__(self, num_annotate: int, data_manager: DataManager) -> List[int]:
-        """
-        Call function which identifies samples which need to be labelled
+        """Identify samples for labelling based on relative distance informativeness measure.
 
         :param num_annotate: number of samples to annotate
         :param data_manager: A pyrelational data manager

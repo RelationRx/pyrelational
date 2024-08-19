@@ -1,20 +1,18 @@
-"""
-Active learning using ratio based confidence uncertainty measure
-between classes in the posterior predictive distribution to
-choose which observations to propose to the oracle
-"""
+"""Active learning using ratio based confidence uncertainty measure."""
 
-from torch import Tensor
-
-from pyrelational.informativeness import classification_ratio_confidence
-from pyrelational.strategies.classification.abstract_classification_strategy import (
+from pyrelational.informativeness import RatioConfidence
+from pyrelational.samplers import DeterministicSampler
+from pyrelational.strategies.classification.classification_strategy import (
     ClassificationStrategy,
 )
 
 
 class RatioConfidenceStrategy(ClassificationStrategy):
-    """Implements Ratio Confidence Strategy whereby unlabelled samples are scored and queried based on
-    the ratio confidence for classification scorer"""
+    """Implements Ratio Confidence Strategy.
 
-    def scoring_function(self, predictions: Tensor) -> Tensor:
-        return classification_ratio_confidence(predictions)
+    Unlabelled samples are scored and queried based on the ratio confidence for classification scorer.
+    """
+
+    def __init__(self, axis: int = -1):
+        """Initialize the strategy with the ratio confidence scorer and a deterministic scorer for classification."""
+        super().__init__(RatioConfidence(axis=axis), DeterministicSampler())

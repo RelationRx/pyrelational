@@ -51,11 +51,10 @@ class StandardDeviation(AbstractRegressionScorer):
 class ExpectedImprovement(AbstractRegressionScorer):
     r"""Scorer for expected improvement in regression (`reference <https://doi.org/10.1023/A:1008306431147>`__)."""
 
-    def __init__(self, xi: float = 0.01, max_label: float | Tensor = 0.0, axis: int = 0) -> None:
+    def __init__(self, xi: float = 0.01, axis: int = 0) -> None:
         """Instantiate scorer."""
         super().__init__(axis=axis)
         self.xi = xi
-        self.max_label = max_label
 
     @check_regression_input
     def __call__(
@@ -63,13 +62,14 @@ class ExpectedImprovement(AbstractRegressionScorer):
         x: Optional[Union[Tensor, Distribution]] = None,
         mean: Optional[Tensor] = None,
         std: Optional[Tensor] = None,
+        max_label: float | Tensor = 0.0,
     ) -> Tensor:
         """Return expected improvement score based on max label in the current data.
 
         Either x or mean and std should be provided as input.
         """
         if isinstance(x, Tensor):
-            return torch.relu(x - self.max_label).mean(self.axis).flatten()
+            return torch.relu(x - max_label).mean(self.axis).flatten()
         else:
             if mean is None:
                 assert x is not None, "both x and mean are None, cannot compute."
@@ -79,12 +79,12 @@ class ExpectedImprovement(AbstractRegressionScorer):
                 std = self.compute_std(x)
             return self._calculate_expected_improvement(mean, std)
 
-    def _calculate_expected_improvement(self, mean: Tensor, std: Tensor) -> Tensor:
+    def _calculate_expected_improvement(self, mean: Tensor, std: Tensor, max_label: float | Tensor = 0.0) -> Tensor:
         """Calculate expected improvement."""
-        Z = (mean - self.max_label - self.xi) / std
+        Z = (mean - max_label - self.xi) / std
         N = torch.distributions.Normal(0, 1)
         cdf, pdf = N.cdf(Z), torch.exp(N.log_prob(Z))
-        return torch.relu((mean - self.max_label - self.xi) * cdf + std * pdf)
+        return torch.relu((mean - max_label - self.xi) * cdf + std * pdf)
 
 
 class UpperConfidenceBound(AbstractRegressionScorer):

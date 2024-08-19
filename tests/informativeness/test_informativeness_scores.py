@@ -99,12 +99,12 @@ class TestInformativenessScorer(TestCase):
         """Check output dimension of expected improvement informativeness functions."""
         a = torch.randn(25, 100)
 
-        scorer = ExpectedImprovement(axis=0, max_label=0.8)
-        o = scorer(x=a, max_label=0.8, axis=0)
+        scorer = ExpectedImprovement(axis=0)
+        o = scorer(x=a, max_label=0.8)
         self.assertEqual(o.numel(), a.size(1))
 
-        scorer = ExpectedImprovement(axis=1, max_label=0.8)
-        o = scorer(x=a, max_label=0.8, axis=1)
+        scorer = ExpectedImprovement(axis=1)
+        o = scorer(x=a, max_label=0.8)
         self.assertEqual(o.numel(), a.size(0))
 
     def test_regression_ucb_with_tensor_input(self) -> None:
@@ -142,8 +142,8 @@ class TestInformativenessScorer(TestCase):
     def test_regression_expected_improvement_with_distribution_input(self) -> None:
         """Check output dimension of expected improvement informativeness functions."""
         a = torch.distributions.Normal(torch.randn(10), torch.rand(10))
-        scorer = ExpectedImprovement(max_label=0.8)
-        o = scorer(x=a)
+        scorer = ExpectedImprovement()
+        o = scorer(x=a, max_label=0.8)
         self.assertEqual(o.numel(), a.loc.size(0))
 
     def test_regression_ucb_with_distribution_input(self) -> None:
@@ -172,7 +172,7 @@ class TestInformativenessScorer(TestCase):
     def test_regression_expected_improvement_with_mean_std_input(self) -> None:
         """Check output dimension of informativeness measures supporting mean/std input."""
         mean, std = torch.randn(10), torch.abs(torch.randn(10))
-        o = ExpectedImprovement(max_label=0.8)(mean=mean, std=std)
+        o = ExpectedImprovement()(mean=mean, std=std, max_label=0.8)
         self.assertEqual(o.numel(), mean.size(0))
 
     def test_regression_ucb_with_mean_std_input(self) -> None:

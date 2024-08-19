@@ -1,27 +1,36 @@
-"""This module defines the interface for an abstract active learning strategy
-which is composed of defining a `__call__` function which
+"""This module defines the interface for an abstract active learning strategy.
+
+It is composed of defining a `__call__` function which
 suggests observations to be labelled. In the default case the `__call__`
 is the composition of a informativeness function which assigns a measure of
 informativeness to unlabelled observations and a selection algorithm which chooses
-what observations to present to the oracle
+what observations to present to the oracle.
 """
 
 import inspect
 import logging
 from abc import ABC
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Union
 
 from pyrelational.data_managers import DataManager
+from pyrelational.informativeness.abstract_scorers import (
+    AbstractClassificationScorer,
+    AbstractRegressionScorer,
+    AbstractScorer,
+)
 from pyrelational.model_managers import ModelManager
+from pyrelational.samplers import AbstractSampler
 
 logger = logging.getLogger()
+SCORER = Union[AbstractScorer, AbstractRegressionScorer, AbstractClassificationScorer]
 
 
 # Trick mypy into not applying contravariance rules to inputs by defining
 # __call__ method as a value, rather than a function.  See also
 # https://github.com/python/mypy/issues/8795
 def _call_unimplemented(self: Any, *input: Any) -> List[int]:
-    r"""Defines the computation performed at every call.
+    r"""Define the computation performed at every call.
+
     Should be overridden by all subclasses.
     .. note::
         Although the recipe for __call__ needs to be defined within
@@ -44,15 +53,20 @@ class Strategy(ABC):
     The user defined __call__ method must have a "num_annotate" argument
     """
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        super(Strategy, self).__init__()
+    def __init__(self, scorer: SCORER, sampler: AbstractSampler):
+        """Initialize the strategy with a scorer and a sampler.
+
+        :param scorer: instance of a scorer class
+        :param sampler: instance of a sampler class
+        """
+        self.scorer = scorer
+        self.sampler = sampler
 
     __call__: Callable[..., List[int]] = _call_unimplemented
 
     def suggest(self, num_annotate: int, **kwargs: Any) -> List[int]:
         """
-        Filter kwargs and feed arguments to the __call__ method to return unlabelled observations to be labelled
-        as a list of dataset indices.
+        Filter kwargs and feed arguments to the __call__ method.
 
         :param num_annotate: number of samples to annotate
         :param kwargs: any kwargs (filtered to match internal suggest inputs)
@@ -64,9 +78,9 @@ class Strategy(ABC):
     @staticmethod
     def train_and_infer(data_manager: DataManager, model_manager: ModelManager[Any, Any]) -> Any:
         """
-        Train the model on the currently labelled subset of the data and produces an output that can be used in
-        model uncertainty based strategies.
+        Train the model on the currently labelled subset of the data.
 
+        Return an output that can be used in model uncertainty based strategies.
         :param data_manager: reference to data_manager which will supply data to train model
             and the unlabelled observations
         :param model_manager: Model with generic model interface that will be trained and used to produce
@@ -96,6 +110,6 @@ class Strategy(ABC):
         return self.__class__.__name__
 
     def __str__(self) -> str:
-        """Pretty prints strategy"""
+        """Print strategy name prettily."""
         str_out = f"Strategy: {self.__repr__()}"
         return str_out

@@ -1,20 +1,18 @@
-"""
-Active learning using marginal confidence uncertainty measure
-between classes in the posterior predictive distribution to
-choose which observations to propose to the oracle
-"""
+"""Active learning using marginal confidence uncertainty measure."""
 
-from torch import Tensor
-
-from pyrelational.informativeness import classification_margin_confidence
-from pyrelational.strategies.classification.abstract_classification_strategy import (
+from pyrelational.informativeness import MarginConfidence
+from pyrelational.samplers import DeterministicSampler
+from pyrelational.strategies.classification.classification_strategy import (
     ClassificationStrategy,
 )
 
 
 class MarginalConfidenceStrategy(ClassificationStrategy):
-    """Implements Marginal Confidence Strategy whereby unlabelled samples are scored and queried based on
-    the marginal confidence for classification scorer"""
+    """Implements Marginal Confidence Strategy.
 
-    def scoring_function(self, predictions: Tensor) -> Tensor:
-        return classification_margin_confidence(predictions)
+    Unlabelled samples are scored and queried based on the marginal confidence for classification scorer.
+    """
+
+    def __init__(self, axis: int = -1):
+        """Initialize the strategy with the marginal confidence scorer and a deterministic scorer for classification."""
+        super().__init__(MarginConfidence(axis=axis), DeterministicSampler())

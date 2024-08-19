@@ -1,5 +1,4 @@
-"""Representative sampling based active learning strategy
-"""
+"""Representative sampling based active learning strategy."""
 
 from typing import Any, List, Union
 
@@ -13,19 +12,19 @@ from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RepresentativeSamplingStrategy(Strategy):
-    """Representative sampling based active learning strategy"""
+    """Representative sampling based active learning strategy."""
 
     def __init__(
         self,
         clustering_method: Union[str, ClusterMixin] = "KMeans",
         **clustering_kwargs: Any,
     ):
-        """
+        """Initialise the strategy with a clustering method and its arguments.
+
         :param clustering_method: name, or instantiated class, of the clustering method to use
         :param clustering_kwargs: arguments to be passed to instantiate clustering class if a string is passed to
             clustering_method
         """
-        super(RepresentativeSamplingStrategy, self).__init__()
         self.clustering_method = clustering_method
         self.clustering_kwargs = clustering_kwargs
 
@@ -34,8 +33,7 @@ class RepresentativeSamplingStrategy(Strategy):
         data_manager: DataManager,
         num_annotate: int,
     ) -> List[int]:
-        """
-        Call function which identifies samples which need to be labelled
+        """Identify samples for labelling based on representative sampling informativeness measure.
 
         :param data_manager: A pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for

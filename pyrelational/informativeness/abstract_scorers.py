@@ -6,7 +6,7 @@ from typing import Any, Union
 from torch import Tensor
 from torch.distributions import Distribution
 
-from .decorators import require_2d_tensor, require_probabilities
+from .decorators import require_probabilities
 
 
 class AbstractScorer(ABC):
@@ -29,7 +29,7 @@ class DecoratedClassificationScorerMeta(type):
         """Decorate the `__call__` method with the `require_2d_tensor` and `require_probabilities` decorators."""
         for key, value in dct.items():
             if callable(value) and key == "__call__":
-                dct[key] = require_probabilities(require_2d_tensor(value))
+                dct[key] = require_probabilities(value)
         return super().__new__(cls, name, bases, dct)
 
 

@@ -26,17 +26,6 @@ def require_probabilities(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
     return wrapper
 
 
-def require_2d_tensor(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
-    """Ensure that the input tensor is a 2D tensor."""
-
-    def wrapper(x: Tensor) -> Tensor:
-        """Check the shape of the input tensor."""
-        assert x.ndim == 2, "x input should be a 2D tensor"
-        return func(x)
-
-    return wrapper
-
-
 def check_regression_input(func: Callable[..., Tensor]) -> Callable[..., Tensor]:
     """Check inputs for regression scoring functions."""
 

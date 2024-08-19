@@ -1,3 +1,7 @@
 """Query samplers module."""
 
-from pyrelational.samplers.samplers import DeterministicSampler, ProbabilisticSampler
+from pyrelational.samplers.samplers import (
+    AbstractSampler,
+    DeterministicSampler,
+    ProbabilisticSampler,
+)
