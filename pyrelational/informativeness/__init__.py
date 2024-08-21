@@ -15,10 +15,7 @@ from pyrelational.informativeness.regression_scorers import (
     ThompsonSampling,
     UpperConfidenceBound,
 )
-from pyrelational.informativeness.task_agnostic import (
-    relative_distance,
-    representative_sampling,
-)
+from pyrelational.informativeness.task_agnostic_scorers import RelativeDistanceScorer
 
 __all__ = [
     "AverageScorer",
@@ -32,6 +29,5 @@ __all__ = [
     "MarginConfidence",
     "RatioConfidence",
     "ClassificationBald",
-    "relative_distance",
-    "representative_sampling",
+    "RelativeDistanceScorer",
 ]

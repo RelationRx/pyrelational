@@ -3,29 +3,18 @@
 These scorers are task-agnostic.
 """
 
-# import inspect
-import logging
-
-# import struct
-from typing import Any, List, Union  # , get_args, Callable,  Optional,
+from typing import Any, List, Union
 
 import numpy as np
-
-# import sklearn.cluster as sklust
 import torch
 from numpy.typing import NDArray
-
-# from sklearn.base import ClusterMixin
-from sklearn.metrics import pairwise_distances_argmin_min  # pairwise_distances_argmin,
+from sklearn.metrics import pairwise_distances_argmin_min
 from torch import Tensor
 from torch.utils.data import DataLoader
 
 from pyrelational.informativeness.abstract_scorers import AbstractScorer
 
-logging.basicConfig()
-logger = logging.getLogger()
-
-Array = Union[Tensor, NDArray[Any], List[Any]]
+ARRAY = Union[Tensor, NDArray[np.float_], List[float]]
 
 
 class RelativeDistanceScorer(AbstractScorer):
@@ -46,7 +35,7 @@ class RelativeDistanceScorer(AbstractScorer):
         self.axis = axis
 
     def __call__(
-        self, query_set: Union[Array, DataLoader[Any]], reference_set: Union[Array, DataLoader[Any]]
+        self, query_set: Union[ARRAY, DataLoader[Any]], reference_set: Union[ARRAY, DataLoader[Any]]
     ) -> Tensor:
         """
         Compute the relative minimum distances between the query and reference sets.
@@ -79,7 +68,7 @@ class RelativeDistanceScorer(AbstractScorer):
         return torch.from_numpy(distances).float()
 
     @staticmethod
-    def _prepare_set(data_set: Union[Array, DataLoader[Any]]) -> Union[NDArray[Any], DataLoader[Any]]:
+    def _prepare_set(data_set: Union[ARRAY, DataLoader[Any]]) -> Union[NDArray[np.float_], DataLoader[Any]]:
         """Convert the input set to a 2D numpy array."""
         if isinstance(data_set, (Tensor, np.ndarray, list)):
             data_set = np.array(data_set)
@@ -89,39 +78,41 @@ class RelativeDistanceScorer(AbstractScorer):
         else:
             raise TypeError("Input set should either be an array-like structure or a PyTorch DataLoader")
 
-    def _compute_distances(self, query: NDArray[Any], reference: NDArray[Any]) -> NDArray[Any]:
+    def _compute_distances(self, query: NDArray[np.float_], reference: NDArray[np.float_]) -> NDArray[np.float_]:
         """Compute the minimum distances from query samples to reference samples."""
-        distances: NDArray[Any] = pairwise_distances_argmin_min(query, reference, metric=self.metric, axis=self.axis)[1]
+        distances: NDArray[np.float_] = pairwise_distances_argmin_min(
+            query, reference, metric=self.metric, axis=self.axis
+        )[1]
         return distances
 
     def _compute_distances_dataloader_to_array(
-        self, query_loader: DataLoader[Any], reference_array: NDArray[Any]
-    ) -> NDArray[Any]:
+        self, query_loader: DataLoader[Any], reference_array: NDArray[np.float_]
+    ) -> NDArray[np.float_]:
         """Compute distances when query set is a DataLoader and reference set is a numpy array."""
-        distances: List[NDArray[Any]] = []
+        distances: List[NDArray[np.float_]] = []
         for batch in query_loader:
             query = batch[0].reshape((batch[0].shape[0], -1))
             distances.append(self._compute_distances(query, reference_array))
         return np.hstack(distances)
 
     def _compute_distances_array_to_dataloader(
-        self, query_array: NDArray[Any], reference_loader: DataLoader[Any]
-    ) -> NDArray[Any]:
+        self, query_array: NDArray[np.float_], reference_loader: DataLoader[Any]
+    ) -> NDArray[np.float_]:
         """Compute distances when query set is a numpy array and reference set is a DataLoader."""
-        distances: List[NDArray[Any]] = []
+        distances: List[NDArray[np.float_]] = []
         for batch in reference_loader:
             reference = batch[0].reshape((batch[0].shape[0], -1))
             distances.append(self._compute_distances(query_array, reference))
-        ret: NDArray[Any] = np.min(np.vstack(distances), axis=0)
+        ret: NDArray[np.float_] = np.min(np.vstack(distances), axis=0)
         return ret
 
     def _compute_distances_dataloader_to_dataloader(
         self, query_loader: DataLoader[Any], reference_loader: DataLoader[Any]
-    ) -> NDArray[Any]:
+    ) -> NDArray[np.float_]:
         """Compute distances when both query and reference sets are DataLoaders."""
-        distances: List[NDArray[Any]] = []
+        distances: List[NDArray[np.float_]] = []
         for query_batch in query_loader:
-            temp_distances: List[NDArray[Any]] = []
+            temp_distances: List[NDArray[np.float_]] = []
             query = query_batch[0].reshape((query_batch[0].shape[0], -1))
             for reference_batch in reference_loader:
                 reference = reference_batch[0].reshape((reference_batch[0].shape[0], -1))

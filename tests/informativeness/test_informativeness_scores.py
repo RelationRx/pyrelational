@@ -23,10 +23,12 @@ from pyrelational.informativeness import (
     StandardDeviation,
     ThompsonSampling,
     UpperConfidenceBound,
-    relative_distance,
-    representative_sampling,
 )
 from pyrelational.informativeness.abstract_scorers import AbstractRegressionScorer
+from pyrelational.informativeness.task_agnostic_scorers import RelativeDistanceScorer
+from pyrelational.strategies.task_agnostic.representative_sampling_strategy import (
+    representative_sampling,
+)
 
 
 class TestInformativenessScorer(TestCase):
@@ -69,7 +71,8 @@ class TestInformativenessScorer(TestCase):
         if reference_as_loader:
             reference = DataLoader(TensorDataset(reference), batch_size=1)
 
-        out = relative_distance(query, reference)
+        scorer = RelativeDistanceScorer()
+        out = scorer(query, reference)
         torch.testing.assert_close(out, torch.tensor([math.sqrt(3), 0, 0]), rtol=0, atol=1e-3)
         self.assertEqual(len(out), len(query))
 
