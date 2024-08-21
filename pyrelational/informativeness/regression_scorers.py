@@ -62,7 +62,7 @@ class ExpectedImprovement(AbstractRegressionScorer):
         x: Optional[Union[Tensor, Distribution]] = None,
         mean: Optional[Tensor] = None,
         std: Optional[Tensor] = None,
-        max_label: float | Tensor = 0.0,
+        max_label: Union[float, Tensor] = 0.0,
     ) -> Tensor:
         """Return expected improvement score based on max label in the current data.
 
@@ -79,7 +79,9 @@ class ExpectedImprovement(AbstractRegressionScorer):
                 std = self.compute_std(x)
             return self._calculate_expected_improvement(mean, std)
 
-    def _calculate_expected_improvement(self, mean: Tensor, std: Tensor, max_label: float | Tensor = 0.0) -> Tensor:
+    def _calculate_expected_improvement(
+        self, mean: Tensor, std: Tensor, max_label: Union[float, Tensor] = 0.0
+    ) -> Tensor:
         """Calculate expected improvement."""
         Z = (mean - max_label - self.xi) / std
         N = torch.distributions.Normal(0, 1)
