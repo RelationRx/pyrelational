@@ -13,8 +13,7 @@ from pyrelational.strategies.task_agnostic.representative_sampling_strategy impo
 
 
 class MixedStrategy(RegressionStrategy):
-    """
-    Implements a strategy that combines least_confidence scorer with representative sampling.
+    """Implements a strategy that combines least_confidence scorer with representative sampling.
     To this end, 10 times more samples than requested are selected based on least_confidence scorer,
     the list is then reduced based on representative_sampling.
     """
