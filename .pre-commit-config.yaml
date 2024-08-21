@@ -20,6 +20,7 @@ repos:
         entry: flake8
         language: system
         types: [python]
+        files: ^pyrelational/pyrelational
   - repo: local
     hooks:
       - id: isort

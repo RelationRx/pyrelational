@@ -1,16 +1,16 @@
 from pyrelational.strategies.regression import (
-    AverageScoreStrategy,
     BALDStrategy,
     ExpectedImprovementStrategy,
+    GreedyStrategy,
     SoftBALDStrategy,
-    StandardDeviationStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,
+    VarianceReductionStrategy,
 )
 
 REGRESSION_TEST_CASES = [
     {"task_type": "regression", "strategy_class": BALDStrategy, "strategy_kwargs": {}},
-    {"task_type": "regression", "strategy_class": StandardDeviationStrategy, "strategy_kwargs": {}},
+    {"task_type": "regression", "strategy_class": VarianceReductionStrategy, "strategy_kwargs": {}},
     {
         "task_type": "regression",
         "strategy_class": ExpectedImprovementStrategy,
@@ -18,7 +18,7 @@ REGRESSION_TEST_CASES = [
     },
     {
         "task_type": "regression",
-        "strategy_class": AverageScoreStrategy,
+        "strategy_class": GreedyStrategy,
         "strategy_kwargs": {},
     },
     {

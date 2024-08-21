@@ -18,9 +18,9 @@ from pyrelational.strategies.classification import (
     RatioConfidenceStrategy,
 )
 from pyrelational.strategies.regression import (
-    AverageScoreStrategy,
     BALDStrategy,
     ExpectedImprovementStrategy,
+    GreedyStrategy,
     SoftBALDStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,
@@ -35,7 +35,7 @@ from tests.test_utils import (
 REGRESSION_STRATEGIES = [
     BALDStrategy,
     ExpectedImprovementStrategy,
-    AverageScoreStrategy,
+    GreedyStrategy,
     SoftBALDStrategy,
     ThompsonSamplingStrategy,
     UpperConfidenceBoundStrategy,

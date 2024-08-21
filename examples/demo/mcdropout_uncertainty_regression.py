@@ -19,7 +19,7 @@ from pyrelational.data_managers import DataManager
 from pyrelational.model_managers import LightningMCDropoutModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
-from pyrelational.strategies.regression import LeastConfidenceStrategy
+from pyrelational.strategies.regression import VarianceReductionStrategy
 
 # dataset
 dataset = DiabetesDataset()
@@ -39,7 +39,7 @@ data_manager = DataManager(
 )
 
 
-strategy = LeastConfidenceStrategy()
+strategy = VarianceReductionStrategy()
 oracle = BenchmarkOracle()
 pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 

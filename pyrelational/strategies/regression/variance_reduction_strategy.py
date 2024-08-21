@@ -5,7 +5,7 @@ from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
-class StandardDeviationStrategy(RegressionStrategy):
+class VarianceReductionStrategy(RegressionStrategy):
     """Implements Least Confidence Strategy.
 
     Unlabelled samples are queried based on their predicted variance by the model.

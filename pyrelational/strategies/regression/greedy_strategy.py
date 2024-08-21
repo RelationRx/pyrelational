@@ -1,12 +1,12 @@
-"""Mean Prediction Strategy Module."""
+"""Greedy Strategy Module."""
 
 from pyrelational.informativeness import AverageScorer
 from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
-class AverageScoreStrategy(RegressionStrategy):
-    """Implements Mean Prediction Strategy.
+class GreedyStrategy(RegressionStrategy):
+    """Implements Greedy Strategy.
 
     Unlabelled samples are queried based on their predicted mean value by the model.
     ie samples with the highest predicted mean values are queried.
