@@ -7,7 +7,7 @@ import torch
 from torch import Tensor
 
 
-class AbstractSampler(ABC):
+class BatchModeSampler(ABC):
     """Abstract sampler class."""
 
     @abstractmethod
@@ -20,7 +20,7 @@ class AbstractSampler(ABC):
         pass
 
 
-class DeterministicSampler(AbstractSampler):
+class TopKSampler(BatchModeSampler):
     """Deterministic sampler based on the top-k scores."""
 
     def __call__(self, scores: Tensor, indices: List[int], num_samples: int) -> List[int]:
@@ -32,7 +32,7 @@ class DeterministicSampler(AbstractSampler):
         return [indices[i] for i in ixs[:num_samples]]
 
 
-class ProbabilisticSampler(AbstractSampler):
+class ProbabilisticSampler(BatchModeSampler):
     """Probabilistic sampler based on the scores."""
 
     def __call__(self, scores: Tensor, indices: List[int], num_samples: int) -> List[int]:

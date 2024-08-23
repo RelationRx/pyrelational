@@ -1,7 +1,7 @@
 """Upper Confidence Bound Strategy."""
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.informativeness import UpperConfidenceBound
-from pyrelational.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
@@ -16,4 +16,4 @@ class UpperConfidenceBoundStrategy(RegressionStrategy):
 
         :param kappa: trade-off parameter between exploitation and exploration
         """
-        super().__init__(UpperConfidenceBound(kappa=kappa, axis=axis), DeterministicSampler())
+        super().__init__(UpperConfidenceBound(kappa=kappa, axis=axis), TopKSampler())

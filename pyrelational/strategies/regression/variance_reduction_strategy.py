@@ -1,7 +1,7 @@
 """Least Confidence Strategy for regression tasks."""
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.informativeness import StandardDeviation
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
@@ -13,4 +13,4 @@ class VarianceReductionStrategy(RegressionStrategy):
 
     def __init__(self, axis: int = 0):
         """Initialize the strategy with the least confidence scorer and a deterministic scorer for regression."""
-        super().__init__(StandardDeviation(axis=axis), DeterministicSampler())
+        super().__init__(StandardDeviation(axis=axis), TopKSampler())

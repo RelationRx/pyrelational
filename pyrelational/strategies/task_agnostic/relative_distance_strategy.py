@@ -2,9 +2,9 @@
 
 from typing import List
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import RelativeDistanceScorer
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
@@ -20,7 +20,7 @@ class RelativeDistanceStrategy(Strategy):
             pairwise_distances function.
         """
         self.metric = metric
-        super().__init__(RelativeDistanceScorer(metric=metric), DeterministicSampler())
+        super().__init__(RelativeDistanceScorer(metric=metric), TopKSampler())
 
     def __call__(self, num_annotate: int, data_manager: DataManager) -> List[int]:
         """Identify samples which need to be labelled.

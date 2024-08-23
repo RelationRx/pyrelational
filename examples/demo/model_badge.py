@@ -13,13 +13,14 @@ import torch
 from utils.datasets import BreastCancerDataset
 from utils.ml_models import BreastCancerClassification
 
+from pyrelational.batch_mode_samplers import TopKSampler
+
 # Active Learning package
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import RelativeDistanceScorer
 from pyrelational.model_managers import LightningModelManager, ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.abstract_strategy import Strategy
 
 # dataset
@@ -94,7 +95,7 @@ class BadgeStrategy(Strategy):
         """"""
         super(BadgeStrategy, self).__init__(
             RelativeDistanceScorer(),
-            DeterministicSampler(),
+            TopKSampler(),
         )
 
     def __call__(self, num_annotate: int, data_manager: DataManager, model_manager: BadgeLightningModel) -> List[int]:

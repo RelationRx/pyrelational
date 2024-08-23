@@ -3,7 +3,7 @@ from unittest import TestCase
 
 import torch
 
-from pyrelational.samplers import DeterministicSampler, ProbabilisticSampler
+from pyrelational.batch_mode_samplers import ProbabilisticSampler, TopKSampler
 
 
 class TestSamplers(TestCase):
@@ -11,7 +11,7 @@ class TestSamplers(TestCase):
 
     def test_deterministic_sampler(self) -> None:
         """Test deterministic sampler."""
-        sampler = DeterministicSampler()
+        sampler = TopKSampler()
         query = sampler(torch.tensor([0.1, 3.0, 2.1]), [1, 2, 3], 1)
         self.assertEqual(len(query), 1)
         self.assertEqual(query, [2])

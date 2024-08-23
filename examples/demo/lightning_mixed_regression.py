@@ -4,8 +4,8 @@ TO DO: illustrate with dataset
 
 import torch
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.informativeness import StandardDeviation
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 from pyrelational.strategies.task_agnostic.representative_sampling_strategy import (
     representative_sampling,
@@ -19,7 +19,7 @@ class MixedStrategy(RegressionStrategy):
     """
 
     def __init__(self, clustering_method: str, oversample_factor: int = 10):
-        super().__init__(StandardDeviation(), DeterministicSampler())
+        super().__init__(StandardDeviation(), TopKSampler())
         self.clustering_method = clustering_method
         self.oversample_factor = oversample_factor
 

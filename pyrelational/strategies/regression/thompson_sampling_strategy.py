@@ -1,7 +1,7 @@
 """Thomas Sampling Strategy for Regression."""
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.informativeness import ThompsonSampling
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
@@ -13,4 +13,4 @@ class ThompsonSamplingStrategy(RegressionStrategy):
 
     def __init__(self, axis: int = 0):
         """Initialize the strategy with the thompson sampling scorer and a deterministic scorer for regression."""
-        super().__init__(ThompsonSampling(axis=axis), DeterministicSampler())
+        super().__init__(ThompsonSampling(axis=axis), TopKSampler())

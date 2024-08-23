@@ -12,6 +12,7 @@ import logging
 from abc import ABC
 from typing import Any, Callable, Dict, List, Union
 
+from pyrelational.batch_mode_samplers import BatchModeSampler
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness.abstract_scorers import (
     AbstractClassificationScorer,
@@ -19,7 +20,6 @@ from pyrelational.informativeness.abstract_scorers import (
     AbstractScorer,
 )
 from pyrelational.model_managers import ModelManager
-from pyrelational.samplers import AbstractSampler
 
 logger = logging.getLogger()
 SCORER = Union[AbstractScorer, AbstractRegressionScorer, AbstractClassificationScorer]
@@ -53,7 +53,7 @@ class Strategy(ABC):
     The user defined __call__ method must have a "num_annotate" argument
     """
 
-    def __init__(self, scorer: SCORER, sampler: AbstractSampler):
+    def __init__(self, scorer: SCORER, sampler: BatchModeSampler):
         """Initialize the strategy with a scorer and a sampler.
 
         :param scorer: instance of a scorer class

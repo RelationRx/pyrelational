@@ -4,10 +4,10 @@ from typing import Any, List
 
 import torch
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.data_managers import DataManager
 from pyrelational.informativeness import ExpectedImprovement
 from pyrelational.model_managers import ModelManager
-from pyrelational.samplers.samplers import DeterministicSampler
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
@@ -21,7 +21,7 @@ class ExpectedImprovementStrategy(Strategy):
 
     def __init__(self, xi: float = 0.01, axis: int = 0) -> None:
         """Initialize the strategy with the expected improvement scorer and a deterministic sampler for regression."""
-        super().__init__(ExpectedImprovement(xi=xi, axis=axis), DeterministicSampler())
+        super().__init__(ExpectedImprovement(xi=xi, axis=axis), TopKSampler())
 
     def __call__(
         self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]

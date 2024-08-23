@@ -1,7 +1,7 @@
 """BALD Strategy for regression tasks."""
 
+from pyrelational.batch_mode_samplers import ProbabilisticSampler, TopKSampler
 from pyrelational.informativeness import RegressionBald
-from pyrelational.samplers import DeterministicSampler, ProbabilisticSampler
 from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
@@ -13,7 +13,7 @@ class BALDStrategy(RegressionStrategy):
 
     def __init__(self, axis: int = 0):
         """Initialise the strategy with bald scorer and deterministic sampler."""
-        super().__init__(RegressionBald(axis=axis), DeterministicSampler())
+        super().__init__(RegressionBald(axis=axis), TopKSampler())
 
 
 class SoftBALDStrategy(RegressionStrategy):
