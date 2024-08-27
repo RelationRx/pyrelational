@@ -13,9 +13,11 @@ import torch
 from utils.datasets import BreastCancerDataset
 from utils.ml_models import BreastCancerClassification
 
+from pyrelational.batch_mode_samplers import TopKSampler
+
 # Active Learning package
 from pyrelational.data_managers import DataManager
-from pyrelational.informativeness import relative_distance
+from pyrelational.informativeness import RelativeDistanceScorer
 from pyrelational.model_managers import LightningModelManager, ModelManager
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
@@ -87,10 +89,16 @@ data_manager = DataManager(
 class BadgeStrategy(Strategy):
     """Implementation of BADGE strategy."""
 
-    def __init__(self):
-        super(BadgeStrategy, self).__init__()
+    scorer: RelativeDistanceScorer
 
-    def __call__(self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager) -> List[int]:
+    def __init__(self):
+        """"""
+        super(BadgeStrategy, self).__init__(
+            RelativeDistanceScorer(),
+            TopKSampler(),
+        )
+
+    def __call__(self, num_annotate: int, data_manager: DataManager, model_manager: BadgeLightningModel) -> List[int]:
         """
         :param num_annotate: Number of samples to label
         :return: indices of samples to label
@@ -101,9 +109,8 @@ class BadgeStrategy(Strategy):
         model_manager.train(l_loader, valid_loader)
         u_grads = model_manager.get_gradients(u_loader)
         l_grads = model_manager.get_gradients(l_loader)
-        scores = relative_distance(u_grads, l_grads)
-        ixs = torch.argsort(scores, descending=True).tolist()
-        return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
+        scores = self.scorer(u_grads, l_grads)
+        return self.sampler(scores, data_manager.u_indices, num_annotate)
 
 
 # Set the instantiated custom model and strategy into the Pipeline object

@@ -1,25 +1,33 @@
+"""Implement Expected Improvement Strategy for regression tasks."""
+
 from typing import Any, List
 
 import torch
 
+from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.data_managers import DataManager
-from pyrelational.informativeness import regression_expected_improvement
+from pyrelational.informativeness import ExpectedImprovement
 from pyrelational.model_managers import ModelManager
 from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class ExpectedImprovementStrategy(Strategy):
-    """Implement Expected Improvement Strategy whereby each unlabelled sample is scored based on the
-    expected improvement scoring function. The top samples according to this score are selected at each step"""
+    """Implement Expected Improvement Strategy.
 
-    def __init__(self) -> None:
-        super(ExpectedImprovementStrategy, self).__init__()
+    Unlabelled sample is scored based on the expected improvement scoring function.
+    """
+
+    scorer: ExpectedImprovement
+
+    def __init__(self, xi: float = 0.01, axis: int = 0) -> None:
+        """Initialize the strategy with the expected improvement scorer and a deterministic sampler for regression."""
+        super().__init__(ExpectedImprovement(xi=xi, axis=axis), TopKSampler())
 
     def __call__(
         self, num_annotate: int, data_manager: DataManager, model_manager: ModelManager[Any, Any]
     ) -> List[int]:
         """
-        Call function which identifies samples which need to be labelled
+        Identify samples which need to be labelled.
 
         :param num_annotate: number of samples to annotate
         :param data_manager: A pyrelational data manager
@@ -33,6 +41,5 @@ class ExpectedImprovementStrategy(Strategy):
         """
         output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
         max_label = torch.max(data_manager.get_sample_labels(data_manager.l_indices))
-        uncertainty = regression_expected_improvement(x=output, max_label=max_label).squeeze(-1)
-        ixs = torch.argsort(uncertainty, descending=True).tolist()
-        return [data_manager.u_indices[i] for i in ixs[:num_annotate]]
+        uncertainty = self.scorer(output, max_label=max_label)
+        return self.sampler(uncertainty, data_manager.u_indices, num_annotate)
