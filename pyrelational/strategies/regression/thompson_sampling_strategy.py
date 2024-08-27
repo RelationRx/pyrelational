@@ -1,14 +1,16 @@
-from torch import Tensor
+"""Thomas Sampling Strategy for Regression."""
 
-from pyrelational.informativeness import regression_thompson_sampling
-from pyrelational.strategies.regression.abstract_regression_strategy import (
-    RegressionStrategy,
-)
+from pyrelational.batch_mode_samplers import TopKSampler
+from pyrelational.informativeness import ThompsonSampling
+from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
 
 
 class ThompsonSamplingStrategy(RegressionStrategy):
-    """Implements Thompson Sampling Strategy whereby unlabelled samples are scored and queried based on the
-    thompson sampling scorer"""
+    """Implements Thompson Sampling Strategy.
 
-    def scoring_function(self, predictions: Tensor) -> Tensor:
-        return regression_thompson_sampling(predictions)
+    Unlabelled samples are scored and queried based on the thompson sampling scorer.
+    """
+
+    def __init__(self, axis: int = 0):
+        """Initialize the strategy with the thompson sampling scorer and a deterministic scorer for regression."""
+        super().__init__(ThompsonSampling(axis=axis), TopKSampler())

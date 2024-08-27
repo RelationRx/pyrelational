@@ -1,20 +1,18 @@
-"""
-Active learning using least confidence uncertainty measure
-between classes in the posterior predictive distribution to
-choose which observations to propose to the oracle
-"""
+"""Active learning using least confidence uncertainty measure."""
 
-from torch import Tensor
-
-from pyrelational.informativeness import classification_least_confidence
-from pyrelational.strategies.classification.abstract_classification_strategy import (
+from pyrelational.batch_mode_samplers import TopKSampler
+from pyrelational.informativeness import LeastConfidence
+from pyrelational.strategies.classification.classification_strategy import (
     ClassificationStrategy,
 )
 
 
 class LeastConfidenceStrategy(ClassificationStrategy):
-    """Implements Least Confidence Strategy whereby unlabelled samples are scored and queried based on
-    the least confidence for classification scorer"""
+    """Implements Least Confidence Strategy.
 
-    def scoring_function(self, predictions: Tensor) -> Tensor:
-        return classification_least_confidence(predictions)
+    Unlabelled samples are scored and queried based on the least confidence for classification scorer.
+    """
+
+    def __init__(self, axis: int = -1):
+        """Initialize the strategy with the least confidence scorer and a deterministic scorer for classification."""
+        super().__init__(LeastConfidence(axis=axis), TopKSampler())
