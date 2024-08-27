@@ -14,7 +14,7 @@ Strategies for regression tasks
 
 Abstract regression strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.. automodule:: pyrelational.strategies.regression.abstract_regression_strategy
+.. automodule:: pyrelational.strategies.regression.regression_strategy
    :members:
    :undoc-members:
    :special-members: __call__
@@ -70,7 +70,7 @@ Strategies for classification tasks
 Abstract Classification strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: pyrelational.strategies.classification.abstract_classification_strategy
+.. automodule:: pyrelational.strategies.classification.classification_strategy
    :members:
    :undoc-members:
    :special-members: __call__

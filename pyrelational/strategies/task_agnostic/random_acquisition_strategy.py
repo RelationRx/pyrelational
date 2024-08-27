@@ -1,5 +1,4 @@
-"""Defines and implements a random acquisition active learning strategy.
-"""
+"""Defines and implements a random acquisition active learning strategy."""
 
 from typing import List
 
@@ -10,14 +9,15 @@ from pyrelational.strategies.abstract_strategy import Strategy
 
 
 class RandomAcquisitionStrategy(Strategy):
-    """Implements RandomAcquisition whereby random samples from unlabelled set are chosen at each step"""
+    """Implements RandomAcquisition whereby random samples from unlabelled set are chosen at each step."""
 
     def __init__(self) -> None:
-        super(RandomAcquisitionStrategy, self).__init__()
+        """Override init method to do nothing. This strategy does not require any initialization."""
+        pass
 
     def __call__(self, num_annotate: int, data_manager: DataManager) -> List[int]:
         """
-        Call function which identifies samples which need to be labelled
+        Identify samples for labelling based on random sampling.
 
         :param num_annotate: number of samples to annotate
         :param data_manager: A pyrelational data manager
