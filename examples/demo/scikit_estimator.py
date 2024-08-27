@@ -11,10 +11,10 @@ import torch
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-from torch.utils.data import Dataset
 
 # Data and data manager
 from utils.datasets import BreastCancerDataset
+
 from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
