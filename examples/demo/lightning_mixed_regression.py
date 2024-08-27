@@ -4,25 +4,27 @@ TO DO: illustrate with dataset
 
 import torch
 
-from pyrelational.informativeness import (
-    regression_least_confidence,
+from pyrelational.batch_mode_samplers import TopKSampler
+from pyrelational.informativeness import StandardDeviation
+from pyrelational.strategies.regression.regression_strategy import RegressionStrategy
+from pyrelational.strategies.task_agnostic.representative_sampling_strategy import (
     representative_sampling,
 )
-from pyrelational.strategies.abstract_strategy import Strategy
 
 
-class MixedStrategy(Strategy):
-    """
-    Implements a strategy that combines least_confidence scorer with representative sampling.
+class MixedStrategy(RegressionStrategy):
+    """Implements a strategy that combines least_confidence scorer with representative sampling.
     To this end, 10 times more samples than requested are selected based on least_confidence scorer,
     the list is then reduced based on representative_sampling.
     """
 
+    def __init__(self, clustering_method: str, oversample_factor: int = 10):
+        super().__init__(StandardDeviation(), TopKSampler())
+        self.clustering_method = clustering_method
+        self.oversample_factor = oversample_factor
+
     def __call__(self, num_annotate, data_manager, model_manager):
-        output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
-        scores = regression_least_confidence(x=output.squeeze(-1))
-        ixs = torch.argsort(scores, descending=True).tolist()
-        ixs = [data_manager.u_indices[i] for i in ixs[: 10 * num_annotate]]
+        ixs = super().__call__(num_annotate * self.oversample_factor, data_manager, model_manager)
         subquery = torch.stack(data_manager.get_sample_feature_vectors(ixs))
-        new_ixs = representative_sampling(subquery)
+        new_ixs = representative_sampling(subquery, num_annotate, self.clustering_method)
         return [ixs[i] for i in new_ixs]
