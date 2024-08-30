@@ -4,7 +4,7 @@ import torch
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import balanced_accuracy_score, auc
+from sklearn.metrics import balanced_accuracy_score, auc, roc_auc_score
 
 # Data and data manager
 from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
@@ -64,8 +64,8 @@ class SKRFC(ModelManager):
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
         y_hat = self._current_model.predict(X)
-        acc = balanced_accuracy_score(y_hat, y)
-        return {"test_acc": acc}
+        metric = roc_auc_score(y_hat, y, average="macro", multi_class="ovo")
+        return {"test_metric": metric}
 
     def __call__(self, loader):
         if not self.is_trained():
@@ -90,11 +90,6 @@ def get_strategy_from_string(strategy):
 experiment_param_space = {
     "seed": tune.grid_search([1,2,3,4,5]),
     "strategy": tune.grid_search(["least_confidence", "entropy", "marginal_confidence", "ratio_confidence"])
-}
-
-config = {
-    "seed": 1,
-    "strategy": "least_confidence"
 }
 
 def trial(config):
@@ -130,10 +125,17 @@ def trial(config):
     
     return {"score": score_area_under_curve}
 
+# Configure and specift the tuner which will run the trials
+experiment_name = "breastcancer"
+storage_path = os.path.join(os.getcwd(), experiment_name + "_results")
+
 trial = tune.with_resources(trial, {"cpu": 3})
 tuner = tune.Tuner(
     trial,
     tune_config=tune.TuneConfig(num_samples=1),
     param_space=experiment_param_space,
+    run_config = tune.RunConfig(
+        name = experiment_name,
+        storage_path = storage_path,)
 )
 results = tuner.fit()
