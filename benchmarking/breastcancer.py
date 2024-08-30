@@ -93,6 +93,11 @@ experiment_param_space = {
     "strategy": tune.grid_search(["least_confidence", "entropy", "marginal_confidence", "ratio_confidence"])
 }
 
+# config = {
+#     "seed": 1,
+#     "strategy": "least_confidence"
+# }
+
 def trial(config):
     seed = config["seed"]
     strategy = get_strategy_from_string(config["strategy"])
@@ -117,13 +122,13 @@ def trial(config):
 
     score_area_under_curve = []
     for i in range(len(pipeline.performances)):
-        if "test_acc" in pipeline.performances[i]:
-            score_area_under_curve.append(pipeline.performances[i]["test_acc"])
+        if "test_metric" in pipeline.performances[i]:
+            score_area_under_curve.append(pipeline.performances[i]["test_metric"])
 
     print(score_area_under_curve)
     score_area_under_curve = np.array(score_area_under_curve)
     score_area_under_curve = auc(np.arange(len(score_area_under_curve)), score_area_under_curve)
-    
+        
     return {"score": score_area_under_curve}
 
 # Configure and specift the tuner which will run the trials
