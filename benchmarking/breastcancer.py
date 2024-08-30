@@ -4,7 +4,7 @@ import torch
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import balanced_accuracy_score, auc
 
 # Data and data manager
 from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
@@ -64,7 +64,7 @@ class SKRFC(ModelManager):
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
         y_hat = self._current_model.predict(X)
-        acc = accuracy_score(y_hat, y)
+        acc = balanced_accuracy_score(y_hat, y)
         return {"test_acc": acc}
 
     def __call__(self, loader):
@@ -92,13 +92,18 @@ experiment_param_space = {
     "strategy": tune.grid_search(["least_confidence", "entropy", "marginal_confidence", "ratio_confidence"])
 }
 
+config = {
+    "seed": 1,
+    "strategy": "least_confidence"
+}
+
 def trial(config):
     seed = config["seed"]
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_breastcancer_data_manager()
     model_config = {"n_estimators": 10, "bootstrap": False}
     trainer_config = {}
-    model_manager = SKRFC(strategy, model_config, trainer_config)
+    model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
 
     # Instantiate an active learning strategy
     al_strategy = RandomAcquisitionStrategy()
@@ -110,25 +115,25 @@ def trial(config):
     # we may create an active learning pipeline
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=al_strategy, oracle=oracle)
 
-    # theoretical performance if the full trainset is labelled
-    pipeline.compute_theoretical_performance()
-
-    # # New data to be annotated, followed by an update of the data_manager and model
-    # to_annotate = pipeline.step(num_annotate=1)
-    # pipeline.query(indices=to_annotate)
-
     # Annotating data step by step until the trainset is fully annotated
     pipeline.run(num_annotate=1)
     print(pipeline)
 
-if __name__ == "__main__":
-    ray.init()
-    analysis = tune.run(
-        trial,
-        config=experiment_param_space,
-        num_samples=20,
-        resources_per_trial={"cpu": 1},
-        local_dir=os.path.join(os.getcwd(), "ray_results")
-    )
-    print("Best config: ", analysis.get_best_config(metric="test_acc", mode="max"))
-    ray.shutdown()
+    score_area_under_curve = []
+    for i in range(len(pipeline.performances)):
+        if "test_acc" in pipeline.performances[i]:
+            score_area_under_curve.append(pipeline.performances[i]["test_acc"])
+
+    print(score_area_under_curve)
+    score_area_under_curve = np.array(score_area_under_curve)
+    score_area_under_curve = auc(np.arange(len(score_area_under_curve)), score_area_under_curve)
+    
+    return {"score": score_area_under_curve}
+
+trial = tune.with_resources(trial, {"cpu": 3})
+tuner = tune.Tuner(
+    trial,
+    tune_config=tune.TuneConfig(num_samples=1),
+    param_space=experiment_param_space,
+)
+results = tuner.fit()
