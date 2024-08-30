@@ -65,7 +65,7 @@ class SKRFC(ModelManager):
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         X, y = next(iter(loader))
         y_hat = self._current_model.predict(X)
-        metric = roc_auc_score(y_hat, y, average="macro", multi_class="ovo")
+        metric = balanced_accuracy_score(y_hat, y)
         return {"test_metric": metric}
 
     def __call__(self, loader):
