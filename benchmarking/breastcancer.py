@@ -120,16 +120,16 @@ def trial(config):
     pipeline.run(num_annotate=1)
     print(pipeline)
 
-    score_area_under_curve = []
+    iteration_metrics = []
     for i in range(len(pipeline.performances)):
         if "test_metric" in pipeline.performances[i]:
-            score_area_under_curve.append(pipeline.performances[i]["test_metric"])
+            iteration_metrics.append(pipeline.performances[i]["test_metric"])
 
-    print(score_area_under_curve)
-    score_area_under_curve = np.array(score_area_under_curve)
-    score_area_under_curve = auc(np.arange(len(score_area_under_curve)), score_area_under_curve)
+    print(iteration_metrics)
+    iteration_metrics = np.array(iteration_metrics)
+    score_area_under_curve = auc(np.arange(len(iteration_metrics)), iteration_metrics)
         
-    return {"score": score_area_under_curve}
+    return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
 
 # Configure and specift the tuner which will run the trials
 experiment_name = "breastcancer"
