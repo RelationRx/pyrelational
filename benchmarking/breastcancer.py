@@ -19,6 +19,7 @@ from pyrelational.strategies.task_agnostic import RandomAcquisitionStrategy
 
 # Ray Tune
 from ray import tune
+from ray.train import RunConfig
 import ray
 import os
 
@@ -134,7 +135,7 @@ tuner = tune.Tuner(
     trial,
     tune_config=tune.TuneConfig(num_samples=1),
     param_space=experiment_param_space,
-    run_config = tune.RunConfig(
+    run_config = RunConfig(
         name = experiment_name,
         storage_path = storage_path,)
 )
