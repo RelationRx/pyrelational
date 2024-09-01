@@ -21,6 +21,7 @@ import os
 from classification_experiment_utils import get_strategy_from_string, numpy_collate
 from classification_experiment_utils import SKRFC
 from classification_experiment_utils import experiment_param_space
+from ray_functions import set_all_seeds
 
 def get_creditcard_data_manager():
     ds = CreditCardDataset()
@@ -41,6 +42,7 @@ def get_creditcard_data_manager():
 
 def trial(config):
     seed = config["seed"]
+    set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_creditcard_data_manager()
     model_config = {"n_estimators": 10, "bootstrap": False}
