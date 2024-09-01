@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score, auc, roc_auc_score
 
 # Data and data manager
-from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
+from pyrelational.datasets.classification.andrea_et_al import CreditCardDataset
 from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
@@ -22,9 +22,9 @@ from classification_experiment_utils import get_strategy_from_string, numpy_coll
 from classification_experiment_utils import SKRFC
 from classification_experiment_utils import experiment_param_space
 
-def get_breastcancer_data_manager():
-    ds = BreastCancerDataset()
-    train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [300, 100, 169])
+def get_creditcard_data_manager():
+    ds = CreditCardDataset()
+    train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [142407, 35600, 106800])
     train_indices = train_ds.indices
     valid_indices = valid_ds.indices
     test_indices = test_ds.indices
@@ -34,7 +34,7 @@ def get_breastcancer_data_manager():
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        labelled_indices=np.random.choice(train_indices, 10, replace=False).tolist(),
+        labelled_indices=np.random.choice(train_indices, 10000, replace=False).tolist(),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,
     )
@@ -42,7 +42,7 @@ def get_breastcancer_data_manager():
 def trial(config):
     seed = config["seed"]
     strategy = get_strategy_from_string(config["strategy"])
-    data_manager = get_breastcancer_data_manager()
+    data_manager = get_creditcard_data_manager()
     model_config = {"n_estimators": 10, "bootstrap": False}
     trainer_config = {}
     model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
@@ -64,7 +64,7 @@ def trial(config):
     return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
 
 # Configure and specift the tuner which will run the trials
-experiment_name = "breastcancer"
+experiment_name = "creditcardfraud"
 storage_path = os.path.join(os.getcwd(), "benchmark_results")
 
 trial = tune.with_resources(trial, {"cpu": 3})

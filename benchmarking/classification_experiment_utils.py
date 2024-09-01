@@ -3,6 +3,7 @@ Utility functions for scripting Active learning benchmark experiments where the 
 """
 
 import torch
+import numpy as np
 
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
@@ -36,6 +37,10 @@ def get_strategy_from_string(strategy):
         return RandomAcquisitionStrategy()
     else:
         raise ValueError("Invalid strategy")
+
+def numpy_collate(batch):
+    """Collate function for a Pytorch to Numpy DataLoader"""
+    return [np.stack(el) for el in zip(*batch)]
 
 # Wrapping the RFC with pyrelational's ModelManager
 class SKRFC(ModelManager):
@@ -71,5 +76,5 @@ class SKRFC(ModelManager):
 
 experiment_param_space = {
     "seed": tune.grid_search([1,2,3,4,5]),
-    "strategy": tune.grid_search(["least_confidence", "entropy", "marginal_confidence", "ratio_confidence"])
+    "strategy": tune.grid_search(["least_confidence", "entropy", "marginal_confidence", "ratio_confidence", "random"])
 }
