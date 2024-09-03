@@ -1,34 +1,41 @@
+import os
+from typing import Any, Dict, List, Union
+
 import numpy as np
 import torch
+from classification_experiment_utils import (
+    SKRFC,
+    experiment_param_space,
+    get_strategy_from_string,
+    numpy_collate,
+)
+from numpy.typing import NDArray
+
+# Ray Tune
+from ray import tune
+from ray.train import RunConfig
+from ray_functions import set_all_seeds
 
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import balanced_accuracy_score, auc, roc_auc_score
+from sklearn.metrics import auc, balanced_accuracy_score, roc_auc_score
+
+from pyrelational.data_managers import DataManager
 
 # Data and data manager
 from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
-from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
-# Ray Tune
-from ray import tune
-from ray.train import RunConfig
-import os
 
-from classification_experiment_utils import get_strategy_from_string, numpy_collate
-from classification_experiment_utils import SKRFC
-from classification_experiment_utils import experiment_param_space
-from ray_functions import set_all_seeds
-
-def get_breastcancer_data_manager():
+def get_breastcancer_data_manager() -> DataManager:
     ds = BreastCancerDataset()
     train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [300, 100, 169])
-    train_indices = train_ds.indices
-    valid_indices = valid_ds.indices
-    test_indices = test_ds.indices
+    train_indices = list(train_ds.indices)
+    valid_indices = list(valid_ds.indices)
+    test_indices = list(test_ds.indices)
 
     return DataManager(
         ds,
@@ -40,13 +47,14 @@ def get_breastcancer_data_manager():
         loader_collate_fn=numpy_collate,
     )
 
-def trial(config):
+
+def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[np.float32, np.float64]]]]:
     seed = config["seed"]
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_breastcancer_data_manager()
     model_config = {"n_estimators": 10, "bootstrap": False}
-    trainer_config = {}
+    trainer_config: Dict[str, Any] = {}
     model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
@@ -62,8 +70,9 @@ def trial(config):
 
     iteration_metrics = np.array(iteration_metrics)
     score_area_under_curve = auc(np.arange(len(iteration_metrics)), iteration_metrics)
-        
+
     return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
+
 
 # Configure and specift the tuner which will run the trials
 experiment_name = "breastcancer"
@@ -74,8 +83,9 @@ tuner = tune.Tuner(
     trial,
     tune_config=tune.TuneConfig(num_samples=1),
     param_space=experiment_param_space,
-    run_config = RunConfig(
-        name = experiment_name,
-        storage_path = storage_path,)
+    run_config=RunConfig(
+        name=experiment_name,
+        storage_path=storage_path,
+    ),
 )
 results = tuner.fit()

@@ -1,36 +1,41 @@
+import os
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cast
+
 import numpy as np
 import torch
+from numpy.typing import NDArray
+
+# Ray Tune
+from ray import tune
+from ray.train import RunConfig
+from ray_functions import set_all_seeds
+from regression_experiment_utils import (
+    GPR,
+    experiment_param_space,
+    get_strategy_from_string,
+    numpy_collate,
+)
 
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import balanced_accuracy_score, auc, roc_auc_score
+from sklearn.metrics import auc, balanced_accuracy_score, roc_auc_score
+
+from pyrelational.data_managers import DataManager
 
 # Data and data manager
 from pyrelational.datasets.regression.scikit_learn import DiabetesDataset
-from pyrelational.data_managers import DataManager
 
 # Model, strategy, oracle, and pipeline
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
-# Ray Tune
-from ray import tune
-from ray.train import RunConfig
-import os
 
-from regression_experiment_utils import get_strategy_from_string, numpy_collate
-from regression_experiment_utils import GPR
-from regression_experiment_utils import experiment_param_space
-from ray_functions import set_all_seeds
-
-ds = DiabetesDataset()
-
-def get_diabetes_data_manager():
+def get_diabetes_data_manager() -> DataManager:
     ds = DiabetesDataset()
     train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [300, 42, 100])
-    train_indices = train_ds.indices
-    valid_indices = valid_ds.indices
-    test_indices = test_ds.indices
+    train_indices = list(train_ds.indices)
+    valid_indices = list(valid_ds.indices)
+    test_indices = list(test_ds.indices)
 
     return DataManager(
         ds,
@@ -42,14 +47,15 @@ def get_diabetes_data_manager():
         loader_collate_fn=numpy_collate,
     )
 
-def trial(config):
+
+def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, np.float32, np.float64]]]]:
     seed = config["seed"]
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_diabetes_data_manager()
-    model_config = {}
-    trainer_config = {}
-    model_manager = GPR(model_config, trainer_config)
+    model_config: Dict[str, Any] = {}
+    trainer_config: Dict[str, Any] = {}
+    model_manager: GPR = GPR(model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
@@ -67,6 +73,7 @@ def trial(config):
 
     return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
 
+
 # Configure and specift the tuner which will run the trials
 experiment_name = "diabetes"
 storage_path = os.path.join(os.getcwd(), "benchmark_results")
@@ -76,8 +83,9 @@ tuner = tune.Tuner(
     trial,
     tune_config=tune.TuneConfig(num_samples=1),
     param_space=experiment_param_space,
-    run_config = RunConfig(
-        name = experiment_name,
-        storage_path = storage_path,)
+    run_config=RunConfig(
+        name=experiment_name,
+        storage_path=storage_path,
+    ),
 )
 results = tuner.fit()
