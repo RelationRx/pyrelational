@@ -5,9 +5,6 @@ Utility functions for scripting Active learning benchmark experiments where the 
 import os
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
-ModelType = TypeVar("ModelType")
-E = TypeVar("E")
-
 import numpy as np
 import ray
 import torch
