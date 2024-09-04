@@ -1,0 +1,34 @@
+Failure # 1 (occurred at 2024-09-01_20-26-20)
+[36mray::ImplicitFunc.train()[39m (pid=30238, ip=128.232.64.154, actor_id=e0d5ac4592477bb27fc6200f01000000, repr=trial)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/miniconda3/envs/pyrelational/lib/python3.12/site-packages/ray/tune/trainable/trainable.py", line 331, in train
+    raise skipped from exception_cause(skipped)
+  File "/local/scratch/pms69/miniconda3/envs/pyrelational/lib/python3.12/site-packages/ray/air/_internal/util.py", line 98, in run
+    self._ret = self._target(*self._args, **self._kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/miniconda3/envs/pyrelational/lib/python3.12/site-packages/ray/tune/trainable/function_trainable.py", line 45, in <lambda>
+    training_func=lambda: self._trainable_func(self.config),
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/miniconda3/envs/pyrelational/lib/python3.12/site-packages/ray/tune/trainable/function_trainable.py", line 250, in _trainable_func
+    output = fn()
+             ^^^^
+  File "/local/scratch/pms69/pyrelational/benchmarking/airfoil.py", line 60, in trial
+    pipeline.run(num_annotate=1)
+  File "/local/scratch/pms69/pyrelational/pyrelational/pipeline/pipeline.py", line 191, in run
+    observations_for_labelling = self.step(num_annotate, *strategy_args, **strategy_kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/pyrelational/pyrelational/pipeline/pipeline.py", line 147, in step
+    observations_for_labelling = self.strategy.suggest(num_annotate, *args, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/pyrelational/pyrelational/strategies/abstract_strategy.py", line 76, in suggest
+    return self(num_annotate=num_annotate, **filtered_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/pyrelational/pyrelational/strategies/regression/regression_strategy.py", line 31, in __call__
+    return self.sampler(scores, data_manager.u_indices, num_annotate)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/local/scratch/pms69/pyrelational/pyrelational/batch_mode_samplers/_batch_mode_samplers.py", line 32, in __call__
+    return [indices[i] for i in ixs[:num_samples]]
+            ~~~~~~~^^^
+IndexError: list index out of range
