@@ -60,7 +60,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
     # Annotating data step by step until the trainset is fully annotated
-    pipeline.run(num_annotate=1)
+    pipeline.run(num_annotate=1, num_iterations=2500)
     print(pipeline)
 
     iteration_metrics = []
