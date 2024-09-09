@@ -30,6 +30,7 @@ from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
 
+# Step 1: Define the get_datamanager function
 def get_airfoil_data_manager() -> DataManager:
     ds = UCIAirfoil()
     train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [1000, 100, 402])
@@ -48,6 +49,7 @@ def get_airfoil_data_manager() -> DataManager:
     )
 
 
+# Step 2: Define the trial function
 def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, np.float32, np.float64]]]]:
     seed = config["seed"]
     set_all_seeds(seed)
@@ -74,7 +76,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
 
 
-# Configure and specift the tuner which will run the trials
+# Step 3: Configure and specift the tuner which will run the trials
 experiment_name = "airfoil"
 storage_path = os.path.join(os.getcwd(), "benchmark_results")
 
