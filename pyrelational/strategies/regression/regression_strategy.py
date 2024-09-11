@@ -27,5 +27,8 @@ class RegressionStrategy(Strategy):
         :return: list of indices to annotate
         """
         output = self.train_and_infer(data_manager=data_manager, model_manager=model_manager)
-        scores = self.scorer(output)
+        if output.shape[0] == 1:
+            scores = self.scorer(output)
+        else:
+            scores = self.scorer(output).squeeze(-1)
         return self.sampler(scores, data_manager.u_indices, num_annotate)
