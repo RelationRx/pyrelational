@@ -1,2 +1,0 @@
-score,iteration_metrics,timestamp,checkpoint_dir_name,done,training_iteration,trial_id,date,time_this_iter_s,time_total_s,pid,hostname,node_ip,time_since_restore,iterations_since_restore
-2302.7327433401065,[0.92690718 0.92953163 0.93358736 ... 0.9388868  0.91877487 0.92666161],1725585591,,False,1,e7384_00006,2024-09-06_02-19-51,34013.17564845085,34013.17564845085,10369,nemo.cl.cam.ac.uk,128.232.64.154,34013.17564845085,1

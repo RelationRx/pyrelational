@@ -1,4 +1,0 @@
-{
-  "seed": 5,
-  "strategy": "upper_confidence_bound"
-}
