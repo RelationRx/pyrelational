@@ -3,12 +3,12 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cas
 
 import numpy as np
 import torch
+from benchmarking_utils import set_all_seeds
 from numpy.typing import NDArray
 
 # Ray Tune
 from ray import tune
 from ray.train import RunConfig
-from ray_functions import set_all_seeds
 from regression_experiment_utils import (
     GPR,
     experiment_param_space,

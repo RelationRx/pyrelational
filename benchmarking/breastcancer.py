@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union
 
 import numpy as np
 import torch
+from benchmarking_utils import set_all_seeds
 from classification_experiment_utils import (
     SKRFC,
     experiment_param_space,
@@ -14,7 +15,6 @@ from numpy.typing import NDArray
 # Ray Tune
 from ray import tune
 from ray.train import RunConfig
-from ray_functions import set_all_seeds
 
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
