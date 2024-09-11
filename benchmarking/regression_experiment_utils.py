@@ -98,7 +98,7 @@ class GPR(ModelManager[GaussianProcessRegressor, GaussianProcessRegressor]):
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         else:
             class_probabilities = model.sample_y(X, n_samples=10)
-            return torch.FloatTensor(class_probabilities)
+            return torch.FloatTensor(class_probabilities).T
 
 
 experiment_param_space = {
