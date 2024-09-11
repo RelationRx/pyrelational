@@ -14,3 +14,8 @@ We leverage Ray Tune's job scheduling to efficiently distribute and manage the r
 # TL;DR
 
 Run `<dataset.py>`, adjust and check benchmarks in `results_grid_analysis.ipynb`
+
+
+# TODOs
+
+- Fix random strategy, under the current implementation of the pipeline run the model is not trained between rounds (in other strategies the model is trained as part of the strategy). This causes the performance to not improve until the very end.
