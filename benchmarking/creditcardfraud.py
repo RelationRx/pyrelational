@@ -42,7 +42,7 @@ def get_creditcard_data_manager() -> DataManager:
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        labelled_indices=np.random.choice(train_indices, 10000, replace=False).tolist(),
+        labelled_indices=np.random.choice(train_indices, 100, replace=False).tolist(),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,
     )
@@ -60,7 +60,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
     # Annotating data step by step until the trainset is fully annotated
-    pipeline.run(num_annotate=1, num_iterations=2500)
+    pipeline.run(num_annotate=1, num_iterations=10)
     print(pipeline)
 
     iteration_metrics = []
@@ -78,7 +78,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
 experiment_name = "creditcardfraud"
 storage_path = os.path.join(os.getcwd(), "benchmark_results")
 
-trial = tune.with_resources(trial, {"cpu": 3})
+trial = tune.with_resources(trial, {"cpu": 4})
 tuner = tune.Tuner(
     trial,
     tune_config=tune.TuneConfig(num_samples=1),
@@ -89,3 +89,18 @@ tuner = tune.Tuner(
     ),
 )
 results = tuner.fit()
+
+
+# ######## Local test ########
+# from tqdm import tqdm
+# configs = []
+# strategies = ["random", "least_confidence", "entropy", "marginal_confidence", "ratio_confidence"]
+# for seed in [1]:
+#     print(f"Running config")
+#     for strategy in strategies:
+#         configs.append({"seed": seed, "strategy": strategy})
+# results = []
+# for config in tqdm(configs, desc="Running trials"):
+#     print(f"Running config: {config}")
+#     results.append(trial(config))
+# print(results)

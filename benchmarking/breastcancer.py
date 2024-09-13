@@ -89,3 +89,17 @@ tuner = tune.Tuner(
     ),
 )
 results = tuner.fit()
+
+
+# ######## Local test ########
+# from tqdm import tqdm
+# configs = []
+# strategies = ["random", "least_confidence", "entropy", "marginal_confidence", "ratio_confidence"]
+# for seed in [1]:
+#     for strategy in strategies:
+#         configs.append({"seed": seed, "strategy": strategy})
+# results = []
+# for config in tqdm(configs, desc="Running trials"):
+#     print(f"Running config: {config}")
+#     results.append(trial(config))
+# print(results)
