@@ -7,7 +7,7 @@ deprecated/
 examples/demo/experiment_logs/
 experiment_logs/
 test_data/
-benchmarking/benchmark_results
+benchmarking/ray_benchmark_results
 
 # Checkpoints
 checkpoints/
