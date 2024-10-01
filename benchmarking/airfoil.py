@@ -3,10 +3,8 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cas
 
 import numpy as np
 import torch
-from benchmarking_utils import set_all_seeds
+from benchmarking_utils import process_results_grid, save_results_df, set_all_seeds
 from numpy.typing import NDArray
-
-# Ray Tune
 from ray import tune
 from ray.train import RunConfig
 from regression_experiment_utils import (
@@ -15,17 +13,10 @@ from regression_experiment_utils import (
     get_strategy_from_string,
     numpy_collate,
 )
-
-# Scikit learn
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import auc, balanced_accuracy_score, roc_auc_score
 
 from pyrelational.data_managers import DataManager
-
-# Data and data manager
 from pyrelational.datasets.regression.uci import UCIAirfoil
-
-# Model, strategy, oracle, and pipeline
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
@@ -78,7 +69,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
 
 # Step 3: Configure and specift the tuner which will run the trials
 experiment_name = "airfoil"
-storage_path = os.path.join(os.getcwd(), "benchmark_results")
+storage_path = os.path.join(os.getcwd(), "ray_benchmark_results")
 
 trial = tune.with_resources(trial, {"cpu": 3})
 tuner = tune.Tuner(
@@ -90,7 +81,9 @@ tuner = tune.Tuner(
         storage_path=storage_path,
     ),
 )
-results = tuner.fit()
+results_grid = tuner.fit()
+results_df = process_results_grid(results_grid=results_grid)
+save_results_df(results_df=results_df, storage_path="benchmark_results", experiment_name=experiment_name)
 
 
 # ######## Local test ########

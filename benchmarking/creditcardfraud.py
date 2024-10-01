@@ -3,7 +3,7 @@ from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, cas
 
 import numpy as np
 import torch
-from benchmarking_utils import set_all_seeds
+from benchmarking_utils import process_results_grid, save_results_df, set_all_seeds
 from classification_experiment_utils import (
     SKRFC,
     experiment_param_space,
@@ -11,21 +11,13 @@ from classification_experiment_utils import (
     numpy_collate,
 )
 from numpy.typing import NDArray
-
-# Ray Tune
 from ray import tune
 from ray.train import RunConfig
-
-# Scikit learn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import auc, balanced_accuracy_score, roc_auc_score
 
 from pyrelational.data_managers import DataManager
-
-# Data and data manager
 from pyrelational.datasets.classification.andrea_et_al import CreditCardDataset
-
-# Model, strategy, oracle, and pipeline
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
@@ -42,7 +34,7 @@ def get_creditcard_data_manager() -> DataManager:
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        labelled_indices=np.random.choice(train_indices, 100, replace=False).tolist(),
+        labelled_indices=np.random.choice(train_indices, 2500, replace=False).tolist(),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,
     )
@@ -60,7 +52,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
     # Annotating data step by step until the trainset is fully annotated
-    pipeline.run(num_annotate=1, num_iterations=10)
+    pipeline.run(num_annotate=1, num_iterations=1000)
     print(pipeline)
 
     iteration_metrics = []
@@ -76,7 +68,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
 
 # Configure and specift the tuner which will run the trials
 experiment_name = "creditcardfraud"
-storage_path = os.path.join(os.getcwd(), "benchmark_results")
+storage_path = os.path.join(os.getcwd(), "ray_benchmark_results")
 
 trial = tune.with_resources(trial, {"cpu": 4})
 tuner = tune.Tuner(
@@ -88,7 +80,9 @@ tuner = tune.Tuner(
         storage_path=storage_path,
     ),
 )
-results = tuner.fit()
+results_grid = tuner.fit()
+results_df = process_results_grid(results_grid=results_grid)
+save_results_df(results_df=results_df, storage_path="benchmark_results", experiment_name=experiment_name)
 
 
 # ######## Local test ########
