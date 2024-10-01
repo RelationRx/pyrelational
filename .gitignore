@@ -7,6 +7,7 @@ deprecated/
 examples/demo/experiment_logs/
 experiment_logs/
 test_data/
+benchmarking/benchmark_results
 
 # Checkpoints
 checkpoints/
