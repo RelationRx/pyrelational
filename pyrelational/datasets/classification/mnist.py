@@ -19,7 +19,7 @@ class MNIST(BaseDataset):
     """
 
     def __init__(self, data_dir: str = "/tmp/", random_seed: int = 1234):
-        """Instantiate the FashionMNIST dataset class.
+        """Instantiate the MNIST dataset class.
 
         :param data_dir: directory where to download the data, defaults to "/tmp/"
         :param random_seed: random seed, defaults to 1234
