@@ -1,7 +1,4 @@
-"""This module defines the acquisition manager which utilises
-the data manager, sampling functions, and model to create acquisition
-functions and general arbiters of the active learning pipeline
-"""
+"""Active learning pipeline."""
 
 import logging
 from collections import defaultdict
@@ -22,7 +19,8 @@ logger = logging.getLogger()
 
 
 class Pipeline:
-    """
+    """Implementation of the active learning pipeline.
+
     The pipeline facilitates the communication between
 
         - DataManager
@@ -40,7 +38,8 @@ class Pipeline:
         strategy: Strategy,
         oracle: Optional[Oracle] = None,
     ):
-        """
+        """Instantiate an active learning pipeline.
+
         :param data_manager: A pyrelational data manager
             which keeps track of what has been labelled and creates data loaders for
             active learning
@@ -67,20 +66,19 @@ class Pipeline:
         self.log_labelled_by(data_manager.l_indices, tag="initialisation")
 
     def compute_theoretical_performance(self, test_loader: Optional[DataLoader[Any]] = None) -> Dict[str, float]:
-        """
-        Returns the performance of the full labelled dataset against the
-        test data. Typically used for evaluation to establish theoretical benchmark
-        of model performance given all available training data is labelled. The
-        "horizontal" line in area under learning curve plots for active learning
+        """Return the performance of the full labelled dataset against the test data.
 
-        Would not make much sense when we are doing active learning for the real
-        situation, hence not part of __init__
+        Typically used for evaluation to establish theoretical benchmark
+        of model performance given all available training data is labelled. The
+        "horizontal" line in area under learning curve plots for active learning.
+
+        Would not make much sense when doing active learning in real world
+        situation, hence not part of __init__.
 
         :param test_loader: Pytorch Data Loader with
             test data compatible with model, optional as often the test loader can be
             generated from data_manager but is here for case when it hasn't been defined
             or there is a new test set.
-
         :return: dictionary containing metric results on test set
         """
         self.model_manager.train(self.train_loader, self.valid_loader)
@@ -97,8 +95,7 @@ class Pipeline:
     def compute_current_performance(
         self, test_loader: Optional[DataLoader[Any]] = None, query: Optional[List[int]] = None
     ) -> None:
-        """
-        Compute performance of model.
+        """Compute performance of model.
 
         :param test_loader: Pytorch Data Loader with
             test data compatible with model, optional as often the test loader can be
@@ -117,13 +114,11 @@ class Pipeline:
         return None
 
     def compute_hit_ratio(self, result: Dict[str, float], query: Optional[List[int]] = None) -> Dict[str, float]:
-        """
-        Utility function for computing the hit ratio as used within the current performance
-        and theoretical performance methods.
+        """Compute the hit ratio metric.
 
+        Used within the current performance and theoretical performance methods.
         :param result: Dict or Dict-like of metrics
         :param query: List of indices selected for labelling. Used for calculating hit ratio metric
-
         :return: updated result dictionary with "hit_ratio" key, corresponding to hit ratio result
         """
         if self.data_manager.top_unlabelled is not None:
@@ -135,11 +130,9 @@ class Pipeline:
         return result
 
     def step(self, num_annotate: int, *args: Any, **kwargs: Any) -> List[int]:
-        """
-        Ask the strategy to provide indices of unobserved observations for labelling by the oracle
+        """Ask the strategy to provide indices of unobserved observations for labelling by the oracle.
 
         :param num_annotate: Number of points to annotate
-
         :return: list of indexes to label from dataset
         """
         default_kwargs = self.__dict__
@@ -148,8 +141,7 @@ class Pipeline:
         return observations_for_labelling
 
     def query(self, indices: List[int]) -> None:
-        """
-        Updates labels based on indices selected for labelling
+        """Update labels based on indices selected for labelling.
 
         :param indices: List of indices selected for labelling
         """
@@ -170,7 +162,8 @@ class Pipeline:
         *strategy_args: Any,
         **strategy_kwargs: Any,
     ) -> None:
-        """
+        """Run the pipeline.
+
         Given the number of samples to annotate and a test loader this method will go through the entire
         active learning process of training the model on the labelled set, and recording the current performance
         based on this. Then it will proceed to compute uncertainties for the unlabelled observations, rank them,
@@ -195,11 +188,14 @@ class Pipeline:
                 test_loader=test_loader,
                 query=observations_for_labelling,
             )
-            self.query(
-                observations_for_labelling,
-            )
+            self.query(observations_for_labelling)
+
             if (num_iterations is not None) and iter_count == num_iterations:
                 break
+
+            if len(self.u_indices) > 0:
+                # Only reset the model if there are still unlabelled samples
+                self.model_manager.reset()
 
         # Final update the model and check final test performance
         self.model_manager.train(self.l_loader, self.valid_loader)
@@ -232,11 +228,9 @@ class Pipeline:
         return pd_df
 
     def log_labelled_by(self, indices: List[int], tag: Optional[str] = None) -> None:
-        """
-        Update the dictionary that records what the observation
-        was labelled by. Default behaviour is to map observation to
-        iteration at which it was labelled
+        """Update the dictionary that records what the observation was labelled by.
 
+        Default behaviour is to map observation to iteration at which it was labelled.
         :param indices: list of indices selected for labelling
         :param tag: string which indicates what the observations where labelled by
         """
@@ -246,54 +240,55 @@ class Pipeline:
 
     @property
     def u_indices(self) -> List[int]:
-        """Indices of unlabelled samples."""
+        """Return the indices of unlabelled samples."""
         return self.data_manager.u_indices
 
     @property
     def u_loader(self) -> DataLoader[Any]:
-        """Dataloader containing unlabelled data."""
+        """Return the dataloader containing unlabelled data."""
         return self.data_manager.get_unlabelled_loader()
 
     @property
     def l_indices(self) -> List[int]:
-        """Indices of labelled samples."""
+        """Return the indices of labelled samples."""
         return self.data_manager.l_indices
 
     @property
     def l_loader(self) -> DataLoader[Any]:
-        """Dataloader containing labelled data."""
+        """Return the dataloader containing labelled data."""
         return self.data_manager.get_labelled_loader()
 
     @property
     def train_loader(self) -> DataLoader[Any]:
-        """Dataloader containing train data."""
+        """Return the dataloader containing train data."""
         return self.data_manager.get_train_loader(full=True)
 
     @property
     def valid_loader(self) -> Optional[DataLoader[Any]]:
-        """Dataloader containing validation data."""
+        """Return the dataloader containing validation data."""
         return self.data_manager.get_validation_loader()
 
     @property
     def test_loader(self) -> DataLoader[Any]:
-        """Dataloader containing test data."""
+        """Return the dataloader containing test data."""
         return self.data_manager.get_test_loader()
 
     @property
     def percentage_labelled(self) -> float:
-        """Percentage of total available dataset labelled."""
+        """Return the percentage of total available dataset labelled."""
         return self.data_manager.get_percentage_labelled()
 
     @property
     def dataset_size(self) -> int:
-        """Number of total data points."""
+        """Return the number of total data points."""
         return len(self.data_manager)
 
     def __repr__(self) -> str:
+        """Return class name."""
         return self.__class__.__name__
 
     def __str__(self) -> str:
-        """Pretty prints contents inside ActiveLearningManager based on available attributes"""
+        """Print prettily the details of the pipeline."""
         str_dm = str(self.data_manager)
         str_model = str(self.model_manager)
         str_dataset_size = str(self.dataset_size)
