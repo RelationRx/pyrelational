@@ -89,7 +89,8 @@ save_results_df(results_df=results_df, storage_path="benchmark_results", experim
 # ######## Local test ########
 # from tqdm import tqdm
 # configs = []
-# strategies = ["random", "bald", "greedy", "thompson_sampling", "variance_reduction", "upper_confidence_bound", "expected_improvement"]
+# strategies = ["random", "bald", "greedy", "thompson_sampling", "variance_reduction",
+#         "upper_confidence_bound", "expected_improvement"]
 # for seed in [1]:
 #     for strategy in strategies:
 #         configs.append({"seed": seed, "strategy": strategy})

@@ -29,7 +29,7 @@ def process_results_grid(results_grid: ResultGrid) -> pd.DataFrame:
     print("Number of results:", num_results)
 
     # Iterate over results
-    for i, result in enumerate(results_grid):
+    for i, result in enumerate(results_grid):  # type: ignore
         if result.error:
             print(f"Trial #{i} had an error:", result.error)
             continue
@@ -58,7 +58,7 @@ def process_results_grid_into_sns_plot_df(results_df: pd.DataFrame) -> pd.DataFr
     - score: The score for that trial
     """
     sns_plot_df = []
-    for a, row in tqdm(results_df.iterrows()):
+    for _, row in tqdm(results_df.iterrows()):
         trial_id = row["trial_id"]
         seed = row["config/seed"]
         score = row["score"]
