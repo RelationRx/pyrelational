@@ -292,7 +292,7 @@ class DataManager:
             ixs = self.u_indices
             percentage = int(percentage * len(ixs))
             y = self.get_sample_labels(ixs)
-            threshold = np.sort(y.abs())[-percentage]
+            threshold = np.sort(y.abs())[-percentage].item()
             indices = torch.where(y.abs() >= threshold)[0]
             self.top_unlabelled = set(ixs[i] for i in indices)
 
