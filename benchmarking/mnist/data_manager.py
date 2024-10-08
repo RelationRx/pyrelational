@@ -13,15 +13,17 @@ def get_mnist_datamanager(
     percentage_val: float = 0.1,
     labelled_size: int = 20,
     random_state: int = 42,
+    data_dir: str = "/tmp/",
 ) -> DataManager:
     """Instantiate data manager for MNIST dataset.
 
     :param percentage_val: size in percentage of the validation split, defaults to 0.1
     :param labelled_size: number of initial labelled sample, defaults to 20
     :param random_state: random seed, defaults to 42
+    :param data_dir: directory where to download the data, defaults to "/tmp/"
     :return: MNIST pyrelational data manager.
     """
-    dataset = MNIST()
+    dataset = MNIST(data_dir=data_dir)
     train_ixs, test_ixs = dataset.data_splits[0]
 
     unlabelled_ixs, val_ixs = train_test_split(

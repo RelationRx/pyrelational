@@ -10,10 +10,10 @@ from typing import Tuple
 
 import torch
 from lightning.pytorch import LightningModule
-from sklearn.metrics import accuracy_score
 from torch import Tensor
 from torch import nn as nn
 from torch.nn import functional as F
+from torchmetrics.classification import MulticlassAccuracy
 
 from pyrelational.model_managers import LightningMCDropoutModelManager
 
@@ -32,6 +32,8 @@ class ConvNet(LightningModule):
         self.fc1 = nn.Linear(1024, 128)
         self.fc1_drop = nn.Dropout()
         self.fc2 = nn.Linear(128, num_classes)
+
+        self.test_accuracy = MulticlassAccuracy(num_classes=num_classes)
 
     def forward(self, x: Tensor) -> Tensor:
         """Run forward pass of the model."""
@@ -66,9 +68,12 @@ class ConvNet(LightningModule):
         self.log("test_loss", loss)
 
         # compute accuracy
-        _, y_pred = torch.max(logits.data, 1)
-        accuracy = accuracy_score(y, y_pred)
-        self.log("test_accuracy", accuracy)
+        self.test_accuracy.update(logits, y)
+
+    def on_test_epoch_end(self) -> None:
+        acc = self.test_accuracy.compute()
+        self.log("test_accuracy", acc)
+        self.test_accuracy.reset()
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         """Configure optimizer for the model."""
