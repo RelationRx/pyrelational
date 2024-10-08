@@ -1,7 +1,7 @@
 Quickstart and introduction by example
 =======================================
 
-As discussed in the :ref:`whatisal` section, the **PyRelationAL** package decomposes the active learning workflow into five
+As discussed in the :ref:`whatisal` section, the **PyRelationAL** package decomposes the generic active learning workflow into five
 main components: 1) a data manager, 2) a model manager, 3) an acquisition strategy built around an informativeness measure, 4) an oracle and 5) a pipeline.
 In this section, we work through an example to illustrate how to instantiate and combine a data manager, a model manager, an acquisition strategy and an oracle.
 
@@ -19,7 +19,9 @@ We first create a pytorch dataset for it. In order to use this dataset within th
   By default this is specified as "y". Some datasets, such as :py:class:`torch.utils.data.TensorDataset` from pytorch, do not have this property and so these are
   not currently supported.
 * The dataset :py:meth:`__getitem__` method must return a tuple of tensors. Most strategies and model managers within the package also assume that the features are contained within a single tensor,
-  which is the first item that is returned in the tuple.
+  which is the first item that is returned in the tuple. Of course, if this is not applicable to your use case, it is simply a matter of extending the appropriate strategy, model manager and pipeline
+  to accommodate this (more on that in later tutorial pages).
+
 
 
 .. code-block:: python
