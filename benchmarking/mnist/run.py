@@ -33,7 +33,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     model_config: Dict[str, Any] = {"num_classes": 10}
     trainer_config: Dict[str, Any] = {
         "patience": 3,
-        "max_epochs": 100,
+        "epochs": 100,
         "accelerator": "gpu",
     }
     model_manager = MCConvNet(model_config=model_config, trainer_config=trainer_config)
@@ -41,16 +41,17 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
     # Annotating data step by step until the unlabelled set is fully annotated
-    pipeline.run(num_annotate=10, num_iterations=1000)
+    num_iterations = 25
+    pipeline.run(num_annotate=10, num_iterations=num_iterations)
     print(pipeline)
 
     iteration_metrics = []
-    for i in range(len(pipeline.performances)):
-        if "test_metric" in pipeline.performances[i]:
-            iteration_metrics.append(pipeline.performances[i]["test_metric"])
+    for i in range(num_iterations):
+        if "test_accuracy" in pipeline.performances[i]:
+            iteration_metrics.append(pipeline.performances[i]["test_accuracy"])
 
     iteration_metrics = np.array(iteration_metrics)
-    score_area_under_curve = auc(np.arange(len(iteration_metrics)), iteration_metrics)
+    score_area_under_curve = auc(np.arange(num_iterations), iteration_metrics)
 
     return {"score": score_area_under_curve, "iteration_metrics": iteration_metrics}
 
