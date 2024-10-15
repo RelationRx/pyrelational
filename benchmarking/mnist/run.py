@@ -35,6 +35,7 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
         "patience": 3,
         "epochs": 100,
         "accelerator": "gpu",
+        "use_early_stopping": True,
     }
     model_manager = MCConvNet(model_config=model_config, trainer_config=trainer_config)
     oracle = BenchmarkOracle()
