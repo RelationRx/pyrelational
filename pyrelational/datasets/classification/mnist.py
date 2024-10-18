@@ -51,3 +51,4 @@ class MNIST(BaseDataset):
 
 if __name__ == "__main__":
     data = MNIST()
+    print("plop")

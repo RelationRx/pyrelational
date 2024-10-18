@@ -6,6 +6,7 @@ from pyrelational.datasets.classification.ksenia_et_al import (
     GaussianCloudsDataset,
     StriatumDataset,
 )
+from pyrelational.datasets.classification.mnist import MNIST
 from pyrelational.datasets.classification.scikit_learn import (
     BreastCancerDataset,
     DigitDataset,

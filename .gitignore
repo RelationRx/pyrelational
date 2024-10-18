@@ -1,11 +1,13 @@
 data/
 .idea
+.vscode
 
 # Dev files
 deprecated/
 examples/demo/experiment_logs/
 experiment_logs/
 test_data/
+benchmarking/ray_benchmark_results
 
 # Checkpoints
 checkpoints/
