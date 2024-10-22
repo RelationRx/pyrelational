@@ -1,3 +1,6 @@
+from pyrelational.strategies.classification.classification_strategy import (
+    ClassificationStrategy,
+)
 from pyrelational.strategies.classification.entropy_classification_strategy import (
     EntropyClassificationStrategy,
 )
