@@ -158,4 +158,5 @@ class RegressionBald(AbstractRegressionScorer):
         """Return BALD score based on disagreement among predictions."""
         x_mean = x.mean(self.axis, keepdim=True)
         x = (x - x_mean) ** 2
-        return torch.log(1 + x.mean(self.axis)) / torch.tensor(2.0)
+        scores = torch.log(1 + x.mean(self.axis)) / torch.tensor(2.0)
+        return scores

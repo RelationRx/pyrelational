@@ -47,7 +47,7 @@ To develop pyrelational, first build and install it from source following the st
 3. If needed, install dependencies in your environment:
 
    ```bash
-   pip install -r requirements.txt
+   pip install -r requirements/dev_requirements.txt
    ```
 
    This will install all the required dependencies for the package, the examples, as well as flake8, isort, pytest-cov, and black.
@@ -69,7 +69,7 @@ To develop pyrelational, first build and install it from source following the st
 6. Install pre-commit hooks:
 
    ```bash
-    pre-commit install
+   pre-commit install
    ```
 
 ### Unit Testing
