@@ -109,7 +109,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         self._create_splits(n_splits=n_splits, random_seed=random_seed, test_size=test_size)
 
     def validate_inputs(self, studies: list[str], synergy_score: str) -> None:
-        """Check user input against allowed values"""
+        """Check user input against allowed values."""
         assert (
             synergy_score in self.ALLOWED_SYNERGY
         ), f"{synergy_score} not supported, pick a synergy score in {self.ALLOWED_SYNERGY}"
@@ -126,7 +126,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         self.data_directory = os.path.join(self.root, dataset_name)
 
     def setup_dataset(self) -> None:
-        """Setup data structures."""
+        """Set data structures."""
         drug_to_id = self.set_drug_features()
         cell_to_id = self.set_cell_line_features()
         self.download_and_process_drugcomb_data(drug_to_id, cell_to_id)
@@ -202,7 +202,7 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         drug_col = summary.drug_col.apply(drug_to_id.get).values
         cell_id = summary.cell_line_name.apply(cell_to_id.get).values
         self.indices = np.stack((drug_row, drug_col, cell_id), axis=1).astype(int)
-        self.y = torch.from_numpy(summary[self.synergy_score].values).float()
+        self.y = torch.from_numpy(summary[self.synergy_score].values).float().unsqueeze(1)
         self.drug_id_to_fingerprint = {
             k: v for k, v in self.drug_id_to_fingerprint.items() if (k in drug_row) or (k in drug_col)
         }
@@ -259,4 +259,5 @@ class DrugCombDataset(Dataset[Tuple[Tensor, Tensor, Tensor, Tensor]]):
         )
 
     def __len__(self) -> int:
+        """Return length of dataset."""
         return len(self.indices)

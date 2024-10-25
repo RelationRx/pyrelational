@@ -28,7 +28,7 @@ logger = logging.getLogger()
 
 class DataManager:
     """
-    DataManager for active learning pipelines
+    DataManager for active learning pipelines.
 
     A diagram showing how the train/test indices are resolved:
 
@@ -60,7 +60,8 @@ class DataManager:
         loader_drop_last: bool = False,
         loader_timeout: float = 0,
     ):
-        """
+        """Instantiate a DataManager.
+
         :param dataset: A PyTorch dataset whose indices refer to individual samples of study. This dataset must have
             an attribute containing the labels, and the __getitem__ method must return a tuple of tensors. In general,
             pyrelational assumes that the first item of this tuple is a tensor of features.
@@ -138,7 +139,7 @@ class DataManager:
         validation_indices: Optional[List[int]],
         test_indices: List[int],
     ) -> None:
-        """Ensures that there is no overlap between train/validation/test sets."""
+        """Ensure that there is no overlap between train/validation/test sets."""
         tt = set.intersection(set(train_indices), set(test_indices))
         tv, vt = None, None
         if validation_indices is not None:
@@ -148,9 +149,9 @@ class DataManager:
             raise ValueError("There is an overlap between the split indices supplied")
 
     def _ensure_unique_indices(self) -> None:
-        """
-        Makes sure that all the indices have no repeated values,
-        and that the train indices are the union of the labelled and unlabelled indices.
+        """Ensure that all the indices have no repeated values.
+
+        Also checks that the train indices are the union of the labelled and unlabelled indices.
         raises a ValueError if any of these conditions are not met.
         """
         if len(set(self.l_indices)) != len(self.l_indices):
@@ -168,8 +169,7 @@ class DataManager:
 
     @staticmethod
     def _ensure_not_empty(mode: Literal["train", "test"], indices: List[int]) -> None:
-        """
-        Ensures that train or test set is not empty.
+        """Ensure that train or test set is not empty.
 
         :param mode: either "train" or "test"
         :param indices: either train or test indices
@@ -179,8 +179,7 @@ class DataManager:
 
     @staticmethod
     def _ensure_no_l_u_intersection(labelled_indices: List[int], unlabelled_indices: List[int]) -> None:
-        """ "
-        Ensure that there is no overlap between labelled and unlabelled samples.
+        """Ensure that there is no overlap between labelled and unlabelled samples.
 
         :param labelled_indices: list of indices in dataset which have been labelled
         :param unlabelled_indices: list of indices in dataset which have not been labelled
@@ -189,10 +188,7 @@ class DataManager:
             raise ValueError("There is overlap between labelled and unlabelled samples")
 
     def _ensure_no_l_or_u_leaks(self) -> None:
-        """
-        Ensures that there are no leaks of labelled or unlabelled indices
-        in the validation or tests indices.
-        """
+        """Ensure there are no leaks of labelled/unlabelled indices in val/test."""
         if self.validation_indices is not None:
             v_overlap = set.intersection(set(self.l_indices), set(self.validation_indices))
             if v_overlap:
@@ -225,16 +221,12 @@ class DataManager:
         validation_indices: Optional[List[int]],
         test_indices: Optional[List[int]],
     ) -> None:
-        """
-        This function is used to resolve what values the indices should be given
-        when only a partial subset of them is supplied
-
+        """Resolve set indices when only a partial subset of them is supplied.
 
         :param train_indices: list of indices in dataset for train set
         :param validation_indices: list of indices in dataset for validation set
         :param test_indices: list of indices in dataset for test set
         """
-
         remaining_indices = set(range(len(self.dataset))) - set.union(
             set(train_indices if train_indices is not None else []),
             set(validation_indices if validation_indices is not None else []),
@@ -258,7 +250,7 @@ class DataManager:
         self.test_indices = test_indices
 
     def __len__(self) -> int:
-        # Override this if necessary
+        """Return dataset length."""
         return len(self.dataset)
 
     def __getitem__(self, idx: int) -> Tuple[Tensor, ...]:
@@ -266,17 +258,18 @@ class DataManager:
         return self.dataset[idx]
 
     def set_target_value(self, idx: int, value: Any) -> None:
-        """
+        """Set the value of a sample given an index.
+
         Sets a value to the y value of the corresponding observation
         denoted by idx in the underlying dataset with the supplied value
-
         :param idx: index value to the observation
         :param value: new value for the observation
         """
         getattr(self.dataset, self.label_attr)[idx] = value
 
     def _top_unlabelled_set(self, percentage: Optional[Union[int, float]] = None) -> None:
-        """
+        """Identify subset of unlabelled with desired values (high or low).
+
         Sets the top unlabelled indices according to the value of their labels.
         Used for calculating hit ratio, which demonstrates
         how quickly the samples in this set are recovered for labelling.
@@ -292,7 +285,7 @@ class DataManager:
             ixs = self.u_indices
             percentage = int(percentage * len(ixs))
             y = self.get_sample_labels(ixs)
-            threshold = np.sort(y.abs())[-percentage]
+            threshold = np.sort(y.abs())[-percentage].item()
             indices = torch.where(y.abs() >= threshold)[0]
             self.top_unlabelled = set(ixs[i] for i in indices)
 
@@ -314,8 +307,7 @@ class DataManager:
         return test_subset
 
     def get_train_loader(self, full: bool = False) -> DataLoader[Any]:
-        """
-        Get train dataloader. Returns full train loader, else return labelled loader
+        """Return full train loader if full, else return labelled loader.
 
         :param full: whether to use full dataset with unlabelled included
         :return: Pytorch Dataloader containing labelled training data for model
@@ -339,35 +331,32 @@ class DataManager:
         return self._create_loader(validation_set)
 
     def get_test_loader(self) -> DataLoader[Any]:
-        """
-        Get test dataloader.
+        """Get test dataloader.
 
         :return: Pytorch Dataloader containing test set
         """
         return self._create_loader(self.get_test_set())
 
     def get_unlabelled_loader(self) -> DataLoader[Any]:
-        """
-        Get unlabelled dataloader.
+        """Get unlabelled dataloader.
 
         :return: Pytorch Dataloader containing unlabelled subset from dataset
         """
         return self._create_loader(Subset(self.dataset, self.u_indices))
 
     def get_labelled_loader(self) -> DataLoader[Any]:
-        """
-        Get labelled dataloader.
+        """Get labelled dataloader.
 
         :return: Pytorch Dataloader containing labelled subset from dataset
         """
         return self._create_loader(Subset(self.dataset, self.l_indices), self.loader_shuffle)
 
     def _generate_random_initial_state(self, seed: int = 0) -> None:
-        """
+        """Generate random labelled and unlabelled sets.
+
         Process the dataset to produce a random subsets of labelled and unlabelled
         samples from the dataset based on the ratio given at initialisation and creates
-        the data_loaders
-
+        the data_loaders.
         :param seed: random seed for reproducibility
         """
         if isinstance(self.random_label_size, float):
@@ -385,22 +374,19 @@ class DataManager:
         self.u_indices = list(u_indices)
 
     def update_train_labels(self, indices: List[int]) -> None:
-        """
-        Updates the labelled and unlabelled sets of the dataset.
+        """Update the labelled and unlabelled sets of the dataset.
 
         Different behaviour based on whether this is done in evaluation mode or real mode.
         The difference is that in evaluation mode the dataset already has the label, so it
         is a matter of making sure the observations are moved from the unlabelled set to the
         labelled set.
-
         :param indices: list of indices corresponding to samples which have been labelled
         """
         self.l_indices = list(set(self.l_indices + indices))
         self.u_indices = list(set(self.u_indices) - set(indices))
 
     def get_percentage_labelled(self) -> float:
-        """
-        Percentage of total available dataset labelled.
+        """Get percentage of total available dataset labelled.
 
         :return: percentage value
         """
@@ -409,22 +395,28 @@ class DataManager:
         return (num_labelled / float(total_len)) * 100
 
     def get_sample_feature_vector(self, ds_index: int) -> Any:
-        """To be reviewed for deprecation (for datasets without tensors)"""
+        """Get feature vector for sample index.
+
+        To be reviewed for deprecation (for datasets without tensors).
+        """
         sample = self[ds_index]
         ret = sample[0].flatten()
         return ret
 
     def get_sample_feature_vectors(self, ds_indices: List[int]) -> List[Tensor]:
-        """To be reviewed for deprecation (for datasets without tensors)"""
+        """Get features for sample indices.
+
+        To be reviewed for deprecation (for datasets without tensors).
+        """
         res = []
         for ds_index in ds_indices:
             res.append(self.get_sample_feature_vector(ds_index))
         return res
 
     def get_sample_labels(self, ds_indices: List[int]) -> Tensor:
-        """
-        Get sample labels. This assumes that labels are last element in output of dataset
+        """Get sample labels.
 
+        This assumes that labels are last element in output of dataset.
         :param ds_indices: collection of indices for accessing samples in dataset.
         :return: list of labels for provided indexes
         """
@@ -435,12 +427,10 @@ class DataManager:
         return torch.stack(res)
 
     def _create_loader(self, dataset: Subset[Tuple[Tensor, ...]], shuffle: bool = False) -> DataLoader[Any]:
-        """
-        Utility to help create dataloader with specifications set at initialisation.
+        """Create dataloader with specifications set at initialisation.
 
         :param dataset: Pytorch dataset to be used in DataLoader
         :param shuffle: whether to shuffle the data in dataloder
-
         :return: Pytorch DataLoader with correct specifications
         """
         batch_size = self.loader_batch_size if isinstance(self.loader_batch_size, int) else len(dataset)
@@ -459,10 +449,11 @@ class DataManager:
         return loader
 
     def __repr__(self) -> str:
+        """Return class name of instance."""
         return self.__class__.__name__
 
     def __str__(self) -> str:
-        """Pretty print a summary of the data_manager contents"""
+        """Print prettily a summary of the data_manager contents."""
         str_percentage_labelled = "%.3f" % (self.get_percentage_labelled())
         str_out = self.__repr__()
         if self.train_indices is not None:
@@ -475,7 +466,7 @@ class DataManager:
 
     @staticmethod
     def _check_is_sized(dataset: Dataset[Tuple[Tensor, ...]]) -> SizedDataset[Tuple[Tensor, ...]]:
-        """Check Dataset is Sized (has a __len__ method)"""
+        """Check Dataset is Sized (has a __len__ method)."""
         if not isinstance(dataset, Sized):
             raise AttributeError("dataset must have __len__ method defined")
         return cast(SizedDataset[Tuple[Tensor, ...]], dataset)
