@@ -55,11 +55,18 @@ def get_strategy_from_string(strategy: str) -> Any:
         raise ValueError("Invalid strategy")
 
 
+# def numpy_collate(
+#     batch: List[Union[torch.Tensor, NDArray[Union[Any, np.float32, np.float64]]]]
+# ) -> List[NDArray[Union[Any, np.float32, np.float64]]]:
+#     """Collate function for a Pytorch to Numpy DataLoader"""
+#     return [np.stack(el) for el in zip(*batch)]
+
+
 def numpy_collate(
     batch: List[Union[torch.Tensor, NDArray[Union[Any, np.float32, np.float64]]]]
 ) -> List[NDArray[Union[Any, np.float32, np.float64]]]:
     """Collate function for a Pytorch to Numpy DataLoader"""
-    return [np.stack(el) for el in zip(*batch)]
+    return [np.stack([b.numpy() if isinstance(b, torch.Tensor) else b for b in samples]) for samples in zip(*batch)]
 
 
 # Wrapping the GPR with pyrelational's ModelManager
