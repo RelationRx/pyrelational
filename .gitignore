@@ -1,6 +1,7 @@
 data/
 .idea
 .vscode
+.DS_Store
 
 # Dev files
 deprecated/
