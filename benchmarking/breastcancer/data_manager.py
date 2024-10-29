@@ -1,3 +1,5 @@
+# type: ignore
+
 """Benchmarking DataManager for the breastcancer dataset
 """
 
@@ -9,6 +11,8 @@ from numpy.typing import NDArray
 
 from pyrelational.data_managers import DataManager
 from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
+
+from ..classification_experiment_utils import pick_one_sample_per_class
 
 
 def get_breastcancer_data_manager() -> DataManager:
@@ -23,7 +27,7 @@ def get_breastcancer_data_manager() -> DataManager:
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        labelled_indices=np.random.choice(train_indices, 10, replace=False).tolist(),
+        labelled_indices=pick_one_sample_per_class(ds, train_indices),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,
     )
