@@ -3,7 +3,9 @@ Utility functions for scripting Active learning benchmark experiments where the 
 """
 
 import os
-from typing import Any, Dict, List, Optional, Type, TypeVar, Union
+import random
+from collections import defaultdict
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import ray
@@ -92,6 +94,44 @@ class SKRFC(ModelManager[RandomForestClassifier, RandomForestClassifier]):
         else:
             class_probabilities = model.predict_proba(X)
             return torch.FloatTensor(class_probabilities).unsqueeze(0)  # unsqueeze due to batch expectation
+
+
+def pick_one_sample_per_class(dataset: Any, train_indices: NDArray[Union[Any, np.int64]]) -> List[int]:
+    """Randomly pick one sample per class in the training subset of dataset
+    and return their index in the dataset. This is used for defining the
+    initial state of the labelled subset in cold start active learning tasks
+    """
+    class2idx = defaultdict(list)
+    for idx in train_indices:
+        idx_class = int(dataset[idx][1])
+        class2idx[idx_class].append(idx)
+
+    class_reps = []
+    for idx_class in class2idx.keys():
+        random_class_idx = random.choice(class2idx[idx_class])
+        class_reps.append(random_class_idx)
+
+    return class_reps
+
+
+from sklearn.model_selection import StratifiedKFold
+
+
+def make_class_stratified_train_val_test_split(dataset: Any, k: int) -> Tuple[
+    NDArray[Union[Any, np.float32, np.float64]],
+    NDArray[Union[Any, np.float32, np.float64]],
+    NDArray[Union[Any, np.float32, np.float64]],
+]:
+    """Return train, val, test indices that respect a class-stratified split"""
+    skf = StratifiedKFold(n_splits=k, shuffle=True)
+    X = np.array(range(len(dataset)))
+    y = np.array([dataset[idx][1] for idx in X])
+    for train_index, test_index in skf.split(X, y):
+        train_indices, test_indices = X[train_index], X[test_index]
+        break
+    val_indices = train_indices[: len(train_indices) // 5]
+    train_indices = train_indices[len(train_indices) // 5 :]
+    return train_indices, val_indices, test_indices
 
 
 experiment_param_space = {
