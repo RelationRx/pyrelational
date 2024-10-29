@@ -12,15 +12,15 @@ from numpy.typing import NDArray
 from pyrelational.data_managers import DataManager
 from pyrelational.datasets.classification.scikit_learn import BreastCancerDataset
 
-from ..classification_experiment_utils import pick_one_sample_per_class
+from ..classification_experiment_utils import (
+    make_class_stratified_train_val_test_split,
+    pick_one_sample_per_class,
+)
 
 
 def get_breastcancer_data_manager() -> DataManager:
     ds = BreastCancerDataset()
-    train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [300, 100, 169])
-    train_indices = list(train_ds.indices)
-    valid_indices = list(valid_ds.indices)
-    test_indices = list(test_ds.indices)
+    train_indices, valid_indices, test_indices = make_class_stratified_train_val_test_split(ds, k=5)
 
     return DataManager(
         ds,
