@@ -23,7 +23,7 @@ def get_energy_data_manager() -> DataManager:
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        labelled_indices=np.random.choice(train_indices, 10, replace=False).tolist(),
+        labelled_indices=np.random.choice(train_indices, 1, replace=False).tolist(),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,
     )
