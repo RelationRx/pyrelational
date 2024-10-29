@@ -53,7 +53,7 @@ if __name__ == "__main__":
     EXPERIMENT_NAME = "results"
     STORAGE_PATH = os.path.join(os.getcwd(), "ray_benchmark_results")
 
-    trial = tune.with_resources(trial, {"cpu": 2})
+    trial = tune.with_resources(trial, {"cpu": 4})
     tuner = tune.Tuner(
         trial,
         tune_config=tune.TuneConfig(num_samples=1),
