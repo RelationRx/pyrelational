@@ -14,20 +14,19 @@ from numpy.typing import NDArray
 from pyrelational.data_managers import DataManager
 from pyrelational.datasets.classification.ksenia_et_al import Checkerboard4x4Dataset
 
-from ..classification_experiment_utils import pick_one_sample_per_class
+from ..classification_experiment_utils import (
+    make_class_stratified_train_val_test_split,
+    pick_one_sample_per_class,
+)
 
 
 def get_checkerboard4x4_data_manager() -> DataManager:
     # Add a random wait between 1 and 10 seconds to avoid race conditions
     # when creating the DataManager
-    time.sleep(random.randint(1, 10))
+    time.sleep(random.randint(1, 20))
 
     ds = Checkerboard4x4Dataset()
-
-    train_ds, valid_ds, test_ds = torch.utils.data.random_split(ds, [900, 100, 1000])
-    train_indices = list(train_ds.indices)
-    valid_indices = list(valid_ds.indices)
-    test_indices = list(test_ds.indices)
+    train_indices, valid_indices, test_indices = make_class_stratified_train_val_test_split(ds, k=5)
 
     return DataManager(
         ds,
