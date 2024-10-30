@@ -3,6 +3,8 @@ data/
 .vscode
 .DS_Store
 
+run_experiments.sh
+
 # Dev files
 deprecated/
 examples/demo/experiment_logs/
