@@ -22,21 +22,15 @@ from ..classification_experiment_utils import (
 def get_checkerboard2x2_data_manager() -> DataManager:
     # Add a random wait between 1 and 10 seconds to avoid race conditions
     # when creating the DataManager
-    time.sleep(random.randint(1, 10))
-
+    time.sleep(random.randint(1, 20))
     ds = Checkerboard2x2Dataset()
-
     train_indices, valid_indices, test_indices = make_class_stratified_train_val_test_split(ds, k=5)
-    # train_indices = list(train_ds.indices)
-    # valid_indices = list(valid_ds.indices)
-    # test_indices = list(test_ds.indices)
 
     return DataManager(
         ds,
         train_indices=train_indices,
         validation_indices=valid_indices,
         test_indices=test_indices,
-        # FIXME
         labelled_indices=pick_one_sample_per_class(ds, train_indices),
         loader_batch_size="full",
         loader_collate_fn=numpy_collate,

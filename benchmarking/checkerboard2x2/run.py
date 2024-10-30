@@ -28,14 +28,14 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[np.flo
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_checkerboard2x2_data_manager()
-    model_config = {"n_estimators": 10, "bootstrap": False}
+    model_config = {"n_estimators": 10, "bootstrap": True}
     trainer_config: Dict[str, Any] = {}
     model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
     # Annotating data step by step until the trainset is fully annotated
-    pipeline.run(num_annotate=1)
+    pipeline.run(num_annotate=50)
     print(pipeline)
 
     iteration_metrics = []
