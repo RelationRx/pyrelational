@@ -4,21 +4,19 @@
 [![PyPI version](https://badge.fury.io/py/pyrelational.svg)](https://badge.fury.io/py/pyrelational)
 [![Documentation Status](https://readthedocs.org/projects/pyrelational/badge/?version=stable)](https://pyrelational.readthedocs.io/en/stable/?badge=stable)
 
-PyRelationAL is an open source Python library for the rapid and reliable construction of active learning (AL) pipelines and strategies. The toolkit offers a modular design for a flexible workflow that enables active learning with as little change to your models and datasets as possible. The package is primarily aimed at researchers so that they can rapidly reimplement, adapt, and create novel active learning strategies. For more information on how we achieve this you can consult the sections below, our comprehensive docs, or our paper. PyRelationAL is principally designed with PyTorch workflows in mind (for Bayesian inference approximation with neural networks) but is designed from the start to be agnostic to the user's choice of ML framework for model implementation.
+PyRelationAL is an open source Python library for the rapid and reliable construction of active learning (AL) strategies and infrastructure around them (which we call pipelines). The toolkit offers a modular design for a flexible workflow that enables active learning with as little change to your models and datasets as possible. The package is primarily aimed at researchers so that they can rapidly reimplement, adapt, and create novel active learning strategies based on a unifying two-step framework. For more information on how we achieve this you can consult the sections below, our docs, or our paper. PyRelationAL can be used with any machine learning framework with some additional convenient utilities should you choose PyTorch model implementations (for Bayesian inference approximation with neural networks).
 
-Detailed in the *overview* section below, PyRelationAL is centered around 5 modules for the development of AL pipelines and strategies. Allowing the user to freely focus on different aspects of the active learning cycle whilst ensuring other components adhere to a consistent API.
+Detailed in the *overview* section below, PyRelationAL is centered around 5 core sub-modules for the development of AL pipelines and a two step framework for defining strategies. Allowing the user to freely focus on different aspects of the active learning cycle whilst ensuring other components adhere to a consistent API.
 
 - **DataManager**: Data management in AL pipelines.
 - **ModelManager**: Framework agnostic wrappers for ML models to work with PyRelationAL.
 - **Strategy**: Module for developing active learning strategies.
 - **Oracle**: Interfaces for different oracles and labelling tools.
 - **Pipeline**: Facilitate the communication between different PyRelationAL modules to run an active learning cycle.
-- *Uncertainty*: PyRelationAL also offers special wrappers for PyTorch modules that enable Bayesian inference approximation for deep active learning.
 
-Furthermore, the package comes with a growing number of **benchmark datasets and default AL tasks** based on literature with associated public licenses to help researchers test their AL strategies and build on a common set of benchmarks.
+Furthermore, the package comes with a growing number of **benchmark datasets and AL tasks** based on literature with associated public licenses to help researchers test their AL strategies and build on a common set of benchmarks. These can be found in the `benchmarking` directory at the project level of this repository and may be moved into a seperate repository in the future.
 
-One of our main incentives for making this library is to get more people interested in research and development of AL. hence we have made primers, tutorials, and examples available on our website for newcomers (and experienced AL practitioners alike). Experienced users can refer to our numerous examples to get started on creating custom pipelines and strategies in their AL projects.
-
+One of our main incentives for making this library is to get more people interested in research and development of AL. Hence we have made primers, tutorials, and examples available on our website for newcomers (and experienced AL practitioners alike). Experienced users can refer to our numerous examples to get started on creating custom pipelines and strategies in their AL projects.
 
 
 ## Quick install
@@ -32,10 +30,12 @@ pip install pyrelational
 ### Example
 
 ```python
-# Active Learning package
+# Active Learning package imports
 from pyrelational.data_managers import DataManager
 from pyrelational.model_managers import ModelManager
-from pyrelational.strategies.classification import LeastConfidenceStrategy
+from pyrelational.strategies.classification import ClassificationStrategy
+from pyrelational.informativeness import LeastConfidence
+from pyrelational.batch_mode_samplers import ProbabilisticSampler
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
 
@@ -48,8 +48,12 @@ data_manager = DataManager(dataset, train_indices, validation_indices,
 # Create a ModelManager that will handle model instantiation, training and evaluation
 model = ModelManager(ModelConstructor, model_config, trainer_config, **kwargs)
 
-# Use the various implemented active learning strategies or define your own
-strategy = LeastConfidenceStrategy()
+# Use the various implemented active learning strategies or define your own based on
+# an intuitive two step framework
+strategy = ClassificationStrategy(
+  scorer=LeastConfidence(),
+  sampler=ProbabilisticSampler()
+)
 
 # Interface with various dataset annotation tools or use an oracle for Benchmarking
 oracle = BenchmarkOracle()
@@ -58,8 +62,8 @@ oracle = BenchmarkOracle()
 pipeline = Pipeline(data_manager, model, strategy, oracle)
 
 # Use the pipeline to run active learning cycles and log performance data
-to_annotate = pipeline.step(num_annotate=5)
-pipeline.run(num_annotate=10)
+to_annotate = pipeline.step(num_annotate=10)
+pipeline.run(num_annotate=1, num_iterations=100)
 print(pipeline)
 ```
 
@@ -67,14 +71,13 @@ print(pipeline)
 
 ![Overview](docs/images/pyrelational_overview.png "Overview")
 
-The `PyRelationAL` package decomposes the active learning workflow into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
+The `PyRelationAL` package decomposes active learning infrastructure into five main components: 1) a **DataManager**, 2) a **ModelManager**, 3) an AL **Strategy**, 4) an **Oracle** and 5) a **Pipeline** that runs the show.
 
-The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools. The Dataset must have
-specific properties for compatibility: 1) The labels must be contained within an attribute (by default PyRelationAL assumes that this is 'y', but the user can change this) 2) The `__getitem__` method returns a tuple of tensors, where the first element is a tensor of features
+The **DataManager** (`pyrelational.data_managers.DataManager`) wraps around a PyTorch Dataset object and handles dataloader instantiation as well as tracking and updating of labelled and unlabelled sample pools. The Dataset must have specific properties for compatibility: 1) The labels must be contained within an attribute (by default PyRelationAL assumes that this is 'y', but the user can change this) 2) The `__getitem__` method returns a tuple of tensors, where the first element is a tensor of features. Our choice for PyTorch Datasets and DataLoaders is because they scale well and are already used in other ML frameworks like Jax (why reinvent the wheel?).
 
-The **ModelManager** (`pyrelational.model_managers.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and primarily handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It enables the use of ML models implemented using different ML frameworks (for example see `examples/demo/model_gaussianprocesses.py` or `examples/demo/scikit_estimator.py`) with PyRelationAL workflows.
+The **ModelManager** (`pyrelational.model_managers.ModelManager`) wraps a user defined ML model (e.g. PyTorch Module, Flax module, or scikit-learn estimator) and primarily handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout) if relevant. It enables the use of ML models implemented using different ML frameworks (for example see `examples/demo/mcdropout_uncertainty_classification.py` or `examples/demo/scikit_estimator.py`) with PyRelationAL workflows.
 
-The AL **Strategy** (`pyrelational.strategies.Strategy`) defines an active learning strategy. We like to typically think of strategies being compositions of an *informativeness measure* and a *query selection algorithm* that selects observations based on the perceived informativeness. Together they compute the utility of a query or set of queries for a batch active mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles. Users can implement their own strategies by overriding the `.__call__()` method. Look at `examples/demo/model_badge.py` for an example.
+The AL **Strategy** (`pyrelational.strategies.Strategy`) defines an active learning strategy. We like to typically think of strategies being compositions of an *informativeness measure* and a *batch selection algorithm* to select queries. Together they compute the utility of a query or set of queries if it is a batch-mode strategy. We define various classic strategies for classification, regression, and task-agnostic scenarios based on the informativeness measures defined in `pyrelational.informativeness`. The flexible nature of the `Strategy` allows for the construction of strategies from simple serial uncertainty sampling approaches to complex agents that leverage several informativeness measures, state and learning based query selection algorithms, with query batch building bandits under uncertainty from noisy oracles. Users can implement their own strategies by overriding the `.__call__()` method. Look at `examples/demo/model_badge.py` for an example.
 
 The **Oracle** (`pyrelational.oracles.Oracle`) is an entity which provides annotations to observations, as suggested by an active learning strategy. In PyRelationAL, the oracle is an interface to whatever annotation tool is being used (e.g. LabelStudio or a bespoke lab-in-the-loop setup). For benchmarking active learning strategies this is not necessary, and we provide a `BenchmarkOracle` for this purpose.
 
@@ -82,16 +85,16 @@ The **Pipeline** (`pyrelational.pipeline.Pipeline`) arbitrates the active learni
 
 In addition to the main modules above we offer tools for **uncertainty estimation**. In recognition of the growing use of deep learning models we offer a suite of methods for Bayesian inference approximation to quantify uncertainty coming from the functional model such as MCDropout and ensembles of models (which may be used to also define query by committee and query by disagreement strategies).
 
-Finally we to help test and benchmark strategies we offer **Benchmark datasets** and **AL task configurations**. We offer an API to a selection of datasets used previously in AL literature and offer each in several AL task configurations, such as cold and warm initialisations, for pain free benchmarking. For more details see our paper and documentation.
+Moreover, to help test and benchmark strategies we offer **Benchmark datasets** as part of the package and **AL task configurations** in the `benchmarking` directory. We offer an API to a selection of datasets used previously in AL literature and offer at least one AL task with different initialisations. For more details on the benchmarking, see `benchmarking/README.md`
 
 In the next section we briefly outline currently available strategies, informativeness measures, uncertainty estimation methods and some planned modules.
 
-### List of included strategies and uncertainty estimation methods (constantly growing!)
+### List of included strategies and uncertainty estimation methods (still growing!)
 
-#### Uncertainty Estimation
+#### Uncertainty Estimation of point-estimate models
 
-- MCDropout
-- Ensemble of models (a.k.a. commitee)
+- MCDropout *(for PyTorch models)*
+- Ensemble of models (a.k.a. commitee) *(framework agnostic)*
 
 #### Informativeness measures included in the library
 
@@ -118,6 +121,12 @@ In the next section we briefly outline currently available strategies, informati
 - Diversity sampling (with user defined relative distance functions)
 - Random acquisition
 - BADGE
+
+### Query sampling algorithms
+
+- TopK sampler
+- Probabilistic sampler
+- BatchBALD (coming soon)
 
 ## Quickstart & examples
 The `examples/` folder contains multiple scripts and notebooks demonstrating how to use PyRelationAL effectively.
@@ -177,6 +186,7 @@ If you wish to contribute to the code, run `pre-commit install` after the above 
 
 - `pyrelational` folder contains the source code for the PyRelationAL package. It contains the main sub-packages for active learning strategies, various informativeness measures, and methods for estimating posterior uncertainties.
 - `examples` folder contains various example scripts and notebooks detailing how the package can be used to construct novel strategies, work with different ML frameworks, and use your own data
+- `benchmarking` folder contains raw results and code to generate the results, these have been written so that users can add their own datasets, models, or strategies in a consistent manner.
 - `tests` folder contains unit tests for pyrelational package
 - `docs` folder contains documentation and assets for docs
 
