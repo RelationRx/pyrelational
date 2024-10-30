@@ -4,16 +4,22 @@ The benchmark results are located within a subdirectory for each dataset in `res
 
 For each experiment, the DataManager is defined in a separate script, specifying the train, val, test splits along with the initial labelled and unlabelled indices in the queryable (train) pool.
 
-In current benchmarks, we leverage Ray Tune's job scheduling to efficiently distribute and manage the running of the jobs. Each job creates an individual "trial" with it's results and other logs sent `benchmark_results/<dataset>/`. After this we can collate and analyse the trials at the trial or whole experiment level by reading these results files into a `result_grid` (see `results_grid_analysis.ipynb` for examples.)
+In current benchmarks, we leverage [Ray Tune's job scheduling](https://docs.ray.io/en/latest/tune/index.html) to efficiently distribute and manage the running of the jobs across available hardware. Each job creates an individual "trial" with its results and other logs sent to the `results.csv`. After this, we can collate and analyze the trials at the trial or whole experiment level by reading these results files in the `visualisation.ipynb` notebook.
 
 # TL;DR
 
-- If adding to an existing benchmark: adjust `run.py`, then run it with `python -m benchmarking/<dataset>/run`.
+To re-run a benchmark experiment with the same selection of strategies as in the paper: run the following command from the project repository
+```bash
+python -m benchmarking.<dataset>.run
+```
 
-- If adding a new benchmark: add a `<dataset>` folder under `benchmarking/` then add the necessary scripts underneath following examples on the repository.
+- If adding a strategy to an existing benchmark: adjust `run.py`, then run it with `python -m benchmarking/<dataset>/run`.
+- If adding a new dataset: add a `<dataset>` folder under `benchmarking/` then add the necessary scripts underneath following examples on the repository. Most important in this case is the `data_manager.py` which will specify the train, validation, test, initial labelled, and initial unlabelled indices for the dataset.
 
 
 # Utilities
-We provide some genetic benchmarking utils in `benchmarking_utils.py`.
+We provide some genetic benchmarking utils in `benchmarking_utils.py` along with classification and regression specific utilities and model definitions in `classification_experiment_utils.py` and `regression_experiment_utils.py` respectively.
 
-Depending on whether the model task is classification or regression, one can leverage relevant utilities from the `classification_experiment_utils.py` or `regression_experiment_utils.py` modules respectively.
+- `benchmarking_utils.py`: Contains general utilities for processing the outputs of the ray benchmarks.
+- `classification_experiment_utils.py`: Provides utilities and model definitions specific to classification tasks, including data preprocessing, model training, and evaluation functions. It also contains utilities for quickly calling classification specific AL strategies and parameter spaces for the experiments. It may be useful to add to these when trying new strategies.
+- `regression_experiment_utils.py`: Offers utilities and model definitions tailored for regression tasks, covering data handling, model training, and performance evaluation. It also contains utilities for quickly calling regression specific AL strategies and parameter spaces for the experiments. It may be useful to add to these when trying new strategies.
