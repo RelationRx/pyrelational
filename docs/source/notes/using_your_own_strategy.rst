@@ -81,4 +81,4 @@ random from the remaining queryable set.
             random_annotate = np.random.choice(remaining_u_indices, num_annotate-greedy_annotate, replace=False)
             return ixs + random_annotate.tolist()
 
-See the `examples folder <https://github.com/RelationRx/pyrelational/examples>`_ in the source repository for more examples.
+See the `examples folder` in the source repository for more examples.

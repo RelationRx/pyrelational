@@ -140,4 +140,4 @@ For example, users can create ensembles of pytorch lightning modules directly as
                   n_estimators=5,
             )
 
-See the `examples folder <https://github.com/RelationRx/pyrelational/examples>`_ in the source repository for more examples.
+See the `examples folder` in the source repository for more examples.

@@ -80,7 +80,7 @@ Now that our data manager is ready, we demonstrate how to define a machine learn
 A **PyRelationAL** model manager wraps a user defined ML model (e.g. PyTorch Module, Pytorch Lightning Module, or scikit-learn estimator) and
 handles instantiation, training, testing, as well as uncertainty quantification (e.g. ensembling, MC-dropout).
 It is also compatible with ML models that directly estimate their uncertainties such as Gaussian Processes
-(see `demo <https://github.com/RelationRx/pyrelational/examples/demo/model_gaussianprocesses.py>`_ on source repository).
+(see demo on source repository).
 Continuing with our example, we define a pytorch lightning module to perform digit classification on the dataset defined
 in the previous section.
 

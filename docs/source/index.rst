@@ -3,12 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-:github_url: https://github.com/RelationRx/pyrelational
-
 Welcome to PyRelationAL's documentation!
 ========================================
 
-**PyRelationAL** is a python active learning library developed by `Relation Therapeutics <https://www.relationrx.com/>`_ for
+**PyRelationAL** is a python active learning library developed for
 rapidly implementing active learning pipelines from data management, model development (and Bayesian approximation), to creating novel active learning strategies.
 
 .. toctree::
@@ -47,12 +45,3 @@ Indices and tables
 If the library is useful for your work please consider citing **PyRelationAL**.
 
 .. code-block:: latex
-
-   @misc{pyrelational,
-         title={PyRelationAL},
-         author={Relation Therapeutics},
-         year={2021},
-         publisher = {GitHub}
-         journal = {GitHub repository}
-         howpublished = {\url{https://github.com/RelationRx/pyrelational}}
-   }

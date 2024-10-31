@@ -1,4 +1,4 @@
-"""Thomas Sampling Strategy for Regression."""
+"""Thompson Sampling Strategy for Regression."""
 
 from pyrelational.batch_mode_samplers import TopKSampler
 from pyrelational.informativeness import ThompsonSampling

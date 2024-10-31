@@ -19,7 +19,7 @@ In return, we will reciprocate that respect by addressing your issue, assessing 
 
 ## Code of Conduct
 
-We take our open source community seriously and hold ourselves and other contributors to high standards of communication. By participating and contributing to this project, you agree to uphold our [Code of Conduct](https://github.com/RelationRx/pyrelational/CODE-OF-CONDUCT.md).
+We take our open source community seriously and hold ourselves and other contributors to high standards of communication. By participating and contributing to this project, you agree to uphold our Code of Conduct.
 
 ## Getting Started
 
@@ -31,12 +31,7 @@ Contributions are made to this repo via Issues and Pull Requests (PRs). A few ge
 ### Build and install
 To develop pyrelational, first build and install it from source following the steps
 
-1. Clone a copy of pyrelational from source:
-
-   ```bash
-   git clone https://github.com/RelationRx/pyrelational
-   cd pyrelational
-   ```
+1. Clone a copy of pyrelational from source
 
 2. If you already cloned pyrelational from source, update it:
 
@@ -83,7 +78,7 @@ python -m pytest tests
 
 ### Continuous Integration
 
-pyrelational uses [GitHub Actions](https://github.com/RelationRX/pyrelational/actions) for continuous integration. `pre-commit` will ensure that the code is properly formatted before accepting commits.
+pyrelational uses GitHub Actions for continuous integration. `pre-commit` will ensure that the code is properly formatted before accepting commits.
 
 ### Issues
 
@@ -97,7 +92,7 @@ PRs to our libraries are always welcome and can be a quick way to get your fix o
 
 - Be written in a way that is easy to understand and maintain.
 - Have an attached Issue that describes the problem and the PR name should refer to the Issue.
-- The PR author agrees to the [Code of Conduct](https://github.com/RelationRx/pyrelational/blob/master/CODE-OF-CONDUCT.md) and the [LICENSE](https://github.com/RelationRx/pyrelational/blob/master/LICENSE)
+- The PR author agrees to the Code of Conduct and the LICENSE
 - Only fix/add the functionality in question **OR** address wide-spread whitespace/style issues, not both.
 - Add unit or integration tests for fixed or changed functionality.
 - Include documentation in the repo or on our [docs site]() #TODO.

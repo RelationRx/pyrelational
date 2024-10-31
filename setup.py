@@ -22,11 +22,8 @@ with open("pyrelational/version.py") as fp:
 setup(
     name="pyrelational",
     description="Python tool box for quickly implementing active learning strategies",
-    author="Relation Therapeutics",
-    author_email="software@relationrx.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/RelationRx/pyrelational",
     packages=find_packages(),
     version=version["__version__"],
     setup_requires=setup_requires,

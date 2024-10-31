@@ -1,6 +1,5 @@
 # PyRelationAL
 
-![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/RelationTherapeutics/99eba16a0a4fad7eadf98ef938afe38c/raw/pytest-coverage-comment.json)
 [![PyPI version](https://badge.fury.io/py/pyrelational.svg)](https://badge.fury.io/py/pyrelational)
 [![Documentation Status](https://readthedocs.org/projects/pyrelational/badge/?version=stable)](https://pyrelational.readthedocs.io/en/stable/?badge=stable)
 
@@ -195,14 +194,3 @@ Make sure you have `sphinx` and `sphinx-rtd-theme` packages installed (`pip inst
 
 To generate the docs, `cd` into the `docs/` directory and run `make html`. This will generate the docs
 at `docs/_build/html/index.html`.
-
-## Citing our work
-
-```
-@article{pyrelational,
-  title={PyRelationAL: A Library for Active Learning Research and Development},
-  author={Scherer, Paul and Gaudelet, Thomas and Pouplin, Alison and Soman, Jyothish and Edwards, Lindsay and Taylor-King, Jake P and others},
-  journal={arXiv preprint arXiv:2205.11117},
-  year={2022}
-}
-```
