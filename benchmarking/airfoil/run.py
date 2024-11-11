@@ -14,6 +14,7 @@ from pyrelational.pipeline import Pipeline
 
 from ..benchmarking_utils import process_results_grid, save_results_df, set_all_seeds
 from ..regression_experiment_utils import (
+    GPR,
     EnsembleScikit,
     experiment_param_space,
     get_strategy_from_string,
@@ -29,9 +30,9 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_airfoil_data_manager()
-    model_config: Dict[str, Any] = {"random_state": seed}
+    model_config: Dict[str, Any] = {}
     trainer_config: Dict[str, Any] = {}
-    model_manager: EnsembleScikit = EnsembleScikit(ElasticNet, 5, model_config, trainer_config)
+    model_manager: GPR = GPR(model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
