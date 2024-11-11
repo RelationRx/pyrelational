@@ -7,7 +7,9 @@ from numpy.typing import NDArray
 from ray import tune
 from ray.train import RunConfig
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import auc
+from sklearn.neural_network import MLPClassifier
 
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
@@ -15,6 +17,7 @@ from pyrelational.pipeline import Pipeline
 from ..benchmarking_utils import process_results_grid, save_results_df, set_all_seeds
 from ..classification_experiment_utils import (
     SKRFC,
+    LogisticRegressor,
     experiment_param_space,
     get_strategy_from_string,
 )
@@ -28,9 +31,10 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[np.flo
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_synthclass2_data_manager(seed=seed)
-    model_config = {"n_estimators": 10, "bootstrap": True}
+    model_config = {"n_estimators": 3, "bootstrap": True, "max_depth": 3}
+    model_config = {"random_state": seed, "hidden_layer_sizes": (128, 64), "early_stopping": True}
     trainer_config: Dict[str, Any] = {}
-    model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
+    model_manager = LogisticRegressor(MLPClassifier, model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
