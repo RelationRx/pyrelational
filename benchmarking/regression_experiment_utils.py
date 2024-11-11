@@ -90,7 +90,7 @@ class GPR(ModelManager[GaussianProcessRegressor, GaussianProcessRegressor]):
             raise ValueError("No current model, call 'train(X, y)' to train the model first")
         else:
             y_hat = self._current_model.predict(X)
-            metric = mean_squared_error(y_hat, y)
+            metric = mean_squared_error(y, y_hat)
             return {"test_metric": metric}
 
     def __call__(self, loader: DataLoader[Any]) -> Any:
