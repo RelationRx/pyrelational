@@ -8,6 +8,7 @@ from ray import tune
 from ray.train import RunConfig
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import auc
+from sklearn.neural_network import MLPRegressor
 
 from pyrelational.oracles import BenchmarkOracle
 from pyrelational.pipeline import Pipeline
@@ -29,9 +30,15 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[Any, n
     set_all_seeds(seed)
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_yacht_data_manager()
-    model_config: Dict[str, Any] = {"random_state": seed}
+    model_config: Dict[str, Any] = {
+        "random_state": seed,
+        "max_iter": 1000,
+        "hidden_layer_sizes": (32, 8, 4),
+        "early_stopping": True,
+        "learning_rate_init": 3e-4,
+    }
     trainer_config: Dict[str, Any] = {}
-    model_manager: EnsembleScikit = EnsembleScikit(ElasticNet, 5, model_config, trainer_config)
+    model_manager: EnsembleScikit = EnsembleScikit(MLPRegressor, 10, model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
