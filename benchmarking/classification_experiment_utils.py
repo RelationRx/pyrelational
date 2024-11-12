@@ -1,6 +1,7 @@
 """
 Utility functions for scripting Active learning benchmark experiments where the model is a classifier.
 """
+
 import random
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
@@ -148,9 +149,7 @@ def pick_one_sample_per_class(dataset: Any, train_indices: NDArray[Union[Any, np
     return class_reps
 
 
-def make_class_stratified_train_val_test_split(
-    dataset: Any, k: int
-) -> Tuple[
+def make_class_stratified_train_val_test_split(dataset: Any, k: int) -> Tuple[
     NDArray[Union[Any, np.float32, np.float64]],
     NDArray[Union[Any, np.float32, np.float64]],
     NDArray[Union[Any, np.float32, np.float64]],
