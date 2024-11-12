@@ -1,0 +1,1 @@
+The benchmark script may need to be run twice as errors might arise the first time when downloading the dataset and race conditions beginning with ray's attempt to download the dataset multiple times in parallel.
