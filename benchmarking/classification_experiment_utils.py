@@ -1,25 +1,21 @@
 """
 Utility functions for scripting Active learning benchmark experiments where the model is a classifier.
 """
-
-import os
 import random
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import numpy as np
-import ray
 import torch
 from numpy.typing import NDArray
 
 # Ray Tune
 from ray import tune
-from ray.train import RunConfig
 
 # Scikit learn
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import auc, balanced_accuracy_score, roc_auc_score
+from sklearn.metrics import balanced_accuracy_score
+from sklearn.model_selection import StratifiedKFold
 from torch.utils.data import DataLoader
 
 # Pyrelational
@@ -96,9 +92,6 @@ class SKRFC(ModelManager[RandomForestClassifier, RandomForestClassifier]):
             return torch.FloatTensor(class_probabilities).unsqueeze(0)  # unsqueeze due to batch expectation
 
 
-from sklearn.linear_model import LogisticRegression
-
-
 class LogisticRegressor(ModelManager[Any, Any]):
     """
     Scikit learn LogisticRegression implementing the interface of our ModelManager
@@ -155,10 +148,9 @@ def pick_one_sample_per_class(dataset: Any, train_indices: NDArray[Union[Any, np
     return class_reps
 
 
-from sklearn.model_selection import StratifiedKFold
-
-
-def make_class_stratified_train_val_test_split(dataset: Any, k: int) -> Tuple[
+def make_class_stratified_train_val_test_split(
+    dataset: Any, k: int
+) -> Tuple[
     NDArray[Union[Any, np.float32, np.float64]],
     NDArray[Union[Any, np.float32, np.float64]],
     NDArray[Union[Any, np.float32, np.float64]],

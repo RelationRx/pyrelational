@@ -47,8 +47,3 @@ class MNIST(BaseDataset):
         # Create splits for cross-validation
         train_ix, test_ix = np.arange(len(train_dataset)), np.arange(len(test_dataset)) + len(train_dataset)
         self.data_splits = [(train_ix, test_ix)]
-
-
-if __name__ == "__main__":
-    data = MNIST()
-    print("plop")

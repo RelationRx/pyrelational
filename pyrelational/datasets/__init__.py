@@ -1,4 +1,5 @@
 from pyrelational.datasets.classification import (
+    MNIST,
     BreastCancerDataset,
     Checkerboard2x2Dataset,
     Checkerboard4x4Dataset,
