@@ -126,7 +126,6 @@ In the next section we briefly outline currently available strategies, informati
 
 - TopK sampler
 - Probabilistic sampler
-- BatchBALD (coming soon)
 
 ## Quickstart & examples
 The `examples/` folder contains multiple scripts and notebooks demonstrating how to use PyRelationAL effectively.
