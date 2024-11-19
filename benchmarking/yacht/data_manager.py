@@ -1,4 +1,4 @@
-"""Benchmarking DataManager for the energy dataset
+"""Benchmarking DataManager for the Yacht dataset
 """
 
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
