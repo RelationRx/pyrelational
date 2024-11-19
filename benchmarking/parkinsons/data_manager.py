@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the Checkerboard2x2 dataset
+"""Benchmarking DataManager for the Parkinsons dataset
 """
 import random
 import time
