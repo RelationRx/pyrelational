@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the fashion MNIST dataset
+"""Benchmarking DataManager for the Zalando FashionMNIST dataset
 """
 import random
 import time
