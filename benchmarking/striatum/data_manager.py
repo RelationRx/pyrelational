@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the Stratium dataset
+"""Benchmarking DataManager for the Striatum dataset
 """
 
 import random
