@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the glass dataset
+"""Benchmarking DataManager for the Digit dataset in Sklearn
 """
 import random
 import time
