@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the breastcancer dataset
+"""Benchmarking DataManager for the Breast Cancer dataset
 """
 
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
