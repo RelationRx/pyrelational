@@ -1,6 +1,6 @@
 # type: ignore
 
-"""Benchmarking DataManager for the GaussianClouds dataset
+"""Benchmarking DataManager for the SynthClass1 dataset
 """
 import random
 import time
