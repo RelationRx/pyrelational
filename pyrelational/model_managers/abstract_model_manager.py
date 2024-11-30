@@ -30,11 +30,19 @@ class ModelManager(ABC, Generic[ModelType, E]):
         super(ModelManager, self).__init__()
 
         self.model_class = model_class
-        self.model_config = json.load(open(model_config, "r")) if isinstance(model_config, str) else model_config
+        if isinstance(model_config, str):
+            with open(model_config, "r") as f:
+                self.model_config = json.load(f)
+        else:
+            self.model_config = model_config
+
         self._current_model: Optional[E] = None
-        self.trainer_config = (
-            json.load(open(trainer_config, "r")) if isinstance(trainer_config, str) else trainer_config
-        )
+
+        if isinstance(trainer_config, str):
+            with open(trainer_config, "r") as f:
+                self.trainer_config = json.load(f)
+        else:
+            self.trainer_config = trainer_config
 
     def _init_model(self) -> ModelType:
         """
@@ -53,7 +61,11 @@ class ModelManager(ABC, Generic[ModelType, E]):
         return self._current_model is not None
 
     @abstractmethod
-    def train(self, train_loader: DataLoader[Any], valid_loader: Optional[DataLoader[Any]] = None) -> None:
+    def train(
+        self,
+        train_loader: DataLoader[Any],
+        valid_loader: Optional[DataLoader[Any]] = None,
+    ) -> None:
         """
         Run train routine.
 

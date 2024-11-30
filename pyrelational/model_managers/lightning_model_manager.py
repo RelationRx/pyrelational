@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 import torch
 from lightning.pytorch import Callback, LightningModule, Trainer
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.utilities.model_helpers import is_overridden
 from torch.utils.data import DataLoader
 
@@ -60,6 +61,10 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
         config = self.trainer_config
         config = _add_pyl_trainer_defaults(config)
         callbacks: List[Callback] = []
+        
+        if config["logger"] is None:
+            config["logger"] = CSVLogger(save_dir=config["checkpoints_dir"])
+
         if config["use_early_stopping"]:
             callbacks.append(
                 EarlyStopping(
@@ -85,6 +90,7 @@ class LightningModelManager(ModelManager[LightningModule, LightningModule]):
             max_epochs=config["epochs"],
             check_val_every_n_epoch=config["period_eval"],
             log_every_n_steps=1,
+            logger = config["logger"]
         )
         return trainer, checkpoint_callback
 
@@ -143,6 +149,7 @@ def _add_pyl_trainer_defaults(config: Dict[str, Any]) -> Dict[str, Any]:
         "use_early_stopping": False,
         "patience": 100,
         "save_top_k": 1,
+        "logger": None,
     }
     config = {**default, **config}
     return config
