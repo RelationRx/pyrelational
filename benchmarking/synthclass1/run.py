@@ -32,9 +32,8 @@ def trial(config: Dict[str, Any]) -> Dict[str, Union[float, NDArray[Union[np.flo
     strategy = get_strategy_from_string(config["strategy"])
     data_manager = get_synthclass1_data_manager(seed=seed)
     model_config = {"n_estimators": 3, "bootstrap": True, "max_depth": 3}
-    model_config = {"random_state": seed, "hidden_layer_sizes": (128, 64), "early_stopping": True}
     trainer_config: Dict[str, Any] = {}
-    model_manager = LogisticRegressor(MLPClassifier, model_config, trainer_config)
+    model_manager = SKRFC(RandomForestClassifier, model_config, trainer_config)
     oracle = BenchmarkOracle()
     pipeline = Pipeline(data_manager=data_manager, model_manager=model_manager, strategy=strategy, oracle=oracle)
 
